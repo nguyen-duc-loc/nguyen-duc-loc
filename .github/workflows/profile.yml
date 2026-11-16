@@ -16,6 +16,10 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "tsconfig.json"
+      - "pnpm-workspace.yaml"
+      - "biome.json"
+      - ".markdownlint-cli2.jsonc"
+      - "lychee.toml"
       - ".node-version"
       - ".github/workflows/profile.yml"
   pull_request:
@@ -47,8 +51,13 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+        env:
+          # The bot commits in this job, so the local pre-commit hook must not run here.
+          SKIP_INSTALL_SIMPLE_GIT_HOOKS: "1"
 
       - run: pnpm typecheck
+
+      - run: pnpm exec biome ci
 
       - name: Build
         if: github.event_name == 'push' || github.event_name == 'pull_request'
@@ -106,3 +115,36 @@ jobs:
         run: |
           echo "Failed sources: $FAILED"
           exit 1
+
+  # README checks get their own read only job, so the third party link checker never sees the write token above.
+  readme:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - name: Lint README
+        run: pnpm lint:md
+
+      - name: Check README links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --no-progress README.md
+          # The placeholder README has no links yet.
+          failIfEmpty: false

@@ -1,0 +1,13 @@
+// markdownlint checks the generated README.md only (pnpm lint:md, and CI on push and pull requests).
+{
+  "config": {
+    "default": true,
+    // Sections render images as <picture> and <img> for light and dark themes (see AGENTS.md).
+    "MD033": false,
+    // Bios and link rows run long; GitHub wraps them.
+    "MD013": false,
+    // A bold tagline under the name is intended (spec 0001, Placeholder output), not a stand in for a heading.
+    "MD036": false
+  },
+  "globs": ["README.md"]
+}
