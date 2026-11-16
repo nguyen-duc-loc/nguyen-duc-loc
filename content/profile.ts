@@ -6,4 +6,4 @@ export type Profile = {
   readonly title: string;
 };
 
-export const profile = { name: "Loc Nguyen (test)", title: "Cloud Developer (test)" } as const satisfies Profile;
+export const profile = { name: "Loc Nguyen", title: "Cloud Developer" } as const satisfies Profile;
