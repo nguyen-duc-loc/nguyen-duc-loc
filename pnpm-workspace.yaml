@@ -1,0 +1,3 @@
+# simple-git-hooks is installed by the root "prepare" script, so its own postinstall stays off.
+allowBuilds:
+  simple-git-hooks: false

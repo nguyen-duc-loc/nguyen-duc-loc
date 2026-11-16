@@ -5,7 +5,7 @@ import { appendFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 import { build } from "./build.ts";
 import { writeSnapshot } from "./snapshots.ts";
-import { HttpError, ValidationError } from "./sources/http.ts";
+import { HttpError } from "./sources/http.ts";
 import { sources } from "./sources/index.ts";
 import type { Source } from "./types.ts";
 
@@ -91,7 +91,7 @@ export async function refresh(): Promise<void> {
     if (result.status === "fulfilled") return;
     const error = result.reason;
     if (!(error instanceof SourceFailure)) throw error; // a hard error, such as a failed snapshot write
-    const source = sources[i]!.name;
+    const source = sources[i].name;
     failures.push({ source, reason: error.reason });
     const cause = error.cause instanceof Error ? error.cause.message : String(error.cause);
     console.warn(`refresh: ${source} failed (${error.reason}): ${cause}`);

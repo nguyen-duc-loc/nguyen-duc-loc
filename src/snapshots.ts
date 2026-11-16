@@ -48,9 +48,7 @@ export async function readSnapshot(source: string): Promise<unknown> {
     text = await readFile(snapshotPath(source), "utf8");
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(
-        `missing snapshot ${source}: run pnpm refresh locally and commit data/snapshots/${source}.json`,
-      );
+      throw new Error(`missing snapshot ${source}: run pnpm refresh locally and commit data/snapshots/${source}.json`);
     }
     throw error;
   }
