@@ -65,7 +65,7 @@ code in `content/`, `src/content.ts`, `src/types.ts`, `src/build.ts`, `src/refre
 The look every section shares: color palette for light and dark mode, fonts, section layout and spacing, the header banner style, and rules for when to animate and when to stay static.
 **Done when:** a `design.md` covers palette (both themes), layout, card style, and animation rules, and a sample card looks right in both light and dark mode.
 spec [0003](../specs/0003-visual-theme-animation-style.md) · design in [`docs/design.md`](../design.md)
-code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`, `src/sections/placeholder.ts`
+code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`
 - [x] Design it (spec): `/architect visual theme & animation style`
 - [x] Build it: `/develop visual theme & animation style`
   - [x] Theme tokens, shared SVG helpers, and the themed sample card live on GitHub (AC-2, AC-4, AC-5, AC-8, AC-9, AC-11)
@@ -76,7 +76,7 @@ code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`, `src/sec
 ## Release 1: A profile you can share
 
 ### 5. Animated header & typing intro · done
-An animated banner with your name and title, and a typing line that cycles through a few short phrases about you.
+An animated banner with your name and title, and a typing line that types a few short phrases about you, then rests on the last one.
 **Done when:** the banner and typing intro animate on your GitHub profile, look right in both themes, and have alt text.
 design in [`docs/design.md`](../design.md) · code in `src/sections/header.ts`, `src/sections/typing.ts`, `src/readme.ts`
 - [x] Build it: `/develop animated header & typing intro`
