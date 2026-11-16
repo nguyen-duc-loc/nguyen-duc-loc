@@ -23,7 +23,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Profile content data | Foundation | done |
 | 4 | Visual theme & animation style | Foundation | done |
-| 5 | Animated header & typing intro | Release 1 | planned |
+| 5 | Animated header & typing intro | Release 1 | in-progress |
 | 6 | About me & contact links | Release 1 | planned |
 | 7 | Tech stack | Release 1 | planned |
 | 8 | LeetCode stats card | Release 1 | planned |
@@ -75,10 +75,11 @@ code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`, `src/sec
 
 ## Release 1: A profile you can share
 
-### 5. Animated header & typing intro
+### 5. Animated header & typing intro · in-progress
 An animated banner with your name and title, and a typing line that cycles through a few short phrases about you.
 **Done when:** the banner and typing intro animate on your GitHub profile, look right in both themes, and have alt text.
-- [ ] Build it: `/develop animated header & typing intro`
+design in [`docs/design.md`](../design.md) · code in `src/sections/header.ts`, `src/sections/typing.ts`, `src/readme.ts`
+- [x] Build it: `/develop animated header & typing intro`
 
 ### 6. About me & contact links
 A short bio and a row of badge style buttons for LinkedIn, Credly, LeetCode, and email.
