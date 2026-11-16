@@ -2,6 +2,8 @@
 // src/content.ts checks the rules types can't express (lengths, counts, dates, URLs) at build time.
 // All text is plain text: no Markdown or HTML. Every value here is public.
 
+import type { IconName } from "../src/icons.ts";
+
 /** `YYYY-MM`, for example `"2024-06"`. The exact format is checked at build time. */
 export type YearMonth = `${number}-${number}`;
 
@@ -27,8 +29,11 @@ export type Profile = {
 
 export type StackItem = {
   readonly name: string;
-  /** A Simple Icons slug, for example `"typescript"`. Leave it out when the brand has none. */
-  readonly icon?: string;
+  /**
+   * A key of the icon registry in `src/icons.ts`, for example `"typescript"`. Leave it out when the brand has
+   * none. A new brand needs its path copied into the registry first (spec 0005).
+   */
+  readonly icon?: IconName;
 };
 
 export type Stack = {
