@@ -3,7 +3,9 @@
 
 import { appendFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
+import { content } from "../content/index.ts";
 import { build } from "./build.ts";
+import { assertContent } from "./content.ts";
 import { writeSnapshot } from "./snapshots.ts";
 import { HttpError } from "./sources/http.ts";
 import { sources } from "./sources/index.ts";
@@ -82,6 +84,8 @@ async function report(failures: readonly Failure[]): Promise<void> {
 }
 
 export async function refresh(): Promise<void> {
+  // Stop before any request, so a bad edit never reaches a fetch URL or the daily run.
+  assertContent(content);
   const names = new Set(sources.map((s) => s.name));
   if (names.size !== sources.length) throw new Error("two registered sources share a name");
 
