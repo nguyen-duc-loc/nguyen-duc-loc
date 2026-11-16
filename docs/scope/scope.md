@@ -41,7 +41,7 @@ Set up the public repo named exactly like your GitHub username (GitHub only show
 **Done when:** the decision is recorded in a spec, the repo shows a placeholder README on your GitHub profile, and the README can be rebuilt with one command (or one automated run).
 spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in `src/`, `content/`, `.github/`
 - [x] Decide the stack (spec): `/architect profile repo & build approach`
-- [ ] Scaffold from the decision: `/develop profile repo & build approach`
+- [x] Scaffold from the decision: `/develop profile repo & build approach`
 - [ ] Verify it: `/check verify profile repo & build approach`
 
 ### 2. Coding standards & tooling
