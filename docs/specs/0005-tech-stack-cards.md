@@ -234,5 +234,5 @@ Skateboard: the first milestone puts the complete Tech stack section live with r
 
 ## Follow-up
 
-- [ ] Spec 0002's *Key invariants* still say a stack category needs "at least 1 item" and `icon` matches `^[a-z0-9]+$`, and its follow up item for feature 7 is now settled by this spec. `/sync` should mark both as superseded here.
+- [x] Spec 0002's *Key invariants* still say a stack category needs "at least 1 item" and `icon` matches `^[a-z0-9]+$`, and its follow up item for feature 7 is now settled by this spec. Done: spec 0002 now marks its stack count and `icon` rules, its `StackItem.icon` type, and that follow up item as superseded here.
 - [ ] Two 400 wide cards side by side rely on GitHub's profile README column being at least 804px wide, as spec 0003 assumed for half cards. `/check verify` should confirm the two by two grid on a common desktop width.
