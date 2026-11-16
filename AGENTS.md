@@ -6,7 +6,7 @@ A generated GitHub profile README. `pnpm build` turns `content/` plus `data/snap
 
 - **Language / Runtime**: TypeScript 7 on Node.js 26, run directly with `node file.ts` (type stripping, no compile step)
 - **Framework**: none. Each section is a plain TypeScript function that returns a Markdown or SVG string
-- **Key dependencies**: no runtime dependencies (built in `fetch` and `node:fs`); dev only `typescript`, `@types/node`; automation in `.github/workflows/profile.yml`
+- **Key dependencies**: no runtime dependencies (built in `fetch` and `node:fs`); dev only `typescript`, `@types/node`, `@biomejs/biome`, `markdownlint-cli2`, `simple-git-hooks`; automation in `.github/workflows/profile.yml`
 - **Package manager**: pnpm, pinned in `package.json` `packageManager`, lockfile committed
 
 Decided in [spec 0001](docs/specs/0001-profile-repo-build-approach/index.md).
