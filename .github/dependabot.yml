@@ -17,6 +17,11 @@ updates:
       interval: weekly
       day: monday
     groups:
+      # Its own group, listed first (a dependency joins the first group it matches). Biome is pinned
+      # exactly and a bump can change formatting, so a failing biome ci must not hold back other updates.
+      # On a Biome PR, run `pnpm exec biome migrate --write` so the $schema version in biome.json matches.
+      biome:
+        patterns: ["@biomejs/biome"]
       npm:
         patterns: ["*"]
     commit-message:
