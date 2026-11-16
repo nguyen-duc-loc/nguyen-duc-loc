@@ -1,7 +1,7 @@
 # 0004. About me as centered Markdown, contact links as generated SVG pill buttons, icons in a shared registry
 
 **Date**: 2026-11-16
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

@@ -9,3 +9,9 @@
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/typing-dark.svg">
   <img alt="Typing intro: Cloud Developer, LeetCode Guardian" src="assets/generated/typing-light.svg" width="100%">
 </picture>
+
+<h2 align="center">About me</h2>
+
+<p align="center">You can&#39;t beat someone who is having fun.</p>
+
+<p align="center">📍 Hanoi, Vietnam</p>
