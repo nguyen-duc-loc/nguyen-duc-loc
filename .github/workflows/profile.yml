@@ -146,5 +146,6 @@ jobs:
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --no-progress README.md
-          # The placeholder README has no links yet.
+          # The README links only its generated images until feature 6 adds profile links.
+          # Kept off so a README with no links at all never fails this check.
           failIfEmpty: false

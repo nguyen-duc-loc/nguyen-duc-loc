@@ -1,0 +1,79 @@
+// The shape of everything in content/ (spec 0002). Types catch typos at `pnpm typecheck`;
+// src/content.ts checks the rules types can't express (lengths, counts, dates, URLs) at build time.
+// All text is plain text: no Markdown or HTML. Every value here is public.
+
+/** `YYYY-MM`, for example `"2024-06"`. The exact format is checked at build time. */
+export type YearMonth = `${number}-${number}`;
+
+/** Usernames only, never full URLs. Buttons and fetchers both derive from these. */
+export type Accounts = {
+  readonly github: string;
+  readonly linkedin: string;
+  readonly leetcode: string;
+  readonly credly: string;
+};
+
+export type Profile = {
+  readonly name: string;
+  readonly title: string;
+  /** City and country only. */
+  readonly location: string;
+  readonly bio: string;
+  readonly typingPhrases: readonly string[];
+  readonly accounts: Accounts;
+  /** Public on purpose. */
+  readonly email: string;
+};
+
+export type StackItem = {
+  readonly name: string;
+  /** A Simple Icons slug, for example `"typescript"`. Leave it out when the brand has none. */
+  readonly icon?: string;
+};
+
+export type Stack = {
+  readonly languages: readonly StackItem[];
+  readonly frameworks: readonly StackItem[];
+  readonly tools: readonly StackItem[];
+  readonly cloud: readonly StackItem[];
+};
+
+export type Role = {
+  readonly company: string;
+  readonly title: string;
+  readonly start: YearMonth;
+  /** `null` means this is your current role. */
+  readonly end: YearMonth | null;
+  readonly highlights: readonly string[];
+  readonly location?: string;
+  readonly companyUrl?: string;
+};
+
+export type School = {
+  readonly school: string;
+  readonly degree: string;
+  readonly field?: string;
+  readonly start: YearMonth;
+  /** `null` means you are still studying here. */
+  readonly end: YearMonth | null;
+  /** Honors or GPA. */
+  readonly note?: string;
+};
+
+export type Project = {
+  readonly name: string;
+  readonly description: string;
+  /** Free names, not linked to the stack. */
+  readonly tech: readonly string[];
+  /** Set `repoUrl`, `demoUrl`, or both. */
+  readonly repoUrl?: string;
+  readonly demoUrl?: string;
+};
+
+export type Content = {
+  readonly profile: Profile;
+  readonly stack: Stack;
+  readonly experience: readonly Role[];
+  readonly education: readonly School[];
+  readonly projects: readonly Project[];
+};

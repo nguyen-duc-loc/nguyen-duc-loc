@@ -41,6 +41,7 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md`.
 - `strict` types, no `any`. Stay inside Node's type stripping subset: `.ts` import extensions, `import type`, no enums, namespaces, parameter properties, or decorators.
 - Errors: expected failures at the edges throw typed errors (`HttpError`, `ValidationError` in `src/sources/http.ts`); each entry script catches once and sets `process.exitCode`.
 - Named exports only. Folders grouped by role (`src/sections/`, `src/sources/`, `content/`).
+- Design system: build all UI to `docs/design.md` (palette, type, layout, motion rules); token values live in `src/theme.ts`, and sections draw through the helpers in `src/svg.ts`.
 - Accessibility: every image is an `<img>` with real `alt` text inside `<picture>` with light and dark versions (Markdown `![]()` is rejected by `src/guards.ts`), WCAG AA contrast in both themes, SVGs self contained (no external fonts or images).
 - Conventional commits (`feat:`, `fix(ci):`, `docs(spec):`). Reserved for automation: `chore(refresh)`, `chore(keepalive)`, `chore(deps)`.
 - Workflow safety: actions pinned by SHA, no `${{ }}` inside `run:` (pass values through `env:`), never force push, keep `main` free of branch protection (the bot pushes to it).

@@ -21,9 +21,9 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Profile repo & build approach | Foundation | in-progress |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Profile content data | Foundation | planned |
-| 4 | Visual theme & animation style | Foundation | planned |
-| 5 | Animated header & typing intro | Release 1 | planned |
+| 3 | Profile content data | Foundation | done |
+| 4 | Visual theme & animation style | Foundation | done |
+| 5 | Animated header & typing intro | Release 1 | done |
 | 6 | About me & contact links | Release 1 | planned |
 | 7 | Tech stack | Release 1 | planned |
 | 8 | LeetCode stats card | Release 1 | planned |
@@ -50,22 +50,36 @@ Capture conventions for the repo (file layout, how to add a section, how refresh
 code in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`, `package.json`, `pnpm-workspace.yaml`, `.github/workflows/profile.yml`
 - [x] Capture conventions + tooling choices: `/audit`
 
-### 3. Profile content data · needs a decision
+### 3. Profile content data · done
 One source of truth for everything you write about yourself: bio, title, tech stack, work experience, education, featured projects, and profile links (LinkedIn, Credly, LeetCode, email). You edit this file, not the README.
 **Done when:** the data shape covers every section in this plan, and changing a role or project in the data updates the README without touching layout.
-- [ ] Design it (spec): `/architect profile content data`
+spec [0002](../specs/0002-profile-content-data.md)
+code in `content/`, `src/content.ts`, `src/types.ts`, `src/build.ts`, `src/refresh.ts`
+- [x] Design it (spec): `/architect profile content data`
+- [x] Build it: `/develop profile content data`
+  - [x] Content modules with your real content, wired into build, README unchanged (AC-1, AC-2, AC-3, AC-4, AC-7)
+  - [x] Content check and link helpers, run by build and refresh (AC-5, AC-6, AC-8)
+- [x] Verify it: `/check verify profile content data`
 
-### 4. Visual theme & animation style · needs a decision
+### 4. Visual theme & animation style · done
 The look every section shares: color palette for light and dark mode, fonts, section layout and spacing, the header banner style, and rules for when to animate and when to stay static.
 **Done when:** a `design.md` covers palette (both themes), layout, card style, and animation rules, and a sample card looks right in both light and dark mode.
-- [ ] Design it (spec): `/architect visual theme & animation style`
+spec [0003](../specs/0003-visual-theme-animation-style.md) · design in [`docs/design.md`](../design.md)
+code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`
+- [x] Design it (spec): `/architect visual theme & animation style`
+- [x] Build it: `/develop visual theme & animation style`
+  - [x] Theme tokens, shared SVG helpers, and the themed sample card live on GitHub (AC-2, AC-4, AC-5, AC-8, AC-9, AC-11)
+  - [x] Build guards for contrast, self contained SVGs, light and dark twins, colors, and XML safe content (AC-3, AC-6, AC-7, AC-10)
+  - [x] `docs/design.md` written from the spec (AC-1)
+- [x] Verify it: `/check verify visual theme & animation style`
 
 ## Release 1: A profile you can share
 
-### 5. Animated header & typing intro
-An animated banner with your name and title, and a typing line that cycles through a few short phrases about you.
+### 5. Animated header & typing intro · done
+An animated banner with your name and title, and a typing line that types a few short phrases about you, then rests on the last one.
 **Done when:** the banner and typing intro animate on your GitHub profile, look right in both themes, and have alt text.
-- [ ] Build it: `/develop animated header & typing intro`
+design in [`docs/design.md`](../design.md) · code in `src/sections/header.ts`, `src/sections/typing.ts`, `src/readme.ts`
+- [x] Build it: `/develop animated header & typing intro`
 
 ### 6. About me & contact links
 A short bio and a row of badge style buttons for LinkedIn, Credly, LeetCode, and email.
