@@ -2,7 +2,19 @@
 // Colors are class names only (`fill-accent`, `stroke-border`, `stop-accent2`); the values come from themeCss.
 
 import { escapeXml } from "./escape.ts";
-import { fonts, layout, motion, radius, type TextSlot, type Theme, themeCss, themes } from "./theme.ts";
+import { type IconName, icons } from "./icons.ts";
+import {
+  button,
+  fonts,
+  layout,
+  motion,
+  radius,
+  type TextSlot,
+  type Theme,
+  themeCss,
+  themes,
+  typography,
+} from "./theme.ts";
 import type { SectionOutput } from "./types.ts";
 
 export type SvgOptions = {
@@ -97,4 +109,30 @@ export function themedImage({ base, alt, width, render }: ThemedImageOptions): S
       { file: dark, content: render(themes.dark) },
     ],
   };
+}
+
+/** An icon from `src/icons.ts` as a nested `size` × `size` SVG at (x, y), painted by `classes`. */
+export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
+  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${icons[name].path}"/></svg>`;
+}
+
+export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
+
+/**
+ * A contact pill (spec 0004, docs/design.md "Button anatomy"): icon then label inside a bordered pill, with a
+ * transparent `button.margin` around it so buttons sit apart in a row. Static: no animation.
+ */
+export function pillButton(theme: Theme, { icon, label }: PillButtonOptions): string {
+  const { width, height, margin, padX, gap } = button;
+  const iconX = margin + padX;
+  const labelX = iconX + button.icon + gap;
+  const slot = { width: width - padX - button.icon - gap - padX, style: typography.button, minSize: 12 };
+  const fit = fitText(label, slot);
+  const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
+  const body = [
+    `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 1}" height="${height - 1}" rx="${radius.pill}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
+    iconSvg(icon, iconX, margin + (height - button.icon) / 2, button.icon, "fill-accent"),
+    `<text class="fill-text" x="${labelX}" y="${margin + height / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${slot.style.weight}"${squeeze}>${escapeXml(label)}</text>`,
+  ].join("\n");
+  return svgDocument(theme, { width: width + 2 * margin, height: height + 2 * margin, body });
 }
