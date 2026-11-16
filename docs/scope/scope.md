@@ -20,7 +20,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
 | 1 | Profile repo & build approach | Foundation | in-progress |
-| 2 | Coding standards & tooling | Foundation | in-progress |
+| 2 | Coding standards & tooling | Foundation | done |
 | 3 | Profile content data | Foundation | planned |
 | 4 | Visual theme & animation style | Foundation | planned |
 | 5 | Animated header & typing intro | Release 1 | planned |
@@ -44,7 +44,7 @@ spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in `src/
 - [x] Scaffold from the decision: `/develop profile repo & build approach`
 - [ ] Verify it: `/check verify profile repo & build approach`
 
-### 2. Coding standards & tooling · in-progress
+### 2. Coding standards & tooling · done
 Capture conventions for the repo (file layout, how to add a section, how refreshes commit), then install light checks such as markdown linting and broken link checks.
 **Done when:** root `AGENTS.md` reflects the real setup, and the checks run clean locally and in the automated workflow.
 code in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`, `package.json`, `pnpm-workspace.yaml`, `.github/workflows/profile.yml`
