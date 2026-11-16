@@ -52,11 +52,25 @@ const problem = (path: string, message: string): string => `${path}: ${message}`
 /** Characters as code points, so an emoji or a Vietnamese letter counts once. */
 const charCount = (text: string): number => [...text].length;
 
+const XML_MESSAGE = "must not contain a control character or a character XML doesn't allow";
+
+/** XML 1.0 allows tab, LF, CR, and U+0020 and up, except U+FFFE and U+FFFF. */
+const isXmlChar = (codePoint: number): boolean =>
+  codePoint === 0x9 ||
+  codePoint === 0xa ||
+  codePoint === 0xd ||
+  (codePoint >= 0x20 && codePoint !== 0xfffe && codePoint !== 0xffff);
+
+/** No character XML forbids and no lone surrogate, so no content text can make an SVG invalid. */
+const isXmlSafe = (text: string): boolean =>
+  text.isWellFormed() && [...text].every((char) => isXmlChar(char.codePointAt(0) ?? 0));
+
 function checkText(path: string, text: string, max: number): string[] {
   if (text === "") return [problem(path, "must not be empty")];
   const problems: string[] = [];
   if (text !== text.trim()) problems.push(problem(path, "must not start or end with whitespace"));
   if (LINE_BREAK.test(text)) problems.push(problem(path, "must not contain a line break"));
+  if (!isXmlSafe(text)) problems.push(problem(path, XML_MESSAGE));
   if (text !== text.normalize("NFC")) problems.push(problem(path, "must be in NFC form"));
   const count = charCount(text);
   if (count > max) problems.push(problem(path, `must be at most ${max} characters (is ${count})`));
@@ -83,11 +97,14 @@ function checkUnique(entries: readonly Entry[], index: number): string[] {
 }
 
 function checkPattern(path: string, value: string, pattern: RegExp): string[] {
+  if (!isXmlSafe(value)) return [problem(path, XML_MESSAGE)];
   return pattern.test(value) ? [] : [problem(path, `must match ${pattern.source}`)];
 }
 
 function checkOptionalUrl(path: string, url: string | undefined): string[] {
-  if (url === undefined || (HTTPS_URL.test(url) && URL.canParse(url))) return [];
+  if (url === undefined) return [];
+  if (!isXmlSafe(url)) return [problem(path, XML_MESSAGE)];
+  if (HTTPS_URL.test(url) && URL.canParse(url)) return [];
   return [problem(path, "must be an https URL")];
 }
 

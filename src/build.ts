@@ -4,11 +4,12 @@ import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { content } from "../content/index.ts";
 import { assertContent } from "./content.ts";
-import { checkReadme } from "./guards.ts";
+import { checkContrast, checkReadme, checkSvgAssets } from "./guards.ts";
 import { GENERATED_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
 import { readSnapshot } from "./snapshots.ts";
 import { sources } from "./sources/index.ts";
+import { contrastPairs, themes } from "./theme.ts";
 import type { GeneratedAsset } from "./types.ts";
 
 const SAFE_ASSET_NAME = /^[a-z0-9][a-z0-9._-]*$/i;
@@ -41,7 +42,12 @@ export async function build(): Promise<void> {
 
   // 2. Render in memory, then 3. run the guards. A failed guard writes nothing.
   const { readme, assets } = renderReadme({ content, snapshots });
-  const problems = [...checkReadme(readme), ...checkAssets(assets)];
+  const problems = [
+    ...checkReadme(readme),
+    ...checkAssets(assets),
+    ...checkContrast(themes, contrastPairs),
+    ...checkSvgAssets(assets),
+  ];
   if (problems.length > 0) {
     throw new Error(`guard failed, nothing was written:\n${problems.map((p) => `  - ${p}`).join("\n")}`);
   }
