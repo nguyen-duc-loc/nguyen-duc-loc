@@ -4,4 +4,4 @@
 
 **Cloud Developer**
 
-> 🚧 Profile under construction.
+> 🚧 Profile under construction. [Old notes](https://github.com/nguyen-duc-loc/verify-0001-missing-repo)
