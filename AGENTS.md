@@ -69,6 +69,8 @@ Chosen here and installed (config in `biome.json`, `.markdownlint-cli2.jsonc`, `
 
 MCP servers: github-mcp-server (recommended, connect it with your `gh` login in your Kiro MCP settings)
 
+Declined: Agent Skills for Biome, markdownlint, and simple-git-hooks (none official for using them; the config files and ## Tooling cover them)
+
 ## Context files
 
 <!-- Nested AGENTS.md files are listed here as they are created -->
