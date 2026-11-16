@@ -51,7 +51,7 @@ Chosen here and installed (config in `biome.json`, `.markdownlint-cli2.jsonc`, `
 - Lint and format: Biome (`biome check` locally, `biome ci` in CI). Biome skips Markdown (markdownlint covers it), `data/snapshots/`, `assets/generated/`, `.kiro/`, and `skills-lock.json`, so it never reformats bot written output.
 - Before commit: `simple-git-hooks` runs Biome check on staged files and `pnpm typecheck`. The `prepare` script installs the hook; CI sets `SKIP_INSTALL_SIMPLE_GIT_HOOKS` so bot commits skip it.
 - CI (`profile.yml`): `biome ci` after typecheck; after build, markdownlint and lychee check `README.md` in a separate read only `readme` job, on push and pull requests only (never the scheduled refresh), and lychee accepts LinkedIn's status 999.
-- Dependencies: pnpm refuses packages published less than a day ago (minimum release age). Pick an older version instead of adding exclusions. A new dependency with an install script needs an `allowBuilds` entry in `pnpm-workspace.yaml`. Biome is pinned exactly, since its formatting changes between versions.
+- Dependencies: pnpm refuses packages published less than a day ago (minimum release age). Pick an older version instead of adding exclusions. A new dependency with an install script needs an `allowBuilds` entry in `pnpm-workspace.yaml`. Biome is pinned exactly, since its formatting changes between versions. On a Biome bump, run `pnpm exec biome migrate --write` so the `$schema` version in `biome.json` matches.
 - Tests: none at the Alpha tier. When `/test` adds them, use `node --test`.
 
 ## Git
