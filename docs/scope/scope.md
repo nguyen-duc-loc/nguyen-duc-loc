@@ -20,7 +20,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
 | 1 | Profile repo & build approach | Foundation | in-progress |
-| 2 | Coding standards & tooling | Foundation | planned |
+| 2 | Coding standards & tooling | Foundation | in-progress |
 | 3 | Profile content data | Foundation | planned |
 | 4 | Visual theme & animation style | Foundation | planned |
 | 5 | Animated header & typing intro | Release 1 | planned |
@@ -44,10 +44,11 @@ spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in `src/
 - [x] Scaffold from the decision: `/develop profile repo & build approach`
 - [ ] Verify it: `/check verify profile repo & build approach`
 
-### 2. Coding standards & tooling
+### 2. Coding standards & tooling · in-progress
 Capture conventions for the repo (file layout, how to add a section, how refreshes commit), then install light checks such as markdown linting and broken link checks.
 **Done when:** root `AGENTS.md` reflects the real setup, and the checks run clean locally and in the automated workflow.
-- [ ] Capture conventions + tooling choices: `/audit`
+code in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`, `package.json`, `pnpm-workspace.yaml`, `.github/workflows/profile.yml`
+- [x] Capture conventions + tooling choices: `/audit`
 
 ### 3. Profile content data · needs a decision
 One source of truth for everything you write about yourself: bio, title, tech stack, work experience, education, featured projects, and profile links (LinkedIn, Credly, LeetCode, email). You edit this file, not the README.

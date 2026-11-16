@@ -1,0 +1,4 @@
+# lychee checks the links in README.md (CI on push and pull requests; locally: lychee README.md).
+
+# Default accepted statuses, plus 999, which LinkedIn returns to automated clients for valid profile URLs.
+accept = ["100..=103", "200..=299", "999"]
