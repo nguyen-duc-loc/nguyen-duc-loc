@@ -2,3 +2,7 @@
 
 # Default accepted statuses, plus 999, which LinkedIn returns to automated clients for valid profile URLs.
 accept = ["100..=103", "200..=299", "999"]
+
+# LeetCode profile pages sit behind a Cloudflare bot check that answers automated clients with 403, even for
+# real accounts (spec 0004, AC-8). Checked by hand in a browser. Only profile pages are skipped.
+exclude = ['^https://leetcode\.com/u/']
