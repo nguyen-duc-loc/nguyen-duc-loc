@@ -3,6 +3,7 @@
 import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { content } from "../content/index.ts";
+import { assertContent } from "./content.ts";
 import { checkReadme } from "./guards.ts";
 import { GENERATED_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
@@ -31,7 +32,8 @@ function checkAssets(assets: readonly GeneratedAsset[]): string[] {
 }
 
 export async function build(): Promise<void> {
-  // 1. Load content and snapshots.
+  // 1. Check content (a failed check writes nothing), then load snapshots.
+  assertContent(content);
   const snapshots = new Map<string, unknown>();
   for (const source of sources) {
     snapshots.set(source.name, await readSnapshot(source.name));
