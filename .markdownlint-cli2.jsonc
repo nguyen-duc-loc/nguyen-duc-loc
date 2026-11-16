@@ -7,7 +7,9 @@
     // Bios and link rows run long; GitHub wraps them.
     "MD013": false,
     // A bold tagline under the name is intended (spec 0001, Placeholder output), not a stand in for a heading.
-    "MD036": false
+    "MD036": false,
+    // The README opens with a themed image (<picture>), not a # heading; its alt text carries the name (spec 0003).
+    "MD041": false
   },
   "globs": ["README.md"]
 }
