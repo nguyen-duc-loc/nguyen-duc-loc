@@ -35,7 +35,7 @@ Forces:
 - **AC-5**: `src/icons.ts` exports one icon registry. Each entry has a single `path` on a 24 × 24 grid and a `source` that is either `simple-icons@<version>` (the pinned release the path was copied from) or `hand drawn`. Entries contain no color. The four contact icons (`linkedin`, `credly`, `leetcode`, `email`) come from Simple Icons when that release has the brand, and are hand drawn otherwise. `email` is always hand drawn (an envelope). Asking for a name that isn't in the registry is a type error.
 - **AC-6**: `src/theme.ts` adds `radius.pill` (20), `typography.button` (14, 600, sans), and a `button` constant holding the button sizes. `docs/design.md` documents the About section, the button anatomy, and the icon registry with the same values. No section writes a size, color, or font itself.
 - **AC-7**: Changing `profile.bio`, `profile.location`, `profile.email`, or any of the three usernames in `content/` and running `pnpm build` changes the README (and the email button's alt text) with no change under `src/`. Two builds in a row produce byte identical output.
-- **AC-8**: `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `pnpm lint:md` pass. Lychee in CI passes on the four new links, or, if Credly or the `mailto:` link fails only because of automation, the failure is confirmed by opening the link by hand and one narrow exclusion with a comment is added to `lychee.toml`.
+- **AC-8**: `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `pnpm lint:md` pass. Lychee in CI passes on the four new links, or, if Credly, LeetCode, or the `mailto:` link fails only because of automation, the failure is confirmed by opening the link by hand and one narrow exclusion with a comment is added to `lychee.toml`.
 
 ## Options considered
 
@@ -230,7 +230,7 @@ Skateboard: the first milestone ships a complete, readable About me section with
    4. Add the button list and row to the `about` section: `themedImage` per button, wrapped in `<a href>`, with the URLs from `profileUrls` and `mailtoUrl` and the alt texts from AC-4, satisfies **AC-2**, **AC-3**, **AC-4**, **AC-7**.
 3. **Milestone 3: design rules and checks.**
    1. Update `docs/design.md`: add the About me section, button anatomy, and icon registry, add the new constants to the type and spacing tables, and leave the motion inventory row for about and buttons as "None", satisfies **AC-6**.
-   2. Run every critical test scenario, push, and confirm the lychee result in CI. If Credly or `mailto:` fails only because of automation, open it by hand and add one commented exclusion to `lychee.toml`, satisfies **AC-7**, **AC-8**.
+   2. Run every critical test scenario, push, and confirm the lychee result in CI. If Credly, LeetCode, or `mailto:` fails only because of automation, open it by hand and add one commented exclusion to `lychee.toml`, satisfies **AC-7**, **AC-8**.
 
 ## Consequences
 
@@ -254,5 +254,5 @@ Skateboard: the first milestone ships a complete, readable About me section with
 
 - [ ] Feature 7 adds its icons to `src/icons.ts` from the same pinned Simple Icons version (or bumps every copied entry together) and decides whether the `stack` content check should accept only `IconName` keys. This settles the spec 0002 follow up about turning a slug into an icon.
 - [ ] Feature 9's "LinkedIn button to the full profile" reuses `pillButton` and the `linkedin` icon instead of a new style.
-- [ ] If CI lychee flags Credly or the `mailto:` link, add one narrow, commented exclusion to `lychee.toml` (AC-8).
+- [x] If CI lychee flags Credly, LeetCode, or the `mailto:` link, add one narrow, commented exclusion to `lychee.toml` (AC-8). Done for LeetCode: Cloudflare answers automated clients with 403 (CI run 43903125380), and the profile opens in a browser.
 - [ ] `/sync` after the build: record in `AGENTS.md` that every icon comes from `src/icons.ts`, and that clickable images are a `themedImage` wrapped in `<a href>`.
