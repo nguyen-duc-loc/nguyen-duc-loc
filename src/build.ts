@@ -2,7 +2,7 @@
 
 import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { profile } from "../content/profile.ts";
+import { content } from "../content/index.ts";
 import { checkReadme } from "./guards.ts";
 import { GENERATED_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
@@ -38,7 +38,7 @@ export async function build(): Promise<void> {
   }
 
   // 2. Render in memory, then 3. run the guards. A failed guard writes nothing.
-  const { readme, assets } = renderReadme({ profile, snapshots });
+  const { readme, assets } = renderReadme({ content, snapshots });
   const problems = [...checkReadme(readme), ...checkAssets(assets)];
   if (problems.length > 0) {
     throw new Error(`guard failed, nothing was written:\n${problems.map((p) => `  - ${p}`).join("\n")}`);

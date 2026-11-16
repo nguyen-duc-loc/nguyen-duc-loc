@@ -54,9 +54,10 @@ code in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`, `package.json`,
 One source of truth for everything you write about yourself: bio, title, tech stack, work experience, education, featured projects, and profile links (LinkedIn, Credly, LeetCode, email). You edit this file, not the README.
 **Done when:** the data shape covers every section in this plan, and changing a role or project in the data updates the README without touching layout.
 spec [0002](../specs/0002-profile-content-data.md)
+code in `content/`, `src/types.ts`, `src/build.ts`
 - [x] Design it (spec): `/architect profile content data`
 - [ ] Build it: `/develop profile content data`
-  - [ ] Content modules with your real content, wired into build, README unchanged (AC-1, AC-2, AC-3, AC-4, AC-7)
+  - [x] Content modules with your real content, wired into build, README unchanged (AC-1, AC-2, AC-3, AC-4, AC-7)
   - [ ] Content check and link helpers, run by build and refresh (AC-5, AC-6, AC-8)
 - [ ] Verify it: `/check verify profile content data`
 

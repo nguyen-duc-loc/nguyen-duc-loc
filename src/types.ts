@@ -1,8 +1,9 @@
-import type { Profile } from "../content/profile.ts";
+import type { Content } from "../content/types.ts";
 
 /** Everything a section may read. Sections never touch the network or the file system. */
 export type BuildContext = {
-  readonly profile: Profile;
+  /** Everything in content/, checked by checkContent before any section runs. */
+  readonly content: Content;
   /** Last good snapshot per registered source, keyed by source name. */
   readonly snapshots: ReadonlyMap<string, unknown>;
 };
