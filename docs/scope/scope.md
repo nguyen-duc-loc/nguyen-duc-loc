@@ -84,11 +84,11 @@ design in [`docs/design.md`](../design.md) · code in `src/sections/header.ts`, 
 ### 6. About me & contact links · in-progress
 A short bio and a row of badge style buttons for LinkedIn, Credly, LeetCode, and email.
 **Done when:** the bio reads from your content data, and every button opens the right profile.
-spec [0004](../specs/0004-about-contact-links.md) · design in [`docs/design.md`](../design.md) · code in `src/sections/about.ts`, `src/readme.ts`
+spec [0004](../specs/0004-about-contact-links.md) · design in [`docs/design.md`](../design.md) · code in `src/sections/about.ts`, `src/icons.ts`, `src/svg.ts`, `src/theme.ts`, `src/readme.ts`
 - [x] Design it (spec): `/architect about me & contact links`
 - [ ] Build it: `/develop about me & contact links`
   - [x] About me heading, bio, and location live (AC-1, AC-7)
-  - [ ] Contact buttons: theme values, icon registry, pill buttons, linked row (AC-2, AC-3, AC-4, AC-5, AC-7)
+  - [x] Contact buttons: theme values, icon registry, pill buttons, linked row (AC-2, AC-3, AC-4, AC-5, AC-7)
   - [ ] `docs/design.md` updated and every check run, including lychee in CI (AC-6, AC-7, AC-8)
 - [ ] Verify it: `/check verify about me & contact links`
 

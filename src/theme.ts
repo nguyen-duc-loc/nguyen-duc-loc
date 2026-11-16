@@ -100,15 +100,24 @@ export const typography = {
   label: { size: 12, weight: 400, family: "sans" },
   number: { size: 24, weight: 600, family: "mono" },
   typing: { size: 22, weight: 400, family: "mono" },
+  button: { size: 14, weight: 600, family: "sans" },
 } as const satisfies { readonly [name: string]: TypeStyle };
 
 /** Spacing scale in px. */
 export const space = [4, 8, 12, 16, 24, 32] as const satisfies readonly number[];
 
-export const radius = { card: 12, small: 6 } as const satisfies { readonly [name: string]: number };
+export const radius = { card: 12, small: 6, pill: 20 } as const satisfies { readonly [name: string]: number };
 
 /** `full` renders at `width="100%"`, `half` at `width="400"` so two sit side by side on desktop. */
 export const layout = { full: 850, half: 400, pad: 24, border: 1 } as const satisfies {
+  readonly [name: string]: number;
+};
+
+/**
+ * Contact pill buttons (spec 0004): a `width` × `height` pill inside a transparent `margin` on every side,
+ * so the file is 148 × 48. `padX` runs from the pill edge to the icon, `gap` from the icon to the label.
+ */
+export const button = { width: 140, height: 40, margin: 4, padX: 16, icon: 16, gap: 8 } as const satisfies {
   readonly [name: string]: number;
 };
 
