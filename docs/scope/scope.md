@@ -1,0 +1,145 @@
+# Scope: GitHub Profile README
+
+An animated, theme aware GitHub profile README that shows who you are: a short intro, your tech stack, your work experience and education, your Credly certifications, your GitHub activity, and your LeetCode progress (the highlight). It is for recruiters, hiring managers, and other developers who visit your GitHub profile.
+
+**Build approach:** Skateboard (ship the smallest complete profile people can visit first, then grow it release by release, keeping it live and shippable at every step).
+**Workflow:** Alpha (after `/develop`, run `/check verify` to confirm the README renders on GitHub in light and dark mode and every card loads). The project default level of rigor. `/architect` is the recommended first stop for a feature with a real decision, but skippable when you already know the build. Any feature can carry its own tag (e.g. `· Beta`) to do more or less.
+
+_These are recommendations to keep your build orderly, not requirements. Skip anything that does not fit: if you already know how to build a feature, use `/develop` and skip `/architect`. You decide when a feature is `done`._
+
+**Planning notes (from your answers):**
+- English only. No deadline, quality first.
+- Every section adapts to the visitor's light or dark theme.
+- Animation is bold but focused: animated header, typing intro, animated stat cards, one signature animation (the contribution graph). Everything else stays static so the page loads fast and reads well.
+- Data freshness is a mix: live images where a reliable source exists, a scheduled refresh (an automated job that rebuilds images and commits them) where outside services are flaky. `/architect` picks which per section.
+- LinkedIn does not offer work history or education to regular developers (only approved partners), so experience and education come from your own content data file, with a LinkedIn button linking to your full profile.
+- Every image has alt text (a short text description for screen readers and for when an image fails to load).
+
+## At a glance
+
+| # | Feature | Phase | Status |
+|---|---------|-------|--------|
+| 1 | Profile repo & build approach | Foundation | in-progress |
+| 2 | Coding standards & tooling | Foundation | planned |
+| 3 | Profile content data | Foundation | planned |
+| 4 | Visual theme & animation style | Foundation | planned |
+| 5 | Animated header & typing intro | Release 1 | planned |
+| 6 | About me & contact links | Release 1 | planned |
+| 7 | Tech stack | Release 1 | planned |
+| 8 | LeetCode stats card | Release 1 | planned |
+| 9 | Experience & education timeline | Release 2 | planned |
+| 10 | Credly badge grid | Release 2 | planned |
+| 11 | LeetCode badges & heatmap | Release 2 | planned |
+| 12 | GitHub stats & streak | Release 3 | planned |
+| 13 | Animated contribution graph | Release 3 | planned |
+| 14 | Featured projects | Release 3 | planned |
+
+## Foundations
+
+### 1. Profile repo & build approach · in-progress
+Set up the public repo named exactly like your GitHub username (GitHub only shows a profile README from that repo), and decide how the README is put together and kept fresh: written by hand, or generated from your content data, plus how scheduled refreshes run.
+**Done when:** the decision is recorded in a spec, the repo shows a placeholder README on your GitHub profile, and the README can be rebuilt with one command (or one automated run).
+spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in _(set by /develop)_
+- [x] Decide the stack (spec): `/architect profile repo & build approach`
+- [ ] Scaffold from the decision: `/develop profile repo & build approach`
+- [ ] Verify it: `/check verify profile repo & build approach`
+
+### 2. Coding standards & tooling
+Capture conventions for the repo (file layout, how to add a section, how refreshes commit), then install light checks such as markdown linting and broken link checks.
+**Done when:** root `AGENTS.md` reflects the real setup, and the checks run clean locally and in the automated workflow.
+- [ ] Capture conventions + tooling choices: `/audit`
+
+### 3. Profile content data · needs a decision
+One source of truth for everything you write about yourself: bio, title, tech stack, work experience, education, featured projects, and profile links (LinkedIn, Credly, LeetCode, email). You edit this file, not the README.
+**Done when:** the data shape covers every section in this plan, and changing a role or project in the data updates the README without touching layout.
+- [ ] Design it (spec): `/architect profile content data`
+
+### 4. Visual theme & animation style · needs a decision
+The look every section shares: color palette for light and dark mode, fonts, section layout and spacing, the header banner style, and rules for when to animate and when to stay static.
+**Done when:** a `design.md` covers palette (both themes), layout, card style, and animation rules, and a sample card looks right in both light and dark mode.
+- [ ] Design it (spec): `/architect visual theme & animation style`
+
+## Release 1: A profile you can share
+
+### 5. Animated header & typing intro
+An animated banner with your name and title, and a typing line that cycles through a few short phrases about you.
+**Done when:** the banner and typing intro animate on your GitHub profile, look right in both themes, and have alt text.
+- [ ] Build it: `/develop animated header & typing intro`
+
+### 6. About me & contact links
+A short bio and a row of badge style buttons for LinkedIn, Credly, LeetCode, and email.
+**Done when:** the bio reads from your content data, and every button opens the right profile.
+- [ ] Build it: `/develop about me & contact links`
+
+### 7. Tech stack
+Your languages, frameworks, tools, and cloud platforms as icons, grouped by category.
+**Done when:** the icons come from your content data, are grouped and labeled, and stay readable in both themes.
+- [ ] Build it: `/develop tech stack`
+
+### 8. LeetCode stats card · needs a decision
+Your LeetCode highlight: a problems solved gauge (easy, medium, hard) and your contest rating and ranking, linked to your LeetCode profile.
+**Done when:** the card shows current solved counts and contest rating, refreshes on its own, matches both themes, and keeps showing the last good version if a refresh fails.
+- [ ] Design it (spec): `/architect leetcode stats card`
+
+## Release 2: Your full story
+
+### 9. Experience & education timeline · needs a decision
+A timeline of your roles and schools built from your content data (LinkedIn does not share this data with regular developers), with a LinkedIn button to the full profile.
+**Done when:** each role shows company, title, dates, and one or two highlights; education shows school, degree, and dates; adding an entry to the data updates the timeline.
+- [ ] Design it (spec): `/architect experience & education timeline`
+
+### 10. Credly badge grid · needs a decision
+Every Credly badge you have earned, shown as a grid of badge images, each linking to its Credly page, updated automatically when you earn a new one.
+**Done when:** all current badges appear, a newly earned badge shows up after the next refresh with no manual edit, and a failed refresh keeps the last good grid.
+- [ ] Design it (spec): `/architect credly badge grid`
+
+### 11. LeetCode badges & heatmap
+Grows the LeetCode section with your earned LeetCode badges and a submission heatmap (a calendar grid colored by how much you solved each day). Builds on the data source decided in feature 8.
+**Done when:** badges and the heatmap show current data, match both themes, and refresh with the stats card.
+- [ ] Build it: `/develop leetcode badges & heatmap`
+
+## Release 3: Your work on GitHub
+
+### 12. GitHub stats & streak · needs a decision
+Your commit streak, top languages, and contribution stats as themed cards.
+**Done when:** the cards show current numbers, match both themes, and still load if an outside card service is down or rate limited (refuses requests after too many).
+- [ ] Design it (spec): `/architect github stats & streak`
+
+### 13. Animated contribution graph · needs a decision
+The signature animation: your GitHub contribution graph turned into an animation, regenerated on a schedule.
+**Done when:** the animation shows your real contribution history, has a light and a dark version, and regenerates on schedule.
+- [ ] Design it (spec): `/architect animated contribution graph`
+
+### 14. Featured projects
+Three to six project cards with a short description and tech used, each linking to the repo or live demo.
+**Done when:** the cards read from your content data, links work, and the layout holds in both themes.
+- [ ] Build it: `/develop featured projects`
+
+## Deferred
+Out of scope for the current build pass, kept so the plan stays honest.
+- **Visitor counter**: shows how many people viewed your profile.
+- **Second language greeting**: a short greeting line in a second language (for example, Vietnamese).
+- **Schedule health check** (from spec 0001): about 60 days after launch, confirm GitHub has not disabled the scheduled workflow. If it has, switch the keepalive to the "enable workflow" API via `/architect`.
+
+## Legend
+
+**The decision box.** Every feature carries exactly one, the sub-task whose label ends with `(spec)`. Its wording varies (`Design it (spec)` normally, `Decide the stack (spec)` on the profile repo feature), so skills locate it by that `(spec)` suffix, never by an exact label. Every other box is an execution box and `/architect` never ticks one.
+
+**Feature lifecycle**: the scope updates as a feature moves; each row is what it shows and who sets it:
+
+| State | Set by | The feature shows |
+|---|---|---|
+| `planned` · needs a decision | `/scope` | one box: `Design it (spec): /architect <feature>` |
+| `in-progress` (designed) | **`/architect` at spec capture** | `Design it` ticked; spec linked; `Build it: /develop <feature>` + **2 to 5 milestones**; the tier's closing boxes (`Verify it` Alpha+, `Test it` Beta+, `Review it` + `Document it` GA); any surfaced follow-up enrolled |
+| `in-progress` (building) | `/develop` | milestone sub-boxes tick one by one; code pointer filled |
+| `in-progress` (verified) | `/check verify` | `Build it` + milestones ticked; `Verify it` ticked |
+| `done` | **you, when you decide it is** (any skill sets it when you say so); `/sync` reconciles | boxes you ran ticked, skipped ones marked skipped; the tier's last stage (`Prototype` → after `/develop`; `Alpha` → after `/check verify`; `Beta`/`GA` → after `/test`) is the suggested point to call it done; `/sync` captures conventions |
+
+- **Next step** = the first unticked box (always a command or a tracked milestone).
+- **needs a decision** = run `/architect` first; otherwise straight to `/develop` (or `/audit` for standards & tooling). The tag drops once the spec is captured.
+- **Atomic build tasks live in the spec's `## Build plan`, not here**: the scope carries only the milestone rollup.
+- **Status** `planned` → `in-progress` → `done`, plus `existing` (pre-workflow) and `dropped` (de-scoped, kept for history).
+- **Approach tag** beside a heading (e.g. `· Facade`) overrides the project default for that feature; no tag = inherits it.
+- **Workflow tier tag** beside a heading (e.g. `· GA`, `· Prototype`) sets that one feature's rigor above or below the project default; no tag inherits the default. It decides the feature's check boxes and each skill's next suggestion.
+- **Workflow** (header line) is the project default, what runs after `/develop`: **Prototype** = nothing (trust develop's own build time self check); **Alpha** = `/check verify`; **Beta** = `/check verify` then `/test`; **GA** = adds a fresh model `/check review` then `/document`. A feature built on an unratified decision (an `Assumed` spec) stays flagged, but that never blocks `done`.
+- **Pointer line** (`spec <n> · code in <path>`): the spec link added by `/architect`, the code path by `/develop`.

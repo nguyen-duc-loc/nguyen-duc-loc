@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore(deps)
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore(deps)
+    ignore:
+      # Keep the Node types on Node 26, the runtime this repo targets.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]

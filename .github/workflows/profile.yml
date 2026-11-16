@@ -1,0 +1,107 @@
+name: profile
+
+on:
+  schedule:
+    # 02:17 in Vietnam. Same as "17 19 * * *" in UTC, since Vietnam has no daylight saving.
+    - cron: "17 2 * * *"
+      timezone: Asia/Ho_Chi_Minh
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "src/**"
+      - "data/snapshots/**"
+      - "assets/static/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "tsconfig.json"
+      - ".node-version"
+      - ".github/workflows/profile.yml"
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: profile
+  cancel-in-progress: false
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - name: Build
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        run: pnpm build
+
+      - name: Refresh
+        id: refresh
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: pnpm refresh
+
+      - name: Check the build changed nothing
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --exit-code
+          untracked="$(git status --porcelain --untracked-files=all)"
+          if [ -n "$untracked" ]; then
+            echo "pnpm build left changes. Run pnpm build locally and commit the result:"
+            echo "$untracked"
+            exit 1
+          fi
+
+      - name: Commit generated files
+        id: commit
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- README.md assets/generated data/snapshots .github/last-refresh
+          if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore(refresh): update generated profile"
+            git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/main
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Keepalive
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.commit.outputs.committed == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node src/keepalive.ts --days 45
+          if ! git diff --quiet -- .github/last-refresh; then
+            git add .github/last-refresh
+            git commit -m "chore(keepalive): record refresh"
+            git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/main
+          fi
+
+      - name: Fail on failed sources
+        if: always() && steps.refresh.outputs.failed_sources != ''
+        env:
+          FAILED: ${{ steps.refresh.outputs.failed_sources }}
+        run: |
+          echo "Failed sources: $FAILED"
+          exit 1
