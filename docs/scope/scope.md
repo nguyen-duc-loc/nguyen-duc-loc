@@ -39,7 +39,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 ### 1. Profile repo & build approach · in-progress
 Set up the public repo named exactly like your GitHub username (GitHub only shows a profile README from that repo), and decide how the README is put together and kept fresh: written by hand, or generated from your content data, plus how scheduled refreshes run.
 **Done when:** the decision is recorded in a spec, the repo shows a placeholder README on your GitHub profile, and the README can be rebuilt with one command (or one automated run).
-spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in _(set by /develop)_
+spec [0001](../specs/0001-profile-repo-build-approach/index.md) · code in `src/`, `content/`, `.github/`
 - [x] Decide the stack (spec): `/architect profile repo & build approach`
 - [ ] Scaffold from the decision: `/develop profile repo & build approach`
 - [ ] Verify it: `/check verify profile repo & build approach`
