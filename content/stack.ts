@@ -1,5 +1,6 @@
-// Your tech stack, shown in file order within each group.
-// `icon` is a Simple Icons slug (https://simpleicons.org). Leave it out when the brand has none.
+// Your tech stack, shown in file order within each group. Each group holds 1 to 8 items.
+// `icon` is a key of the icon registry in src/icons.ts (Simple Icons slugs, https://simpleicons.org).
+// For a new brand, copy its path into the registry first. Leave `icon` out when the brand has none.
 
 import type { Stack } from "./types.ts";
 

@@ -105,6 +105,13 @@ Write `font-size` and `font-weight` from these styles (through `fitText` for the
 | `button.padX` | 16 (pill edge to icon) |
 | `button.icon` | 16 (icon size) |
 | `button.gap` | 8 (icon to label) |
+| `stackCard.columns` | 2 (chips per row in a tech stack card) |
+| `stackCard.headingGap` | 16 (heading box to the first chip row) |
+| `stackCard.chipHeight` | 32 |
+| `stackCard.gapX`, `stackCard.gapY` | 16 (between the two columns), 8 (between chip rows) |
+| `stackCard.chipPadX` | 12 (chip edge to icon, and text end to chip edge) |
+| `stackCard.icon` | 16 (icon size) |
+| `stackCard.iconGap` | 8 (icon to name) |
 
 ## Card anatomy
 
@@ -162,6 +169,26 @@ Every button is drawn by `pillButton(theme, { icon, label })` as a `contact-<nam
 
 Label `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so buttons need no new pair. Feature 9's LinkedIn button reuses `pillButton`.
 
+## Tech stack (built by feature 7)
+
+Decided in [spec 0005](specs/0005-tech-stack-cards.md). Right after the About me contact buttons, the README has `<h2 align="center">Tech stack</h2>`, a blank line, then one `<p align="center">` block with no blank lines inside. The block holds four half cards from `themedImage`, in this order: Languages, Frameworks, Tools, Cloud. Their files are `stack-<category>-light.svg` and `stack-<category>-dark.svg`, rendered at `width="400"`, so two sit side by side on desktop and they stack on a phone. No card is a link.
+
+Each card's alt text is `<Label>: <name>, <name>, …` with every item name in file order, for example `Languages: TypeScript, Go, C++, Bash`. Every stack `icon` must be a key of the icon registry: a wrong slug fails `pnpm typecheck` and the build. A category holds 1 to 8 items. Cards have no animation.
+
+## Stack card anatomy
+
+Every stack card is drawn by `card()` at `layout.half` (400) wide. All values are in px; the new ones live in `stackCard`.
+
+- The heading is the category label at x = 24 (`layout.pad`), center y = 34 (`pad + 10`), in the `heading` style with `fill-accent`, `dominant-baseline="central"`, and `text-anchor="start"`. The heading box is 20 tall.
+- Chips sit in 2 columns inside the 352 inner width, so each chip is 168 wide (`(352 − gapX) / columns`). They fill each row left to right, in file order. Chip i sits at x = `24 + (i mod 2) × 184`, y = `60 + floor(i / 2) × 40` (60 = `pad + 20 + headingGap`, 40 = `chipHeight + gapY`). Positions depend only on the index, never on text width.
+- The chip is a `rect` at (x + 0.5, y + 0.5), 167 × 31, `rx` of `radius.small`, classes `fill-surface stroke-border`, and `stroke-width` of `layout.border`, the same half pixel inset as `card()`.
+- With an icon: `iconSvg(icon, x + 12, y + 8, 16, "fill-accent")`, then the name at x + 36, center y = y + 16, in a 120px slot.
+- Without an icon (AWS today): no icon and no placeholder. The name starts at x + 12 in a 144px slot.
+- The name is in the `body` style with `fill-text`, sized by `fitText` with a 12px (`label` size) minimum. When squeezed it writes `textLength` and `lengthAdjust="spacingAndGlyphs"`.
+- Every card has the same height, `76 + 40 × rows` (`2 × pad + 20 + headingGap + rows × 40 − gapY`), where `rows = ceil(n / 2)` and n is the item count of the largest category. Today Tools has 5 items, so every card is 196 tall; with the 8 item cap a card is at most 236 tall.
+
+Name `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so stack cards need no new pair.
+
 ## Icon registry
 
 Every icon on the profile comes from `src/icons.ts`. Each entry is one `path` on a 24 × 24 grid plus a `source`:
@@ -173,10 +200,21 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 
 | Icon | Source |
 |---|---|
+| `cplusplus` | `simple-icons@16.38.0` |
 | `credly` | `simple-icons@16.38.0` |
+| `docker` | `simple-icons@16.38.0` |
 | `email` | hand drawn: an envelope with its flap cut out as a V |
+| `git` | `simple-icons@16.38.0` |
+| `gnubash` | `simple-icons@16.38.0` |
+| `go` | `simple-icons@16.38.0` |
+| `kubernetes` | `simple-icons@16.38.0` |
 | `leetcode` | `simple-icons@16.38.0` |
 | `linkedin` | hand drawn (Simple Icons 16.38.0 has no LinkedIn): a lowercase "in" cut out of a rounded square |
+| `linux` | `simple-icons@16.38.0` |
+| `nextdotjs` | `simple-icons@16.38.0` |
+| `react` | `simple-icons@16.38.0` |
+| `terraform` | `simple-icons@16.38.0` |
+| `typescript` | `simple-icons@16.38.0` |
 
 ## Motion
 
