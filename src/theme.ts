@@ -121,6 +121,22 @@ export const button = { width: 140, height: 40, margin: 4, padX: 16, icon: 16, g
   readonly [name: string]: number;
 };
 
+/**
+ * Tech stack cards (spec 0005, docs/design.md "Stack card anatomy"): chips in `columns` columns under the card
+ * heading. `headingGap` runs from the heading box to the first chip row, `chipPadX` from the chip edge to the
+ * icon (and from the text end to the chip edge), `iconGap` from the icon to the name.
+ */
+export const stackCard = {
+  columns: 2,
+  headingGap: 16,
+  chipHeight: 32,
+  gapX: 16,
+  gapY: 8,
+  chipPadX: 12,
+  icon: 16,
+  iconGap: 8,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",

@@ -1,7 +1,7 @@
 # 0005. Tech stack as four half cards of icon chips, with stack icons typed against the icon registry
 
 **Date**: 2026-11-16
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
