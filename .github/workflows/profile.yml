@@ -24,7 +24,8 @@ on:
 permissions: {}
 
 concurrency:
-  group: profile
+  # One group per ref. A shared group would let a PR run cancel a waiting run on main.
+  group: profile-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
