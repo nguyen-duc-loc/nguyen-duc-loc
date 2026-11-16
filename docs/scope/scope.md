@@ -100,7 +100,7 @@ spec [0005](../specs/0005-tech-stack-cards.md) · design in [`docs/design.md`](.
 - [x] Build it: `/develop tech stack`
   - [x] Tech stack cards live: registry icons, typed slugs, theme sizes, four half cards wired into the README (AC-1, AC-2, AC-3, AC-4, AC-5, AC-8, AC-10)
   - [x] Content rules (registry check, 1 to 8 items), `docs/design.md` updated, and every check run, including both themes on GitHub (AC-6, AC-7, AC-9, AC-11)
-- [ ] Verify it: `/check verify tech stack`
+- [x] Verify it: `/check verify tech stack`
 
 ### 8. LeetCode stats card · needs a decision
 Your LeetCode highlight: a problems solved gauge (easy, medium, hard) and your contest rating and ranking, linked to your LeetCode profile.
