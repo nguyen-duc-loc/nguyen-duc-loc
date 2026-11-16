@@ -22,7 +22,10 @@ pnpm install
 pnpm build      # offline: content/ + data/snapshots/ -> README.md, assets/generated/
 pnpm refresh    # fetch every source in src/sources/index.ts, then build
 pnpm typecheck  # tsc --noEmit (Node strips types without checking them)
-# Test: no suite yet; the gate is typecheck + /check verify
+pnpm lint       # biome check: format, lint, import order (biome check --write fixes)
+pnpm lint:md    # markdownlint on README.md
+lychee README.md  # optional link check, needs lychee installed (brew install lychee)
+# Test: no suite yet; the gate is typecheck + Biome + /check verify
 ```
 
 ## Specs
@@ -44,10 +47,11 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md`.
 
 ## Tooling
 
-Chosen here, installed by `/develop coding standards & tooling`:
-- Lint and format: Biome (`biome check` locally, `biome ci` in CI).
-- Before commit: `simple-git-hooks` runs Biome check and `pnpm typecheck`.
-- CI (`profile.yml`): `biome ci` after typecheck; after build, markdownlint and lychee check `README.md` on push and pull requests only (never the scheduled refresh), and lychee accepts LinkedIn's status 999.
+Chosen here and installed (config in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`):
+- Lint and format: Biome (`biome check` locally, `biome ci` in CI). Biome skips Markdown (markdownlint covers it), `data/snapshots/`, `assets/generated/`, `.kiro/`, and `skills-lock.json`, so it never reformats bot written output.
+- Before commit: `simple-git-hooks` runs Biome check on staged files and `pnpm typecheck`. The `prepare` script installs the hook; CI sets `SKIP_INSTALL_SIMPLE_GIT_HOOKS` so bot commits skip it.
+- CI (`profile.yml`): `biome ci` after typecheck; after build, markdownlint and lychee check `README.md` in a separate read only `readme` job, on push and pull requests only (never the scheduled refresh), and lychee accepts LinkedIn's status 999.
+- Dependencies: pnpm refuses packages published less than a day ago (minimum release age). Pick an older version instead of adding exclusions. A new dependency with an install script needs an `allowBuilds` entry in `pnpm-workspace.yaml`. Biome is pinned exactly, since its formatting changes between versions.
 - Tests: none at the Alpha tier. When `/test` adds them, use `node --test`.
 
 ## Git
