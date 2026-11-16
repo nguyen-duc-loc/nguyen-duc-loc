@@ -21,7 +21,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Profile repo & build approach | Foundation | in-progress |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Profile content data | Foundation | planned |
+| 3 | Profile content data | Foundation | in-progress |
 | 4 | Visual theme & animation style | Foundation | planned |
 | 5 | Animated header & typing intro | Release 1 | planned |
 | 6 | About me & contact links | Release 1 | planned |
@@ -50,10 +50,15 @@ Capture conventions for the repo (file layout, how to add a section, how refresh
 code in `biome.json`, `.markdownlint-cli2.jsonc`, `lychee.toml`, `package.json`, `pnpm-workspace.yaml`, `.github/workflows/profile.yml`
 - [x] Capture conventions + tooling choices: `/audit`
 
-### 3. Profile content data · needs a decision
+### 3. Profile content data · in-progress
 One source of truth for everything you write about yourself: bio, title, tech stack, work experience, education, featured projects, and profile links (LinkedIn, Credly, LeetCode, email). You edit this file, not the README.
 **Done when:** the data shape covers every section in this plan, and changing a role or project in the data updates the README without touching layout.
-- [ ] Design it (spec): `/architect profile content data`
+spec [0002](../specs/0002-profile-content-data.md)
+- [x] Design it (spec): `/architect profile content data`
+- [ ] Build it: `/develop profile content data`
+  - [ ] Content modules with your real content, wired into build, README unchanged (AC-1, AC-2, AC-3, AC-4, AC-7)
+  - [ ] Content check and link helpers, run by build and refresh (AC-5, AC-6, AC-8)
+- [ ] Verify it: `/check verify profile content data`
 
 ### 4. Visual theme & animation style · needs a decision
 The look every section shares: color palette for light and dark mode, fonts, section layout and spacing, the header banner style, and rules for when to animate and when to stay static.
