@@ -369,7 +369,7 @@ Skateboard: the first step ships a complete, visible themed card on the live pro
 ## Follow-up
 
 - [ ] `/sync`: add a pointer to `docs/design.md` and a one line rule ("sections draw with `src/theme.ts` tokens through `src/svg.ts`, colors by class only, motion ends within 5 seconds") to `AGENTS.md`. Also correct the `AGENTS.md` rule that says SVGs are self contained to mention that `data:` URIs are blocked too.
-- [ ] Feature 5: the scope says the typing line "cycles through a few short phrases"; it now types through them once and rests on the last one. Update that row's wording when feature 5 is designed or built.
+- [x] Feature 5: the scope says the typing line "cycles through a few short phrases"; it now types through them once and rests on the last one. Update that row's wording when feature 5 is designed or built.
 - [ ] Feature 6 adds Markdown escaping to `src/escape.ts` when the bio renders as Markdown (spec 0002 asked for one shared helper; this feature adds the XML part).
 - [ ] Feature 7 decides whether tech icons use `fill-text` (one color) or brand colors added as tokens.
 - [ ] Feature 8 decides the Easy, Medium, and Hard colors (Latte Green and Yellow are below 3:1 on `surface`).

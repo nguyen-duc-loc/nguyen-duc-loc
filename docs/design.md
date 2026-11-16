@@ -152,7 +152,6 @@ This never overflows and always gives the same result. On narrow fonts it may sh
 | Typing line | 5 | Types "Cloud Developer", deletes it, types "LeetCode Guardian", then rests (`motion.typing`). Phrases come from `typingPhrases`. At most three phrases, with holds shortened so the whole run ends within `motion.budget`. | The last phrase, no cursor |
 | Stat cards (LeetCode, GitHub) | 8, 12 | Content enters once, staggered. Gauges and bars fill once. Numbers fade in; they don't count up. | Full numbers, filled gauges |
 | Contribution graph | 13 | Decided in feature 13's spec. Ends within `motion.budget`, or that spec records a reasoned exception. | Decided there |
-| Sample card (temporary, in the header slot) | 4 | The four lines enter once, staggered. | All four lines in place |
 | Everything else (about, buttons, tech stack, timeline, Credly grid, projects, LeetCode badges and heatmap) | 6, 7, 9, 10, 11, 14 | None | Itself |
 
 ### Rules
