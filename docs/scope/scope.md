@@ -64,12 +64,13 @@ code in `content/`, `src/content.ts`, `src/types.ts`, `src/build.ts`, `src/refre
 ### 4. Visual theme & animation style · in-progress
 The look every section shares: color palette for light and dark mode, fonts, section layout and spacing, the header banner style, and rules for when to animate and when to stay static.
 **Done when:** a `design.md` covers palette (both themes), layout, card style, and animation rules, and a sample card looks right in both light and dark mode.
-spec [0003](../specs/0003-visual-theme-animation-style.md)
+spec [0003](../specs/0003-visual-theme-animation-style.md) · design in [`docs/design.md`](../design.md)
+code in `src/theme.ts`, `src/svg.ts`, `src/escape.ts`, `src/guards.ts`, `src/sections/placeholder.ts`
 - [x] Design it (spec): `/architect visual theme & animation style`
 - [ ] Build it: `/develop visual theme & animation style`
   - [ ] Theme tokens, shared SVG helpers, and the themed sample card live on GitHub (AC-2, AC-4, AC-5, AC-8, AC-9, AC-11)
-  - [ ] Build guards for contrast, self contained SVGs, light and dark twins, colors, and XML safe content (AC-3, AC-6, AC-7, AC-10)
-  - [ ] `docs/design.md` written from the spec (AC-1)
+  - [x] Build guards for contrast, self contained SVGs, light and dark twins, colors, and XML safe content (AC-3, AC-6, AC-7, AC-10)
+  - [x] `docs/design.md` written from the spec (AC-1)
 - [ ] Verify it: `/check verify visual theme & animation style`
 
 ## Release 1: A profile you can share
