@@ -25,7 +25,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 4 | Visual theme & animation style | Foundation | done |
 | 5 | Animated header & typing intro | Release 1 | done |
 | 6 | About me & contact links | Release 1 | done |
-| 7 | Tech stack | Release 1 | in-progress |
+| 7 | Tech stack | Release 1 | done |
 | 8 | LeetCode stats card | Release 1 | planned |
 | 9 | Experience & education timeline | Release 2 | planned |
 | 10 | Credly badge grid | Release 2 | planned |
@@ -92,7 +92,7 @@ spec [0004](../specs/0004-about-contact-links.md) · design in [`docs/design.md`
   - [x] `docs/design.md` updated and every check run, including lychee in CI (AC-6, AC-7, AC-8)
 - [x] Verify it: `/check verify about me & contact links`
 
-### 7. Tech stack · in-progress
+### 7. Tech stack · done
 Your languages, frameworks, tools, and cloud platforms as icons, grouped by category.
 **Done when:** the icons come from your content data, are grouped and labeled, and stay readable in both themes.
 spec [0005](../specs/0005-tech-stack-cards.md) · design in [`docs/design.md`](../design.md) · code in `src/sections/stack.ts`, `src/icons.ts`, `src/content.ts`, `content/types.ts`, `src/theme.ts`, `src/readme.ts`
