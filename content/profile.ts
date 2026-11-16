@@ -1,9 +1,19 @@
-// Starter content data. Feature 3 (Profile content data) owns the final shape.
-// Edit this file, then run `pnpm build`. Never edit README.md by hand.
+// Who you are. Edit this file, then run `pnpm build`. Never edit README.md by hand.
+// Everything here is public, so never add a phone number, street address, or anything private.
 
-export type Profile = {
-  readonly name: string;
-  readonly title: string;
-};
+import type { Profile } from "./types.ts";
 
-export const profile = { name: "Loc Nguyen", title: "Cloud Developer" } as const satisfies Profile;
+export const profile = {
+  name: "Loc Nguyen",
+  title: "Cloud Developer",
+  location: "Hanoi, Vietnam",
+  bio: "You can't beat someone who is having fun.",
+  typingPhrases: ["Cloud Developer", "LeetCode Guardian"],
+  accounts: {
+    github: "nguyen-duc-loc",
+    linkedin: "nguyenducloc404",
+    leetcode: "nguyenducloc",
+    credly: "nguyenducloc",
+  },
+  email: "nguyenducloc404@gmail.com",
+} as const satisfies Profile;

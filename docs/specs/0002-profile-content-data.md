@@ -1,7 +1,7 @@
 # 0002. Typed content modules in `content/`, checked at build time
 
 **Date**: 2026-11-16
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
