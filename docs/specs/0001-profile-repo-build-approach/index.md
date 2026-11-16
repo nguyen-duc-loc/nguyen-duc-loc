@@ -21,9 +21,10 @@ Your profile lives in the public repo `nguyen-duc-loc/nguyen-duc-loc`, and you n
 - **AC-4**: The workflow runs daily at 02:17 `Asia/Ho_Chi_Minh` and on manual "Run workflow". A run where nothing changed creates no commit.
 - **AC-5**: `pnpm refresh` fetches each registered outside source on its own. A source that fails (network error, timeout, error status, or a response that fails validation) keeps its previous snapshot file unchanged, the sources that worked are still written and committed, and the workflow run ends failed and names the failed sources. (The framework ships now with zero sources; features 8, 10, and 12 register the first ones and are where this is first verified end to end.)
 - **AC-6**: When a run on `main` has nothing to commit and the latest commit on `main` is older than 45 days, the run commits an updated `.github/last-refresh` file. Locally, `node src/keepalive.ts --days 0` rewrites that file (and commits nothing).
-- **AC-7**: Every `uses:` in the workflow is pinned to a full 40 character commit SHA with a `# vX.Y.Z` comment. The workflow sets `permissions: {}` at the top and grants only `contents: write` to the job. `.github/dependabot.yml` opens weekly grouped update PRs for `github-actions` and `npm` (which covers pnpm), as in *Dependabot config* below.
+- **AC-7**: Every `uses:` in the workflow is pinned to a full 40 character commit SHA with a `# vX.Y.Z` comment. The workflow sets `permissions: {}` at the top, grants only `contents: write` to the `profile` job, and only `contents: read` to the `readme` job. `.github/dependabot.yml` opens weekly grouped update PRs for `github-actions` and `npm` (which covers pnpm), as in *Dependabot config* below.
 - **AC-8**: `pnpm build` fails with a clear message, and writes no files, if the README text contains an `<img>` with a missing or blank `alt`, or any Markdown image (`![...](...)`). This enforces the scope rule that every image has alt text from day one.
-- **AC-9**: Every pull request to `main` (including Dependabot PRs) runs `pnpm typecheck` and `pnpm build`, and the check fails if the build changes any committed file. PR runs never commit or push.
+- **AC-9**: Every pull request to `main` (including Dependabot PRs) runs `pnpm typecheck`, `biome ci`, and `pnpm build`, and the check fails if the build changes any committed file. PR runs never commit or push.
+- **AC-10**: Every push to `main` and every pull request runs markdownlint and lychee on the built `README.md` in a job with only `contents: read`. A lint problem or a dead link fails the run, but never stops the bot's commit.
 
 ## Decision
 
@@ -51,7 +52,7 @@ Reasoning and options: see [rationale.md](rationale.md).
 | Generated images | Committed under `assets/generated/` and linked from the README by relative path | Relative paths skip GitHub's Camo image cache, so a refresh shows up within minutes (raw files still cache for about 5 minutes). An SVG shown through `<img>` cannot load external fonts or images, so every SVG must be self contained (features 4, 8, and 13 inherit this). |
 | Automation | One workflow, `.github/workflows/profile.yml`, on GitHub hosted `ubuntu-latest` | Free for public repos, with no other service to run. |
 | Runtime dependencies | None to start. Node's built in `fetch` and `node:fs` cover it | Fewer pins to keep fresh. A feature adds a dependency only when it needs one. |
-| Dev dependencies | `typescript`, `@types/node` | Needed for type checking only. |
+| Dev dependencies | `typescript`, `@types/node`, `@biomejs/biome` (pinned exactly), `markdownlint-cli2`, `simple-git-hooks` | Type checking, plus the lint, format, and pre-commit tooling recorded in `AGENTS.md` `## Tooling` (feature 2). |
 | Tests (when added) | Node's built in test runner (`node --test`) | Already part of the runtime. Tests are not required at the Alpha tier and come later through `/test`. |
 | Supply chain | Actions pinned by SHA, plus Dependabot weekly for `github-actions` and `npm` | Current hardening practice. Dependabot keeps the pins from going stale. |
 | License | None | This is personal content. People can view it but have no right to reuse it. |
@@ -81,9 +82,17 @@ assets/static/               hand made images, if any
 .gitignore                   node_modules/, .kiro/settings/
 .gitattributes               * text=auto eol=lf
 .node-version                26 (floats to the latest 26.x on each run, which is accepted)
-package.json                 "type": "module", "private": true, packageManager, engines.node ">=26"
+package.json                 "type": "module", "private": true, packageManager, engines.node ">=26", scripts, and
+                             "simple-git-hooks": { "pre-commit": "pnpm exec biome check --staged --no-errors-on-unmatched && pnpm typecheck" }
+                             (the "prepare": "simple-git-hooks" script installs the hook on pnpm install)
 pnpm-lock.yaml
+pnpm-workspace.yaml          allowBuilds (simple-git-hooks' own install script stays off). pnpm 12's default minimum release age
+                             (packages under a day old are refused) applies; pick an older version, never add exclusions
 tsconfig.json
+biome.json                   Biome format and lint. Uses .gitignore, and skips Markdown, .kiro/, assets/generated/,
+                             data/snapshots/, and skills-lock.json, so it never reformats bot written output
+.markdownlint-cli2.jsonc     markdownlint rules, plus globs: ["README.md"], which is where pnpm lint:md gets its target
+lychee.toml                  lychee settings (accepts LinkedIn's 999), read automatically from the working directory
 ```
 
 ### Commands
@@ -93,6 +102,8 @@ tsconfig.json
 | `pnpm build` | `node src/build.ts`. Reads `content/` and `data/snapshots/`, runs the guards on the rendered README text, then writes `README.md` and `assets/generated/` | None |
 | `pnpm refresh` | `node src/refresh.ts`. Runs every registered fetcher, writes the snapshots that succeeded, then runs build | Yes |
 | `pnpm typecheck` | `tsc --noEmit` | None |
+| `pnpm lint` | `biome check` (CI runs `biome ci`) | None |
+| `pnpm lint:md` | `markdownlint-cli2` on `README.md` | None |
 
 ### tsconfig essentials
 
@@ -135,26 +146,27 @@ Each `src/sources/<name>.ts` exports `{ name, sortKey, fetch(signal: AbortSignal
 
 | Concern | Decision |
 |---|---|
-| Triggers | `schedule: cron "17 2 * * *"` with `timezone: Asia/Ho_Chi_Minh` (add a comment that `17 19 * * *` in UTC is the same time, since Vietnam has no daylight saving) · `workflow_dispatch` · `push` to `main` with `paths: content/**, src/**, data/snapshots/**, assets/static/**, package.json, pnpm-lock.yaml, tsconfig.json, .node-version, .github/workflows/profile.yml` · `pull_request` to `main` |
-| Permissions | Top level `permissions: {}`. The job gets `contents: write` only. On pull requests from Dependabot or forks, GitHub makes the token read only anyway |
-| Concurrency | `group: profile-${{ github.ref }}`, `cancel-in-progress: false`, so each branch and each PR has its own group. A running job always finishes. GitHub lets only one run wait per group, and a newer waiting run cancels the older one. That is harmless inside one group: on `main` the newest waiting run carries the newest commit (each run checks out the commit that triggered it), and on a PR it carries the newest push to that PR. Groups never cancel each other, so a PR check can never be cancelled by a run on `main` or on another PR. Do not go back to one shared group: verify on 2026-11-16 showed it cancelled a PR check before it started, leaving the PR with no check at all |
-| Setup | `actions/checkout` (v7) with `persist-credentials: false`, then the official pnpm setup action with no `version:` input (it reads `packageManager`), then `actions/setup-node` (v7) with `node-version-file: .node-version` and `cache: pnpm`, then `pnpm install --frozen-lockfile` |
-| Steps, in order | 1. `pnpm typecheck` (always). 2. `pnpm build`, if `github.event_name` is `push` or `pull_request`. 3. `pnpm refresh` with `id: refresh`, if the event is `schedule` or `workflow_dispatch`. 4. On `pull_request` only: `git diff --exit-code` (fails the check if the build changed a committed file), then stop. 5. Commit step, `id: commit` (below). 6. Keepalive, only if `steps.commit.outputs.committed == 'false'`. 7. Fail step (below). A hard failure in steps 1 to 3 stops the job, so nothing is committed |
-| Main only | Steps 5 and 6 run only when `github.ref == 'refs/heads/main'` and the event is not `pull_request`. A manual run on another branch builds and refreshes but never pushes |
+| Triggers | `schedule: cron "17 2 * * *"` with `timezone: Asia/Ho_Chi_Minh` (add a comment that `17 19 * * *` in UTC is the same time, since Vietnam has no daylight saving) · `workflow_dispatch` · `push` to `main` with `paths: content/**, src/**, data/snapshots/**, assets/static/**, package.json, pnpm-lock.yaml, tsconfig.json, pnpm-workspace.yaml, biome.json, .markdownlint-cli2.jsonc, lychee.toml, .node-version, .github/workflows/profile.yml` · `pull_request` to `main` |
+| Permissions | Top level `permissions: {}`. The `profile` job gets `contents: write` only. The `readme` job gets `contents: read` only. On pull requests from Dependabot or forks, GitHub makes the token read only anyway |
+| Concurrency | `group: profile-${{ github.ref }}`, `cancel-in-progress: false`, so each branch and each PR has its own group. A running workflow run always finishes. GitHub lets only one run wait per group, and a newer waiting run cancels the older one. That is harmless inside one group: on `main` the newest waiting run carries the newest commit (each run checks out the commit that triggered it), and on a PR it carries the newest push to that PR. Groups never cancel each other, so a PR check can never be cancelled by a run on `main` or on another PR. Do not go back to one shared group: verify on 2026-11-16 showed it cancelled a PR check before it started, leaving the PR with no check at all |
+| Setup | `actions/checkout` (v7) with `persist-credentials: false`, then `pnpm/action-setup` (v6) with no `version:` input (it reads `packageManager`), then `actions/setup-node` (v7) with `node-version-file: .node-version` and `cache: pnpm`, then `pnpm install --frozen-lockfile`. In the `profile` job, the install step sets `SKIP_INSTALL_SIMPLE_GIT_HOOKS: "1"` in `env:`, so the bot's commits never run the local pre-commit hook |
+| Steps, in order (`profile` job) | 1. `pnpm typecheck` (always). 2. `pnpm exec biome ci` (always). 3. `pnpm build`, if `github.event_name` is `push` or `pull_request`. 4. `pnpm refresh` with `id: refresh`, if the event is `schedule` or `workflow_dispatch`. 5. On `pull_request` only: `git diff --exit-code`, then a `git status --porcelain --untracked-files=all` check (fails if the build changed a committed file or left a new one). Steps 6 and 7 are skipped on pull requests by their own `if:`. 6. Commit step, `id: commit` (below). 7. Keepalive, only if `steps.commit.outputs.committed == 'false'`. 8. Fail step (below). A hard failure in steps 1 to 4 stops the job, so nothing is committed |
+| Main only | Steps 6 and 7 run only when `github.ref == 'refs/heads/main'` and the event is not `pull_request`. A manual run on another branch builds and refreshes but never pushes |
 | Git identity | `git config user.name "github-actions[bot]"` and `git config user.email "41898282+github-actions[bot]@users.noreply.github.com"` |
 | Commit | `git add README.md assets/generated data/snapshots .github/last-refresh` (`git add -A` on those paths, so deleted SVGs are staged too). If `git diff --cached --quiet` reports changes, commit with `chore(refresh): update generated profile`, push, and set `committed=true`. Otherwise set `committed=false` |
 | Push | With `GH_TOKEN: ${{ github.token }}` in `env:`, run `git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/main` |
 | Keepalive | `node src/keepalive.ts --days 45`. If `.github/last-refresh` changed, stage it, commit with `chore(keepalive): record refresh`, and push the same way |
 | Fail step | Runs with `if: always() && steps.refresh.outputs.failed_sources != ''`. It receives the list through `env: FAILED: ${{ steps.refresh.outputs.failed_sources }}` and runs `echo "Failed sources: $FAILED"; exit 1`. GitHub then emails you about the failed run |
 | Push race | If you push while a run is in progress, that run's push is rejected and the run fails. The run triggered by your push then rebuilds from your new commit. No force push, and no automatic rebase of generated files |
-| Timeout | `timeout-minutes: 10` |
+| Timeout | `timeout-minutes: 10` on each job |
 | Untrusted input | No `${{ }}` interpolation inside `run:` scripts at all. Every value goes in through `env:` |
+| `readme` job | A second job in the same workflow, with `if: github.event_name == 'push' \|\| github.event_name == 'pull_request'` (never the schedule or a manual run), `contents: read`, and `timeout-minutes: 10`. Same setup as above (the hook skip is not needed, since it never commits). Steps: `pnpm build`, then `pnpm lint:md`, then `lycheeverse/lychee-action` (SHA pinned) with `args: --no-progress README.md` and `failIfEmpty: false` (the placeholder has no links yet). It runs beside the `profile` job and never blocks its commit |
 
 Bot pushes made with `GITHUB_TOKEN` do not trigger workflows, so refresh commits never cause a loop.
 
 ### Dependabot config (`.github/dependabot.yml`)
 
-Two entries, `github-actions` and `npm`, both with `directory: "/"`, `schedule.interval: weekly` on `monday`, one group per ecosystem with `patterns: ["*"]`, and `commit-message.prefix: chore(deps)`. The `npm` entry ignores `semver-major` updates of `@types/node`, so the types stay on Node 26. Merging a Dependabot PR triggers the `push` run, which rebuilds if needed.
+Two entries, `github-actions` and `npm`, both with `directory: "/"`, `schedule.interval: weekly` on `monday`, one group per ecosystem with `patterns: ["*"]`, and `commit-message.prefix: chore(deps)`. The `npm` entry ignores `semver-major` updates of `@types/node`, so the types stay on Node 26. `@biomejs/biome` gets its own `biome` group, listed before the catch all `npm` group, so a Biome bump that changes formatting and fails `biome ci` never blocks the other npm updates. When you merge a Biome bump, run `pnpm exec biome migrate --write` in the PR so the `$schema` version in `biome.json` matches. Merging a Dependabot PR triggers the `push` run, which rebuilds if needed.
 
 ### Bootstrap (first push)
 
@@ -190,11 +202,11 @@ From this folder: `git init -b main`, run `pnpm install` and `pnpm build` locall
 
 ### Security model
 
-The repo is public, and all content in it is public. There are no stored secrets. The job's `GITHUB_TOKEN` can write repo contents and nothing else. Outside sources are read through their public endpoints. If a later source needs a token, that feature's spec adds it as a repo secret and names it here under Configuration. All actions are SHA pinned, and Dependabot proposes the updates as PRs you review.
+The repo is public, and all content in it is public. There are no stored secrets. The `profile` job's `GITHUB_TOKEN` can write repo contents and nothing else. The `readme` job's token is read only, so the third party link checker (which receives the token by default) never holds write access. Outside sources are read through their public endpoints. If a later source needs a token, that feature's spec adds it as a repo secret and names it here under Configuration. All actions are SHA pinned, and Dependabot proposes the updates as PRs you review.
 
 ### Configuration required
 
-- None now. Under Settings, Actions, General, keep the default workflow permissions at "Read repository contents" (the workflow raises its own job to `contents: write`).
+- None now. Under Settings, Actions, General, keep the default workflow permissions at "Read repository contents" (the workflow raises only its `profile` job to `contents: write`).
 - Leave `main` without branch protection or rulesets. If either is added later, the bot's pushes with `GITHUB_TOKEN` are rejected.
 
 ### Delivery shape (Skateboard)
@@ -224,8 +236,11 @@ The first shippable slice is the whole pipeline with one section. That means the
 
 ## Follow-up
 
-- [ ] Root `AGENTS.md` does not exist yet. `/audit` (feature 2) should record this stack, the repo layout, the commands, and the rule "never edit `README.md` by hand" in root `AGENTS.md` `## Rules`.
-- [ ] `node`, `octocat`, `github-actions-hardening`, and `dependabot` skills are installed but not yet in root `AGENTS.md` `## Agent skills`. All four apply project wide (one small repo), so they belong at root.
+- [x] Root `AGENTS.md` does not exist yet. `/audit` (feature 2) should record this stack, the repo layout, the commands, and the rule "never edit `README.md` by hand" in root `AGENTS.md` `## Rules`.
+- [x] `node`, `octocat`, `github-actions-hardening`, and `dependabot` skills are installed but not yet in root `AGENTS.md` `## Agent skills`. All four apply project wide (one small repo), so they belong at root.
 - [ ] GitHub MCP Server (`github/github-mcp-server`): you chose to connect it with your `gh` login instead of a personal access token. Add it to your Kiro MCP settings yourself, then record it on the `MCP servers:` line of `AGENTS.md`.
-- [ ] Before AC-7 can pass, confirm at build time which official pnpm setup action supports the pinned pnpm major (the landscape check suggested `pnpm/setup` for pnpm 11 and later, and this is unverified). Also confirm that Dependabot reads the current pnpm lockfile format and bumps `packageManager`. If it does not, pin pnpm to the newest major Dependabot supports.
-- [ ] About 60 days after launch, check that the scheduled workflow is still enabled (Actions tab). If GitHub disabled it despite the keepalive commits, bot commits don't count as activity. The ready fallback is a daily call to the "enable workflow" API (`PUT /repos/{owner}/{repo}/actions/workflows/profile.yml/enable`), which needs `actions: write` added to the job. Revisit with `/architect` before switching, since it changes AC-7.
+- [ ] Before AC-7 can pass, confirm at build time which official pnpm setup action supports the pinned pnpm major. (Done: `pnpm/action-setup` v6.1.1 runs pnpm 12.21.0 in CI.) Still open: confirm that Dependabot reads the current pnpm lockfile format and bumps `packageManager`. If it does not, pin pnpm to the newest major Dependabot supports.
+- [ ] About 60 days after launch, check that the scheduled workflow is still enabled (Actions tab). If GitHub disabled it despite the keepalive commits, bot commits don't count as activity. The ready fallback is a daily call to the "enable workflow" API (`PUT /repos/{owner}/{repo}/actions/workflows/profile.yml/enable`), which needs `actions: write` added to the `profile` job. Revisit with `/architect` before switching, since it changes AC-7.
+- [ ] `/develop`: add the separate `biome` group to `.github/dependabot.yml`, as in *Dependabot config* above.
+- [ ] `/check verify`: `verify.md` predates the `readme` job. Add steps for the `readme` job's `contents: read` (AC-7), a pull request with badly formatted code failing at `biome ci` (AC-9), and AC-10.
+- [ ] Features 8, 10, and 12: once fetched data reaches `README.md`, decide whether `pnpm lint:md` also runs in the `profile` job before the commit step, so a refresh can't ship broken Markdown. Today refresh commits are never linted, and that is harmless while no source exists.
