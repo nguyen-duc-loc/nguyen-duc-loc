@@ -137,6 +137,85 @@ export const stackCard = {
   iconGap: 8,
 } as const satisfies { readonly [name: string]: number };
 
+/**
+ * LeetCode solved card (spec 0006, docs/design.md "Solved card anatomy"): a 270 degree arc of Easy, Medium, and
+ * Hard segments around (`cx`, `cy`), plus three difficulty chips on the right. Angles are in degrees. The card is
+ * `2 × layout.pad + 3 × chipHeight + 2 × chipGap` tall. Chip offsets (`dotX` to `chipValueY`) are from the chip's
+ * top left corner.
+ */
+export const solvedCard = {
+  cx: 136,
+  cy: 107,
+  radius: 80,
+  stroke: 6,
+  span: 270,
+  segmentGap: 6,
+  trackOpacity: 0.25,
+  numberBaseline: 112,
+  numberSlot: 88,
+  checkX: 104,
+  checkY: 122,
+  checkSize: 14,
+  solvedX: 122,
+  solvedY: 129,
+  attemptingY: 162,
+  attemptingSlot: 96,
+  chipX: 264,
+  chipWidth: 112,
+  chipHeight: 44,
+  chipGap: 8,
+  dotX: 16,
+  dotY: 14,
+  dotRadius: 4,
+  chipLabelX: 26,
+  chipLabelY: 14,
+  chipValueX: 12,
+  chipValueY: 31,
+  chipValueSlot: 88,
+} as const satisfies { readonly [name: string]: number };
+
+/**
+ * LeetCode contest card (spec 0006, docs/design.md "Contest card anatomy"): `layout.full` wide. A left pane with the
+ * stats row and the rating history chart, a divider at `dividerX + 0.5`, and a right pane with the Top value and the
+ * rating histogram. `*X` and `*Slot` place each stat column; every text on this card is 20px or larger.
+ */
+export const contestCard = {
+  height: 300,
+  paneRight: 616,
+  dividerX: 640,
+  rightX: 664,
+  rightWidth: 162,
+  labelY: 34,
+  valueY: 68,
+  ratingX: 24,
+  ratingSlot: 104,
+  levelIconX: 144,
+  levelIconY: 31,
+  levelIcon: 40,
+  levelX: 192,
+  levelSlot: 120,
+  rankX: 328,
+  rankSlot: 176,
+  attendedX: 520,
+  attendedSlot: 96,
+  chartLeft: 28,
+  chartRight: 612,
+  chartTop: 120,
+  chartBottom: 240,
+  flatSpan: 100,
+  lineWidth: 2,
+  dotRadius: 5,
+  tipGap: 10,
+  tipHeight: 28,
+  tipPadX: 8,
+  yearY: 266,
+  barsBottom: 276,
+  barsMaxHeight: 168,
+  barGap: 2,
+  barMinHeight: 2,
+  barRadius: 1,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",

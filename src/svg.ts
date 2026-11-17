@@ -43,6 +43,9 @@ const BASE_CSS = [
   "@keyframes grow{from{transform:scaleX(0)}}",
   `.gauge{animation:gauge ${motion.fill.duration}ms ${ease} both}`,
   "@keyframes gauge{from{stroke-dashoffset:var(--gauge-empty)}}",
+  // Vertical bars: scale up from the bottom edge.
+  `.rise{animation:rise ${motion.fill.duration}ms ${ease} both;transform-box:fill-box;transform-origin:center bottom}`,
+  "@keyframes rise{from{transform:scaleY(0)}}",
 ].join("");
 
 const REDUCED_MOTION_CSS = "@media (prefers-reduced-motion: reduce){*{animation:none !important}}";

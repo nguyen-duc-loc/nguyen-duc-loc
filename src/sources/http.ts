@@ -3,8 +3,9 @@
 export class HttpError extends Error {
   readonly status: number;
 
-  constructor(status: number, url: string) {
-    super(`HTTP ${status} from ${url}`);
+  /** `detail` (for example a GraphQL error message) is appended to the message; `status` stays the reported reason. */
+  constructor(status: number, url: string, detail?: string) {
+    super(detail === undefined ? `HTTP ${status} from ${url}` : `HTTP ${status} from ${url}: ${detail}`);
     this.name = "HttpError";
     this.status = status;
   }
