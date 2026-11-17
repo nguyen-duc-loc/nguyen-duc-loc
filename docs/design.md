@@ -191,14 +191,31 @@ Every stack card is drawn by `card()` at `layout.half` (400) wide. All values ar
 
 Name `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so stack cards need no new pair.
 
-## LeetCode (built by feature 8)
+## LeetCode (built by features 8 and 11)
 
-Decided in [spec 0006](specs/0006-leetcode-stats-card.md). Right after the Tech stack block, the README has `<h2 align="center">LeetCode</h2>`, a blank line, a `<p align="center">` block holding the contest card, a blank line, and a `<p align="center">` block holding the solved card. Neither block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).leetcode`, so a click opens the LeetCode profile.
+Decided in [spec 0006](specs/0006-leetcode-stats-card.md) and grown by [spec 0009](specs/0009-leetcode-badges-heatmap.md). Right after the Tech stack block, the README has `<h2 align="center">LeetCode</h2>`, then these `<p align="center">` blocks, separated by blank lines:
+
+1. The contest card.
+2. The solved card, then the badges card on the next line, so they sit side by side on desktop and stack on a phone.
+3. The badge row (left out when no badge qualifies).
+4. The heatmap card.
+
+No block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).leetcode`, so a click opens the LeetCode profile.
 
 | Card | Files | Width |
 |---|---|---|
 | Contest | `leetcode-contest-light.svg`, `leetcode-contest-dark.svg` | `width="100%"` (`layout.full`, 850 × 300) |
 | Solved | `leetcode-solved-light.svg`, `leetcode-solved-dark.svg` | `width="400"` (`layout.half`, 400 × 196) |
+| Badges | `leetcode-badges-light.svg`, `leetcode-badges-dark.svg` | `width="400"` (`layout.half`, 400 × 196, the solved card's height) |
+| Heatmap | `leetcode-heatmap-light.svg`, `leetcode-heatmap-dark.svg` | `width="100%"` (`layout.full`, 850 × 264) |
+
+**Badge row.** Up to 8 badges (`badgeRow.max`): the badge chosen on LeetCode (`activeBadgeId`) first, even a monthly one, then badges whose `category` isn't `DCC` (the monthly Daily Coding Challenge), newest `earnedOn` first, ties to the larger numeric `id`, never repeating the chosen badge. Each badge is one line, like the Credly grid:
+
+```html
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="<icon>"><img alt="<name>, LeetCode badge earned <Mon YYYY>" src="<icon>" width="80"></picture></a>
+```
+
+The image is LeetCode's transparent PNG (never the GIF), on `assets.leetcode.com/` or `leetcode.com/static/`, at 80px wide (`badgeRow.width`). `outsideImage` escapes `src` and `alt` once, and the section escapes the `href` once.
 
 The data comes only from `data/snapshots/leetcode.json`, read through `parseLeetcodeSnapshot`. Numbers follow fixed rules, never the locale: the contest card and all alt text group integers with commas (`6,064`), the solved card prints plain digits like LeetCode (`2245/4114`), ratings are rounded with `Math.round`, Top is `toFixed(2)` plus `%`, and years are UTC.
 
@@ -206,6 +223,11 @@ Alt text states the same numbers a sighted visitor sees:
 
 - Contest: `LeetCode contest rating 2,247, level Guardian, global ranking 6,064 of 892,590, top 0.72%, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024.` With no badge it drops `, level <badge>`. One contest reads `1 contest attended`. One history point reads `Rating history: 2,247 in 2024.`, and two points in the same year read `Rating history: 1,565 to 2,247 in 2024.`
 - Solved: `LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting.`
+- Badges: `LeetCode badges: 62 earned. Most recent: Oct LeetCoding Challenge, Oct 2026.` One badge reads `1 earned`. No badges reads `LeetCode badges: none earned yet.`
+- Each row badge: `<name>, LeetCode badge earned <Mon YYYY>`, for example `Guardian, LeetCode badge earned May 2026`.
+- Heatmap: `LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days.` Singulars read `1 submission`, `1 active day`, and `max streak 1 day`. No submissions in the window reads `LeetCode submissions from <start> to <end>: no submissions.`
+
+Dates use the fixed English month table in `src/dates.ts` (`MONTHS`, shared with the timeline) and are computed in UTC from `YYYY-MM-DD` strings: `<Mon YYYY>` for badges, `<Mon> <D>, <YYYY>` with no zero padding for the heatmap range.
 
 Difficulty colors (Easy `success`, Medium `warning`, Hard `danger`) only paint shapes: the arc, the chip dots, and the check icon. Every word and number is `fill-text` or `fill-muted`, because Latte yellow is too faint to read as text.
 
@@ -252,6 +274,39 @@ Drawn by `card()` at 400 × 196 (`2 × pad + 3 × chipHeight + 2 × chipGap`). T
 | Chip value | `<solved>/<total>`, plain digits, at x + 12 (`chipValueX`), center y = y + 31 (`chipValueY`), slot 88 (`chipValueSlot`) | `body` via `fitText` (min 12), `fill-text` |
 
 Text uses `dominant-baseline="central"`, except the solved number line.
+
+## Badges card anatomy
+
+Drawn by `card()` at 400 × 196, the solved card's height. The values live in `badgesCard`. Every text sits at x = 24 (`layout.pad`) with `dominant-baseline="central"` and `text-anchor="start"`. Static: no animation class.
+
+| Element | Geometry | Style |
+|---|---|---|
+| Heading | `Badges`, center y = 34 (`headingY`) | `heading`, `fill-accent` |
+| Icon | `iconSvg("leetcode", 352, 22, 24, "fill-accent")`: x = `layout.half − pad − icon`, y = `iconY`, size `icon` | |
+| Count | All badges, grouped (`62`), center y = 74 (`countY`) | `title`, `fill-text` |
+| Most recent label | `Most recent`, center y = 112 (`recentY`) | `body`, `fill-muted` |
+| Badge name | The badge with the newest `earnedOn` (ties: larger numeric `id`), center y = 138 (`nameY`), `fitText` in 352 (`nameSlot`), min 14 (`nameMin`), then squeezed with `textLength` | `heading`, `fill-text` |
+| Month | `<Mon YYYY>` of its `earnedOn`, center y = 164 (`monthY`) | `body`, `fill-muted` |
+
+With no badges, the count reads `0` and `No badges yet` (`body`, `fill-muted`) sits at `recentY`, with no name or month.
+
+## Heatmap card anatomy
+
+Drawn by `card()` at 850 × 264 (`heatmap.height`). The values live in `heatmap`. All text is 20px or larger, with `dominant-baseline="central"`. Static: no animation class. Days are UTC (`Date.UTC`, `getUTCDay`), and the grid ends on the snapshot's `asOf`, so the build never reads the clock.
+
+| Element | Geometry | Style |
+|---|---|---|
+| Window | The 365 days (`windowDays`) from `asOf − 364` to `asOf`. A day's count is its `calendar[]` entry, else 0 | |
+| Stats | Labels at center y = 34 (`labelY`), values at center y = 68 (`valueY`), `text-anchor="start"`. Submissions (past year) at x 24, slot 300 (`submissionsX`, `submissionsSlot`). Active days at x 348, slot 220 (`activeX`, `activeSlot`). Max streak at x 592, slot 234 (`streakX`, `streakSlot`). Each label and value (`groupDigits(n)`, no unit) goes through `fitText` in its slot, min 20 | Labels `lead` `fill-muted`. Submissions value `title` `fill-accent`. Active days and Max streak values `number` `fill-text` |
+| Stat values | From the `calendar[]` entries inside the window: the sum of counts, the number of entries, and the longest run of back to back dates. They can differ from LeetCode's page by a day, since its window is one day wider | |
+| Blocks | One block per month the window touches (12 or 13), oldest on the left. A day's column is `floor((weekday(first day) + day offset) / 7)`, its row its weekday (Sunday 0). A block has `floor((weekday(first day) + days − 1) / 7) + 1` columns | |
+| Cells | Step 11 (`cell` 9 + `cellGap` 2). Block b starts at `x0 + (columns before it) × 11 + b × 6` (`monthGap`). Cell at (block x + column × 11, 100 + row × 11) (`gridTop`), 9 × 9, `rx` 2 (`cellRadius`). Cells end at y = 175 | Level 0 `fill-track`. Levels 1 to 4 `fill-accent` with `fill-opacity` 0.25, 0.5, 0.75, 1 (`opacity1` to `opacity4`), always written |
+| Grid x | Width `w = columns × 11 − 2 + (blocks − 1) × 6`, `x0 = 24 + floor((802 − w) / 2)`, so the grid is centered. The widest window (65 columns, 13 blocks) is 785 | |
+| Levels | The highest k with `count ≥ level<k>Min`: 1, 2, 3, 5 (`level1Min` to `level4Min`). Count 0 is level 0 | |
+| Month labels | The short month name at the block's center x, center y = 198 (`monthY`), `text-anchor="middle"`, only on blocks with at least 3 columns (`monthMinColumns`). Both end blocks can be the same month (two different years), and both get a label | `lead`, `fill-muted` |
+| Legend | Center y = 230 (`legendY`). `More` ends at x = 826 (`text-anchor="end"`). Five cells, levels 0 to 4, at x = 717, 728, 739, 750, 761 and y = 225.5, the last one ending `legendGap` 8 plus `ceil(0.6 × 20 × 4)` left of 826. `Less` ends at x = 709 | Text `lead` `fill-muted`; cells as in *Cells* |
+
+**Levels shown by color (a recorded exception).** The heatmap shows a day's level by its mauve opacity alone, as LeetCode does. The `Less` to `More` legend explains the ramp, and the three stats and the alt text carry the numbers, so no information lives only in color. Everywhere else, color is never the only cue.
 
 ## Experience and education (built by feature 9)
 
@@ -418,7 +473,7 @@ Third party images that look the same in both themes (for example, Credly badge 
 
 - Every image is an `<img>` with real alt text, inside `<picture>` with a light and a dark version. Markdown image syntax fails the build.
 - Every text pair in the contrast table meets WCAG AA in both themes, and the build checks it.
-- Color is never the only way to show information. Status shapes (`success`, `warning`, `danger`) only fill or stroke shapes, and each one has a text label nearby in `fill-text` or `fill-muted`.
+- Color is never the only way to show information. Status shapes (`success`, `warning`, `danger`) only fill or stroke shapes, and each one has a text label nearby in `fill-text` or `fill-muted`. The one recorded exception is the LeetCode heatmap's levels (see *Heatmap card anatomy*).
 - All motion ends within 5 seconds and respects reduce motion (see *Motion*).
 - Content text passes through `escapeXml` exactly once on its way into an SVG or an HTML attribute. `themedImage` escapes alt text, so pass it raw. The content check also rejects characters XML doesn't allow.
 
