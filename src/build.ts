@@ -4,7 +4,7 @@ import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { content } from "../content/index.ts";
 import { assertContent } from "./content.ts";
-import { checkContrast, checkReadme, checkSvgAssets } from "./guards.ts";
+import { checkContrast, checkReadme, checkReadmeAssets, checkSvgAssets } from "./guards.ts";
 import { GENERATED_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
 import { readSnapshot } from "./snapshots.ts";
@@ -44,6 +44,7 @@ export async function build(): Promise<void> {
   const { readme, assets } = renderReadme({ content, snapshots });
   const problems = [
     ...checkReadme(readme),
+    ...checkReadmeAssets(readme, assets),
     ...checkAssets(assets),
     ...checkContrast(themes, contrastPairs),
     ...checkSvgAssets(assets),

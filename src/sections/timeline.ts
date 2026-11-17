@@ -6,12 +6,15 @@
 import type { Role, School, YearMonth } from "../../content/types.ts";
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
-import { card, type FitResult, fitText, themedImage, wrapLines } from "../svg.ts";
-import { layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
+import { card, type FitResult, fitText, pillButton, themedImage, wrapLines } from "../svg.ts";
+import { button, layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
 import type { Section } from "../types.ts";
 
 const EXPERIENCE_HEADING = "Experience";
 const EDUCATION_HEADING = "Education";
+/** Reuses the About me LinkedIn pill files (spec 0004), so this section writes no button asset. */
+const BUTTON_BASE = "contact-linkedin";
+const BUTTON_ALT = "Full work history on LinkedIn";
 const MIN_SIZE = 20;
 
 // --- Sort (spec 0002): newest start first; on a tie, current first, then the later end, then file order ---
@@ -247,6 +250,13 @@ export const timeline: Section = ({ content }) => {
     width: "100%",
     render: (theme) => timelineSvg(theme, schools.map(schoolEntry)),
   });
+  // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
+  const { markdown: buttonMarkdown } = themedImage({
+    base: BUTTON_BASE,
+    alt: BUTTON_ALT,
+    width: button.width + 2 * button.margin,
+    render: (theme) => pillButton(theme, { icon: "linkedin", label: "LinkedIn" }),
+  });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
   const block = (markdown: string): string => ['<p align="center">', markdown, "</p>"].join("\n");
 
@@ -255,6 +265,7 @@ export const timeline: Section = ({ content }) => {
     block(linked(experience.markdown)),
     `<h2 align="center">${EDUCATION_HEADING}</h2>`,
     block(linked(education.markdown)),
+    block(linked(buttonMarkdown)),
   ].join("\n\n");
   return { markdown, assets: [...(experience.assets ?? []), ...(education.assets ?? [])] };
 };
