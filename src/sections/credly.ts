@@ -1,16 +1,21 @@
 // Certifications (spec 0008, docs/design.md "Certifications"): every active Credly badge as Credly's own image,
 // each linked to its badge page, in one centered block that wraps on narrow screens. Badges are grouped by
-// issuer through the order alone. Data comes only from the committed snapshot; this section writes no assets.
+// issuer through the order alone, and the Credly pill from About me follows as a see all button. Data comes
+// only from the committed snapshot; this section writes no assets.
 
+import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import { type CredlyBadge, type CredlySnapshot, parseCredlySnapshot } from "../sources/credly.ts";
-import { outsideImage } from "../svg.ts";
-import { credlyGrid } from "../theme.ts";
+import { outsideImage, pillButton, themedImage } from "../svg.ts";
+import { button, credlyGrid } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
 const HEADING = "Certifications";
 const SOURCE = "credly";
 const BADGE_PAGE = "https://www.credly.com/badges/";
+/** Reuses the About me Credly pill files (spec 0004), so this section writes no button asset. */
+const BUTTON_BASE = "contact-credly";
+const BUTTON_ALT = "All badges on Credly";
 /** Within an issuer, higher levels first. Any other level, or none, sorts after these. */
 const LEVEL_ORDER = ["Advanced", "Intermediate", "Foundational"] as const satisfies readonly string[];
 
@@ -63,11 +68,20 @@ function readCredly({ content, snapshots }: BuildContext): CredlySnapshot {
   return snapshot;
 }
 
-// --- Section (AC-5, AC-8) ---
+// --- Section (AC-5, AC-7, AC-8) ---
 
 export const credlyBadges: Section = (ctx) => {
   const { badges } = readCredly(ctx);
+  // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
+  const { markdown: buttonMarkdown } = themedImage({
+    base: BUTTON_BASE,
+    alt: BUTTON_ALT,
+    width: button.width + 2 * button.margin,
+    render: (theme) => pillButton(theme, { icon: "credly", label: "Credly" }),
+  });
+  const seeAll = `<a href="${escapeXml(profileUrls(ctx.content.profile.accounts).credly)}">${buttonMarkdown}</a>`;
   const block = (lines: readonly string[]): string => ['<p align="center">', ...lines, "</p>"].join("\n");
-  const markdown = [`<h2 align="center">${HEADING}</h2>`, block(ordered(badges).map(badgeLine))].join("\n\n");
+  const grid = block(ordered(badges).map(badgeLine));
+  const markdown = [`<h2 align="center">${HEADING}</h2>`, grid, block([seeAll])].join("\n\n");
   return { markdown };
 };

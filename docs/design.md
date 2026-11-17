@@ -300,6 +300,34 @@ Drawn by `card()` at 850 wide. All text is 20px or larger. The values live in `t
 
 Text `text`, `muted`, and `accent` on `surface` are already in the contrast table, so the cards need no new pair.
 
+## Certifications (built by feature 10)
+
+Decided in [spec 0008](specs/0008-credly-badge-grid.md). After the LinkedIn button block of *Experience and education*, separated by blank lines, the README has:
+
+- `<h2 align="center">Certifications</h2>`
+- a `<p align="center">` block holding every badge from `data/snapshots/credly.json`, one badge per line
+- a `<p align="center">` block holding the see all button
+
+No block has blank lines inside. Each badge comes from `outsideImage()` and is exactly one line, with no spaces or line breaks between tags, so the badges wrap like inline images on a phone:
+
+```html
+<a href="https://www.credly.com/badges/<id>"><picture><source media="(prefers-color-scheme: dark)" srcset="<imageUrl>"><img alt="<name>, issued by <issuer>" src="<imageUrl>" width="110"></picture></a>
+```
+
+- The image is Credly's own PNG (`imageUrl`, always on `images.credly.com/images/`), shown at 110px wide (`credlyGrid.badgeWidth`). Both sources point at the same file, there is no light `<source>`, and there is no `height`, so the PNG keeps its own shape. The PNGs are transparent, so they sit on either theme's page background.
+- Alt text is `<name>, issued by <issuer>`, for example `AWS Certified Cloud Practitioner, issued by Amazon Web Services Training and Certification`. Pass it raw: `outsideImage` escapes `src` and `alt` once, and the section escapes the `href` once.
+- The section writes no assets, and nothing in it moves.
+
+Badges are grouped by issuer through the order alone, with no per issuer line or label:
+
+1. Issuers with more badges first. Ties go by issuer name.
+2. Within an issuer, by level: `Advanced`, `Intermediate`, `Foundational`, then any other level or none.
+3. Then the newest `issuedOn` first, then name, then `id`.
+
+Strings compare with JavaScript's `<`, never by locale. The build never reads the clock: refresh drops expired, hidden, and unaccepted badges before the snapshot is written.
+
+The see all button is `<a href>` to `profileUrls(accounts).credly` around a `<picture>` of the existing `contact-credly-light.svg` and `contact-credly-dark.svg`, at `width="148"`, alt text `All badges on Credly`. `checkReadmeAssets` fails the build if those files ever stop being written.
+
 ## Icon registry
 
 Every icon on the profile comes from `src/icons.ts`. Each entry is one `path` on a 24 × 24 grid plus a `source`:
@@ -384,7 +412,7 @@ GitHub follows the visitor's theme only through `<picture>`, so every themed ima
 
 The light file is the `<img>` fallback. GitHub's Light and Light high contrast themes get the light file. Dark, Dark dimmed, and Dark high contrast get the dark file. Never make a single SVG that switches theme with its own `prefers-color-scheme` query: that follows the OS setting, which can differ from the GitHub theme.
 
-Third party images that look the same in both themes (for example, Credly badge PNGs) still use `<picture>`, and may point both sources at the same outside file.
+Third party images that look the same in both themes (for example, Credly badge PNGs) still use `<picture>`, and may point both sources at the same outside file. Draw them with `outsideImage()` (see *Certifications*).
 
 ## Accessibility
 

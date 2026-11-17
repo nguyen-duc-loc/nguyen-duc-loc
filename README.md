@@ -110,3 +110,10 @@
 <a href="https://www.credly.com/badges/b11d2520-6967-412a-9ada-c5f9b20f1ac0"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob"><img alt="HashiCorp Certified: Terraform Associate (004), issued by IBM Professional Certification" src="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob" width="110"></picture></a>
 <a href="https://www.credly.com/badges/c6dedda7-444d-4e13-9ae2-6598c073c82c"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png"><img alt="FinOps Certified Engineer, issued by The Linux Foundation" src="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png" width="110"></picture></a>
 </p>
+
+<p align="center">
+<a href="https://www.credly.com/users/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-credly-dark.svg">
+  <img alt="All badges on Credly" src="assets/generated/contact-credly-light.svg" width="148">
+</picture></a>
+</p>
