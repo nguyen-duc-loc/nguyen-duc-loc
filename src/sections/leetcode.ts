@@ -1,23 +1,17 @@
-// LeetCode (spec 0006, docs/design.md "LeetCode", "Contest card anatomy", and "Solved card anatomy"): the
-// LeetCode profile page redrawn in the theme. A full width contest card (stats row, rating history line, Top %
-// histogram) sits above a half card with the problems solved arc and Easy, Med., and Hard chips. Each card is a
-// themed image linked to the LeetCode profile. Data comes only from the committed snapshot.
+// LeetCode (specs 0006 and 0009, docs/design.md "LeetCode" and its card anatomy sections): the LeetCode profile
+// page redrawn in the theme. A full width contest card (stats row, rating history line, Top % histogram) sits above
+// a half card with the problems solved arc and Easy, Med., and Hard chips, and the badges half card beside it. A
+// row of badge PNGs follows. Each card and badge links to the LeetCode profile. Data comes only from the committed
+// snapshot; the badges card lives in `leetcode-badges.ts`.
 
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import { type Difficulty, type LeetcodeSnapshot, parseLeetcodeSnapshot } from "../sources/leetcode.ts";
-import { card, enter, type FitResult, fitText, iconSvg, themedImage } from "../svg.ts";
-import {
-  contestCard,
-  layout,
-  radius,
-  solvedCard,
-  type TextSlot,
-  type Theme,
-  type TypeStyle,
-  typography,
-} from "../theme.ts";
+import { card, enter, fitText, iconSvg, themedImage } from "../svg.ts";
+import { contestCard, layout, radius, solvedCard, type TextSlot, type Theme, typography } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
+import { badgeRowLines, badgesAlt, badgesCardSvg } from "./leetcode-badges.ts";
+import { type Anchor, groupDigits, textTag } from "./leetcode-text.ts";
 
 const HEADING = "LeetCode";
 const SOURCE = "leetcode";
@@ -41,34 +35,7 @@ const difficulties = [
 
 // --- Formatting (AC-7): fixed rules, never the locale ---
 
-/** `6064` to `6,064`. Integers only. */
-function groupDigits(n: number): string {
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
 const f2 = (n: number): string => n.toFixed(2);
-
-// --- Text ---
-
-type Anchor = "start" | "middle" | "end";
-type TextOptions = {
-  readonly x: number;
-  readonly y: number;
-  readonly anchor: Anchor;
-  readonly classes: string;
-  readonly style: TypeStyle;
-  /** From `fitText`. Omitted: the style's own size. */
-  readonly fit?: FitResult;
-  readonly baseline?: "central" | "alphabetic";
-};
-
-/** A `<text>` element. `inner` is markup: escape outside text before passing it. */
-function textTag({ x, y, anchor, classes, style, fit, baseline = "central" }: TextOptions, inner: string): string {
-  const size = fit?.size ?? style.size;
-  const family = style.family === "mono" ? " font-mono" : "";
-  const squeeze = fit?.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
-  return `<text class="${classes}${family}" x="${x}" y="${y}" dominant-baseline="${baseline}" text-anchor="${anchor}" font-size="${size}" font-weight="${style.weight}"${squeeze}>${inner}</text>`;
-}
 
 // --- Solved card ---
 
@@ -426,12 +393,22 @@ export const leetcodeStats: Section = (ctx) => {
     width: layout.half,
     render: (theme) => solvedCardSvg(theme, snapshot),
   });
+  const badges = themedImage({
+    base: "leetcode-badges",
+    alt: badgesAlt(snapshot),
+    width: layout.half,
+    render: (theme) => badgesCardSvg(theme, snapshot, solvedHeight),
+  });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
+  const block = (lines: readonly string[]): string => ['<p align="center">', ...lines, "</p>"].join("\n");
+  const row = badgeRowLines(snapshot, href);
 
   const markdown = [
     `<h2 align="center">${HEADING}</h2>`,
-    ['<p align="center">', linked(contest.markdown), "</p>"].join("\n"),
-    ['<p align="center">', linked(solved.markdown), "</p>"].join("\n"),
+    block([linked(contest.markdown)]),
+    block([linked(solved.markdown), linked(badges.markdown)]),
+    ...(row.length === 0 ? [] : [block(row)]),
   ].join("\n\n");
-  return { markdown, assets: [...(contest.assets ?? []), ...(solved.assets ?? [])] };
+  const assets = [contest, solved, badges].flatMap((image) => image.assets ?? []);
+  return { markdown, assets };
 };

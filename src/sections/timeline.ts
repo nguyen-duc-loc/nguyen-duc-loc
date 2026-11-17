@@ -5,6 +5,7 @@
 
 import type { Role, School, YearMonth } from "../../content/types.ts";
 import { profileUrls } from "../content.ts";
+import { MONTHS } from "../dates.ts";
 import { escapeXml } from "../escape.ts";
 import { card, type FitResult, fitText, pillButton, themedImage, wrapLines } from "../svg.ts";
 import { button, layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
@@ -33,22 +34,7 @@ function newestFirst<T extends Dated>(entries: readonly T[]): readonly T[] {
   });
 }
 
-// --- Dates (AC-5): a fixed English month table, never the locale or the clock ---
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-] as const satisfies readonly string[];
+// --- Dates (AC-5): the fixed English month table in src/dates.ts, never the locale or the clock ---
 
 const CARD_SEPARATOR = " \u2013 ";
 const ALT_SEPARATOR = " to ";

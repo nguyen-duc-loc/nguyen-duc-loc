@@ -238,6 +238,60 @@ export const timelineCard = {
 /** Certifications (spec 0008, docs/design.md "Certifications"): each Credly badge PNG shows `badgeWidth` px wide. */
 export const credlyGrid = { badgeWidth: 110 } as const satisfies { readonly [name: string]: number };
 
+/**
+ * LeetCode badges half card (spec 0009, docs/design.md "Badges card anatomy"): `layout.half` wide and as tall as
+ * the solved card. Every y is a text center (`dominant-baseline="central"`), every x is `layout.pad`.
+ */
+export const badgesCard = {
+  headingY: 34,
+  icon: 24,
+  iconY: 22,
+  countY: 74,
+  recentY: 112,
+  nameY: 138,
+  nameSlot: 352,
+  nameMin: 14,
+  monthY: 164,
+} as const satisfies { readonly [name: string]: number };
+
+/** The LeetCode badge image row (spec 0009): at most `max` PNGs, each `width` px wide. */
+export const badgeRow = { max: 8, width: 80 } as const satisfies { readonly [name: string]: number };
+
+/**
+ * LeetCode submission heatmap (spec 0009, docs/design.md "Heatmap card anatomy"): `layout.full` × `height`, the
+ * `windowDays` ending on the snapshot's `asOf`. A day's level is the highest k with `count ≥ level<k>Min`, drawn
+ * with `fill-opacity` `opacity<k>`; level 0 is `fill-track`.
+ */
+export const heatmap = {
+  height: 264,
+  windowDays: 365,
+  labelY: 34,
+  valueY: 68,
+  submissionsX: 24,
+  submissionsSlot: 300,
+  activeX: 348,
+  activeSlot: 220,
+  streakX: 592,
+  streakSlot: 234,
+  gridTop: 100,
+  cell: 9,
+  cellGap: 2,
+  cellRadius: 2,
+  monthGap: 6,
+  monthY: 198,
+  monthMinColumns: 3,
+  legendY: 230,
+  legendGap: 8,
+  level1Min: 1,
+  level2Min: 2,
+  level3Min: 3,
+  level4Min: 5,
+  opacity1: 0.25,
+  opacity2: 0.5,
+  opacity3: 0.75,
+  opacity4: 1,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",
