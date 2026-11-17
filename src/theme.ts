@@ -235,6 +235,9 @@ export const timelineCard = {
   entryGap: 24,
 } as const satisfies { readonly [name: string]: number };
 
+/** Certifications (spec 0008, docs/design.md "Certifications"): each Credly badge PNG shows `badgeWidth` px wide. */
+export const credlyGrid = { badgeWidth: 110 } as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",

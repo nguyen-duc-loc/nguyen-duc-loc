@@ -136,6 +136,18 @@ export function themedImage({ base, alt, width, render }: ThemedImageOptions): S
   };
 }
 
+export type OutsideImageOptions = { readonly src: string; readonly alt: string; readonly width: number };
+
+/**
+ * A third party image (spec 0008, docs/design.md "Certifications"), such as a Credly badge PNG, inside
+ * `<picture>` with the dark source and the `<img>` both pointing at the same file. One line, so a row of them
+ * wraps like inline images. `src` and `alt` are plain text, escaped once here.
+ */
+export function outsideImage({ src, alt, width }: OutsideImageOptions): string {
+  const url = escapeXml(src);
+  return `<picture><source media="(prefers-color-scheme: dark)" srcset="${url}"><img alt="${escapeXml(alt)}" src="${url}" width="${width}"></picture>`;
+}
+
 /** An icon from `src/icons.ts` as a nested `size` × `size` SVG at (x, y), painted by `classes`. */
 export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
   return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${icons[name].path}"/></svg>`;
