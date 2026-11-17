@@ -34,3 +34,24 @@
   <img alt="Email nguyenducloc404@gmail.com" src="assets/generated/contact-email-light.svg" width="148">
 </picture></a>
 </p>
+
+<h2 align="center">Tech stack</h2>
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-languages-dark.svg">
+  <img alt="Languages: TypeScript, Go, C++, Bash" src="assets/generated/stack-languages-light.svg" width="400">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-frameworks-dark.svg">
+  <img alt="Frameworks: React, Next.js" src="assets/generated/stack-frameworks-light.svg" width="400">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-tools-dark.svg">
+  <img alt="Tools: Git, Docker, Terraform, Linux, Kubernetes" src="assets/generated/stack-tools-light.svg" width="400">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-cloud-dark.svg">
+  <img alt="Cloud: AWS" src="assets/generated/stack-cloud-light.svg" width="400">
+</picture>
+</p>

@@ -90,9 +90,9 @@ Plain text over inline Markdown: the same string goes into SVG, where Markdown d
 | | `accounts` | `Accounts` | yes |
 | | `email` | string | yes |
 | Accounts (inside Profile, `Accounts`), 1:1 | `github`, `linkedin`, `leetcode`, `credly` | string (username) | yes, all four |
-| Stack (`stack.ts`, `Stack`), exactly 1 | `languages`, `frameworks`, `tools`, `cloud` | `StackItem[]` | yes, all four |
+| Stack (`stack.ts`, `Stack`), exactly 1 | `languages`, `frameworks`, `tools`, `cloud` | `StackItem[]`, 1 to 8 items each (spec 0005) | yes, all four |
 | StackItem (`StackItem`), 1:N per category | `name` | string | yes |
-| | `icon` | string, a Simple Icons slug | optional (some brands, possibly AWS and Azure, have no slug; feature 7 then shows a text badge) |
+| | `icon` | `IconName`, a key of the icon registry in `src/icons.ts` (superseded by [spec 0005](0005-tech-stack-cards.md); was a free string holding a Simple Icons slug) | optional (a brand with no icon, like AWS, shows as a name only chip, per spec 0005) |
 | Role (`experience.ts`, `experience: Role[]`), 1:N | `company`, `title` | string | yes |
 | | `start` | `YearMonth` | yes |
 | | `end` | `YearMonth \| null` (`null` = current) | yes |
@@ -157,7 +157,7 @@ Plain text over inline Markdown: the same string goes into SVG, where Markdown d
 | `accounts.leetcode` | `^[A-Za-z0-9_-]+$` |
 | `accounts.credly` | `^[A-Za-z0-9._-]+$` |
 | `email` | `^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$` |
-| Stack | each category has at least 1 item. Item `name` is unique across all categories. `icon`, when set, matches `^[a-z0-9]+$` |
+| Stack | each category has 1 to 8 items. Item `name` is unique across all categories. `icon`, when set, is a key of the icon registry in `src/icons.ts`, checked with `Object.hasOwn`. The count and `icon` rules are superseded by [spec 0005](0005-tech-stack-cards.md) (AC-6, AC-7); they were "at least 1 item" and `^[a-z0-9]+$` |
 | `start`, `end` | match `^\d{4}-(0[1-9]\|1[0-2])$`. When `end` is set, `start <= end` (string comparison) |
 | `experience` | at least 1 role. `highlights` has 1 or 2 items, each at most 120 characters |
 | `education` | at least 1 school. `note` at most 120 characters |
@@ -170,7 +170,7 @@ Plain text over inline Markdown: the same string goes into SVG, where Markdown d
 **Problem reporting** (`checkContent` output, the contract for AC-5 and AC-6):
 - Path: JS notation from the `content` root without the `content.` prefix, 0 based indexes (`experience[1].highlights[0]`). A count rule reports the list (`projects`). A duplicate reports the later item (`stack.tools[2].name`) and names the earlier one. Start after end reports `<entry>.end`. A project with no link reports `projects[i]`.
 - Order: top level order `profile`, `stack`, `experience`, `education`, `projects`. Within an entity, fields in *Data model sketch* order (stack categories `languages`, `frameworks`, `tools`, `cloud`). A list level problem comes before its items' problems. Several problems on one field follow the order of the rule table above.
-- Wording (fill in `N`, `M`, `K`, `<path>`, `<pattern>`): `must not be empty` · `must not start or end with whitespace` · `must not contain a line break` · `must be in NFC form` · `must be at most N characters (is M)` · `must have N to M items (has K)` (or `must have at least N items (has K)`, or `must have at most N items (has K)` when the list may be empty, as `projects` may) · `duplicate of <path>` · `must match <pattern>` · `must be an https URL` · `start must not be after end` · `needs repoUrl or demoUrl`.
+- Wording (fill in `N`, `M`, `K`, `<path>`, `<pattern>`): `must not be empty` · `must not start or end with whitespace` · `must not contain a line break` · `must be in NFC form` · `must be at most N characters (is M)` · `must have N to M items (has K)` (or `must have at least N items (has K)`, or `must have at most N items (has K)` when the list may be empty, as `projects` may) · `duplicate of <path>` · `must match <pattern>` · `must be an icon in src/icons.ts` (stack `icon`, from spec 0005) · `must be an https URL` · `start must not be after end` · `needs repoUrl or demoUrl`.
 
 Contracts for the section features (written here, built there):
 - Feature 9 sorts roles and schools newest `start` first. On a tie, a current entry (`end: null`) comes first, then the later `end`, then file order (stable sort). `end: null` displays as "Present". Feature 9 decides whether roles and schools share one timeline or show as two lists.
@@ -225,7 +225,7 @@ Skateboard: the first milestone ships a complete, live content layer with the RE
 ## Follow-up
 
 - [ ] The first section that renders content text (feature 5 or 6) adds one shared escape helper (for example `src/escape.ts`) instead of each section writing its own.
-- [ ] Feature 7 decides how a Simple Icons slug becomes a self contained, theme aware icon (and whether to add `simple-icons` as a dev dependency), how an item without `icon` looks, and may tighten the `icon` check to known slugs. Check then which cloud brands still have a slug.
+- [x] Settled by [spec 0005](0005-tech-stack-cards.md): icons come from the registry in `src/icons.ts` (no `simple-icons` dependency), an item without `icon` is a name only chip, `icon` is typed as `IconName` and checked against the registry, and AWS has no slug. The original item: Feature 7 decides how a Simple Icons slug becomes a self contained, theme aware icon (and whether to add `simple-icons` as a dev dependency), how an item without `icon` looks, and may tighten the `icon` check to known slugs. Check then which cloud brands still have a slug.
 - [ ] Features 6, 7, 9, and 14 each carry their own "edit the data, the README changes" check, which is the scope's done when line for this feature, proven per section.
 - [ ] Scope feature 14 still says "three to six project cards". With projects allowed to be empty, `/scope` should reword it (zero to six, hidden when empty) or move it to Deferred until Loc has projects.
 - [ ] Spec 0001 says `content/profile.ts` is a starter that feature 3 replaces. `/sync` should mark that settled by this spec.

@@ -2,16 +2,18 @@
 // Pure functions: no network, no file system, no clock.
 
 import type { Accounts, Content, Profile, Project, Role, School, Stack } from "../content/types.ts";
+import { icons } from "./icons.ts";
 
 const SHORT_TEXT_MAX = 80;
 const BIO_MAX = 300;
 const TYPING_PHRASE_MAX = 40;
 const LONG_TEXT_MAX = 120;
+/** Keeps all four tech stack cards at 1 to 4 chip rows, since they share the tallest height (spec 0005). */
+const STACK_CATEGORY_MAX = 8;
 
 const LINE_BREAK = /[\r\n\u2028\u2029]/;
 const HTTPS_URL = /^https:\/\/\S+$/;
 const YEAR_MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
-const STACK_ICON = /^[a-z0-9]+$/;
 const EMAIL = /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 
 /** In the order problems are reported. */
@@ -96,6 +98,12 @@ function checkUnique(entries: readonly Entry[], index: number): string[] {
   return earlier ? [problem(entries[index].path, `duplicate of ${earlier.path}`)] : [];
 }
 
+/** A stack icon must be a key of the registry. `Object.hasOwn`, so `toString` or `constructor` never pass. */
+function checkStackIcon(path: string, icon: string | undefined): string[] {
+  if (icon === undefined || Object.hasOwn(icons, icon)) return [];
+  return [problem(path, "must be an icon in src/icons.ts")];
+}
+
 function checkPattern(path: string, value: string, pattern: RegExp): string[] {
   if (!isXmlSafe(value)) return [problem(path, XML_MESSAGE)];
   return pattern.test(value) ? [] : [problem(path, `must match ${pattern.source}`)];
@@ -144,14 +152,14 @@ function checkStack(stack: Stack): string[] {
   );
   const names = items.map(({ base, item }) => ({ path: `${base}.name`, value: item.name }));
   return STACK_CATEGORIES.flatMap((category) => [
-    ...checkCount(`stack.${category}`, stack[category], 1),
+    ...checkCount(`stack.${category}`, stack[category], 1, STACK_CATEGORY_MAX),
     ...items.flatMap(({ category: itemCategory, base, item }, i) =>
       itemCategory !== category
         ? []
         : [
             ...checkText(names[i].path, item.name, SHORT_TEXT_MAX),
             ...checkUnique(names, i),
-            ...(item.icon === undefined ? [] : checkPattern(`${base}.icon`, item.icon, STACK_ICON)),
+            ...checkStackIcon(`${base}.icon`, item.icon),
           ],
     ),
   ]);
