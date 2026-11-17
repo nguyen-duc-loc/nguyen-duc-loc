@@ -31,6 +31,25 @@ export function checkReadme(readme: string): string[] {
   return problems;
 }
 
+// --- README asset references (spec 0007, AC-11) ---
+
+const URL_ATTR = /\s(?:src|srcset)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
+const GENERATED_REF = /^(?:\.\/)?assets\/generated\/(.+)$/;
+
+/** Every `assets/generated/<file>` the README names in a `src` or `srcset` must be a generated asset. */
+export function checkReadmeAssets(readme: string, assets: readonly GeneratedAsset[]): string[] {
+  const written = new Set(assets.map(({ file }) => file));
+  const missing = new Set<string>();
+  for (const m of readme.matchAll(URL_ATTR)) {
+    // A srcset is a comma separated list of `url [descriptor]` candidates.
+    for (const candidate of (m[1] ?? m[2] ?? m[3]).split(",")) {
+      const ref = GENERATED_REF.exec(candidate.trim().split(/\s+/)[0]);
+      if (ref && !written.has(ref[1])) missing.add(ref[1]);
+    }
+  }
+  return [...missing].map((file) => `README references a missing generated asset: ${file}`);
+}
+
 // --- Contrast (spec 0003, AC-3) ---
 
 const THEME_ORDER = ["light", "dark"] as const satisfies readonly ThemeName[];

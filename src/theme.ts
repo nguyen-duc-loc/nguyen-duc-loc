@@ -216,6 +216,25 @@ export const contestCard = {
   barRadius: 1,
 } as const satisfies { readonly [name: string]: number };
 
+/**
+ * Experience and education cards (spec 0007, docs/design.md "Timeline card anatomy"): `layout.full` wide, a
+ * vertical rail at `railX` with a dot per entry, and text from `textX` to `layout.full − layout.pad`. Row 0 holds
+ * the name and the dates, right aligned in `dateSlot`, `titleGap` apart. Rows are `lineHeight` apart, entries
+ * `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
+ */
+export const timelineCard = {
+  railX: 40,
+  railWidth: 2,
+  dotRadius: 7,
+  dotStroke: 2,
+  textX: 72,
+  bulletIndent: 20,
+  dateSlot: 228,
+  titleGap: 16,
+  lineHeight: 28,
+  entryGap: 24,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",
