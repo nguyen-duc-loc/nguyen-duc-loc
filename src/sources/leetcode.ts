@@ -1,8 +1,9 @@
-// LeetCode stats (spec 0006): one POST to LeetCode's public GraphQL endpoint, no token. `validate` maps the
+// LeetCode stats (spec 0006), badges and submission calendar (spec 0009): one POST to LeetCode's public GraphQL endpoint, no token. `validate` maps the
 // response to the snapshot and `parseLeetcodeSnapshot` checks it. The build runs the same parse on read, so a
 // snapshot that passes one passes the other. Module load does no I/O.
 
 import { content } from "../../content/index.ts";
+import { isRealDate } from "../dates.ts";
 import type { Source } from "../types.ts";
 import { HttpError, USER_AGENT, ValidationError } from "./http.ts";
 
@@ -12,7 +13,13 @@ const DETAIL_MAX = 300;
 
 const QUERY = `query leetcodeStats($username: String!) {
   allQuestionsCount { difficulty count }
-  matchedUser(username: $username) { username submitStatsGlobal { acSubmissionNum { difficulty count } } }
+  matchedUser(username: $username) {
+    username
+    submitStatsGlobal { acSubmissionNum { difficulty count } }
+    badges { id displayName icon creationDate category }
+    activeBadge { id }
+    userCalendar { submissionCalendar }
+  }
   userProfileUserQuestionProgressV2(userSlug: $username) { numFailedQuestions { difficulty count } }
   userContestRanking(username: $username) { attendedContestsCount rating globalRanking totalParticipants topPercentage badge { name } }
   userContestRankingHistory(username: $username) { attended rating contest { startTime } }
@@ -23,6 +30,16 @@ const USERNAME = /^[A-Za-z0-9_-]+$/;
 const BADGE = /^[A-Za-z][A-Za-z ]{0,29}$/;
 const HISTORY_MAX = 1000;
 const HISTOGRAM_MAX = 40;
+const BADGE_ID = /^[0-9]{1,15}$/;
+const BADGE_NAME = /^[A-Za-z0-9][A-Za-z0-9 .&'+:-]{0,59}$/;
+const BADGE_ICON = /^https:\/\/(assets\.leetcode\.com\/|leetcode\.com\/static\/)[A-Za-z0-9_./%-]+\.png$/;
+const BADGE_CATEGORY = /^[A-Z][A-Z_]{0,29}$/;
+const BADGES_MAX = 500;
+const CALENDAR_MAX = 400;
+const CALENDAR_KEY = /^[0-9]{1,11}$/;
+const SECONDS_PER_DAY = 86_400;
+/** Prefixed to a badge `icon` that LeetCode returns as a site relative path. */
+const ICON_ORIGIN = "https://leetcode.com";
 
 export type Difficulty = "easy" | "medium" | "hard";
 export const difficultyNames = ["easy", "medium", "hard"] as const satisfies readonly Difficulty[];
@@ -49,6 +66,23 @@ export type LeetcodeSnapshot = {
     readonly ratingEnd: number;
     readonly userCount: number;
   }[];
+  /** UTC date (`YYYY-MM-DD`) the response was read: the heatmap's last day. */
+  readonly asOf: string;
+  /** The badge chosen on LeetCode, an `id` in `badges`, or null. */
+  readonly activeBadgeId: string | null;
+  /** Ascending by `earnedOn`, then numeric `id`. */
+  readonly badges: readonly LeetcodeBadge[];
+  /** Days with at least one submission, strictly increasing by `date` (UTC). */
+  readonly calendar: readonly { readonly date: string; readonly count: number }[];
+};
+
+export type LeetcodeBadge = {
+  readonly id: string;
+  readonly name: string;
+  /** An absolute `https` PNG URL on LeetCode. */
+  readonly icon: string;
+  readonly earnedOn: string;
+  readonly category: string;
 };
 
 type Fields = { readonly [key: string]: unknown };
@@ -144,12 +178,75 @@ function parseHistogram(value: unknown): LeetcodeSnapshot["histogram"] {
   return buckets;
 }
 
+function realDate(value: unknown, path: string): string {
+  return isRealDate(value) ? value : fail(path, "must be a real date");
+}
+
+function matching(value: unknown, path: string, pattern: RegExp, problem = `must match ${pattern}`): string {
+  return typeof value === "string" && pattern.test(value) ? value : fail(path, problem);
+}
+
+/** `earnedOn`, then numeric `id`, both ascending. */
+function compareBadges(a: LeetcodeBadge, b: LeetcodeBadge): number {
+  if (a.earnedOn !== b.earnedOn) return a.earnedOn < b.earnedOn ? -1 : 1;
+  return Number(a.id) - Number(b.id);
+}
+
+function parseBadges(value: unknown, asOf: string): LeetcodeSnapshot["badges"] {
+  const badges = list(value, "badges", 0, BADGES_MAX).map((entry, i): LeetcodeBadge => {
+    const path = `badges[${i}]`;
+    const fields = record(entry, path);
+    const earnedOn = realDate(fields.earnedOn, `${path}.earnedOn`);
+    if (earnedOn > asOf) fail(`${path}.earnedOn`, "must be no later than asOf");
+    return {
+      id: matching(fields.id, `${path}.id`, BADGE_ID),
+      name: matching(fields.name, `${path}.name`, BADGE_NAME),
+      icon: matching(fields.icon, `${path}.icon`, BADGE_ICON, "must be a LeetCode PNG URL"),
+      earnedOn,
+      category: matching(fields.category, `${path}.category`, BADGE_CATEGORY),
+    };
+  });
+  const ids = new Set<string>();
+  badges.forEach((badge, i) => {
+    if (ids.has(badge.id)) fail(`badges[${i}].id`, "must be unique");
+    ids.add(badge.id);
+    if (i > 0 && compareBadges(badges[i - 1], badge) > 0) {
+      fail(`badges[${i}]`, "must come after the previous entry by earnedOn, then numeric id");
+    }
+  });
+  return badges;
+}
+
+function parseActiveBadgeId(value: unknown, badges: LeetcodeSnapshot["badges"]): string | null {
+  if (value === null) return null;
+  if (typeof value !== "string" || !badges.some((badge) => badge.id === value)) {
+    return fail("activeBadgeId", "must be null or the id of an entry in badges");
+  }
+  return value;
+}
+
+function parseCalendar(value: unknown, asOf: string): LeetcodeSnapshot["calendar"] {
+  const days = list(value, "calendar", 0, CALENDAR_MAX).map((entry, i) => {
+    const path = `calendar[${i}]`;
+    const fields = record(entry, path);
+    const date = realDate(fields.date, `${path}.date`);
+    if (date > asOf) fail(`${path}.date`, "must be no later than asOf");
+    return { date, count: integer(fields.count, `${path}.count`, 1) };
+  });
+  days.forEach((day, i) => {
+    if (i > 0 && day.date <= days[i - 1].date) fail(`calendar[${i}].date`, "must be later than the previous entry's");
+  });
+  return days;
+}
+
 /** Checks a snapshot (from `validate`, or read from disk). Throws `ValidationError` with `<path>: <problem>`. */
 export function parseLeetcodeSnapshot(value: unknown): LeetcodeSnapshot {
   if (!isRecord(value)) return fail("(root)", "must be an object");
   const { username } = value;
   if (typeof username !== "string" || !USERNAME.test(username)) fail("username", `must match ${USERNAME}`);
   const difficulties = record(value.difficulties, "difficulties");
+  const asOf = realDate(value.asOf, "asOf");
+  const badges = parseBadges(value.badges, asOf);
   return {
     username: username as string,
     difficulties: {
@@ -160,6 +257,10 @@ export function parseLeetcodeSnapshot(value: unknown): LeetcodeSnapshot {
     contest: parseContest(value.contest),
     history: parseHistory(value.history),
     histogram: parseHistogram(value.histogram),
+    asOf,
+    activeBadgeId: parseActiveBadgeId(value.activeBadgeId, badges),
+    badges,
+    calendar: parseCalendar(value.calendar, asOf),
   };
 }
 
@@ -175,7 +276,53 @@ function required(data: Fields, key: string): Fields {
   return isRecord(value) ? value : fail(key, "is null or missing");
 }
 
-function mapResponse(raw: unknown): unknown {
+/** `matchedUser.badges` to snapshot badges, with site relative icons made absolute, sorted (spec 0009). */
+function mapBadges(value: unknown): readonly Fields[] {
+  if (!Array.isArray(value)) return fail("matchedUser.badges", "is null or missing");
+  return value
+    .map((row, i) => {
+      const { id, displayName, icon, creationDate, category } = record(row, `matchedUser.badges[${i}]`);
+      const absolute = typeof icon === "string" && icon.startsWith("/") ? `${ICON_ORIGIN}${icon}` : icon;
+      return { id, name: displayName, icon: absolute, earnedOn: creationDate, category };
+    })
+    .toSorted((a, b) =>
+      a.earnedOn !== b.earnedOn ? (String(a.earnedOn) < String(b.earnedOn) ? -1 : 1) : Number(a.id) - Number(b.id),
+    );
+}
+
+/** `activeBadge` may be `null` (no badge chosen), but the key must be there. */
+function mapActiveBadge(user: Fields): unknown {
+  if (!("activeBadge" in user)) return fail("matchedUser.activeBadge", "is missing");
+  const { activeBadge } = user;
+  return activeBadge === null ? null : record(activeBadge, "matchedUser.activeBadge").id;
+}
+
+/** The JSON string of unix seconds to counts, as dated entries with count 0 dropped, oldest first. */
+function mapCalendar(user: Fields): readonly Fields[] {
+  const calendar = user.userCalendar;
+  if (!isRecord(calendar)) return fail("matchedUser.userCalendar", "is null or missing");
+  const text = calendar.submissionCalendar;
+  if (typeof text !== "string") return fail("matchedUser.userCalendar.submissionCalendar", "is null or missing");
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return fail("matchedUser.userCalendar.submissionCalendar", "must be a JSON object");
+  }
+  const days = record(parsed, "matchedUser.userCalendar.submissionCalendar");
+  return Object.entries(days)
+    .map(([key, count]) => {
+      if (!CALENDAR_KEY.test(key) || Number(key) % SECONDS_PER_DAY !== 0) {
+        fail("calendar", `key ${key} must be a UTC midnight in unix seconds`);
+      }
+      return { seconds: Number(key), count };
+    })
+    .filter(({ count }) => count !== 0)
+    .toSorted((a, b) => a.seconds - b.seconds)
+    .map(({ seconds, count }) => ({ date: new Date(seconds * 1000).toISOString().slice(0, 10), count }));
+}
+
+function mapResponse(raw: unknown): Fields {
   const body = record(raw, "(response)");
   const { errors } = body;
   if (Array.isArray(errors) && errors.length > 0) {
@@ -233,6 +380,9 @@ function mapResponse(raw: unknown): unknown {
     },
     history: history.toSorted((a, b) => Number(a.startTime) - Number(b.startTime)),
     histogram: histogram.toSorted((a, b) => Number(a.ratingStart) - Number(b.ratingStart)),
+    activeBadgeId: mapActiveBadge(user),
+    badges: mapBadges(user.badges),
+    calendar: mapCalendar(user),
   };
 }
 
@@ -248,10 +398,13 @@ async function errorDetail(response: Response): Promise<string | undefined> {
   }
 }
 
+/** What `fetch` hands to `validate`: the parsed body and the UTC date it was read. */
+export type LeetcodeResponse = { readonly asOf: string; readonly body: unknown };
+
 export const leetcode = {
   name: "leetcode",
   sortKey: "startTime",
-  async fetch(signal: AbortSignal): Promise<unknown> {
+  async fetch(signal: AbortSignal): Promise<LeetcodeResponse> {
     const response = await fetch(ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/json", "user-agent": USER_AGENT },
@@ -259,9 +412,13 @@ export const leetcode = {
       signal,
     });
     if (!response.ok) throw new HttpError(response.status, ENDPOINT, await errorDetail(response));
-    return response.json();
+    const body: unknown = await response.json();
+    // Read after the body, so LeetCode's newest calendar day is never later than asOf (spec 0009).
+    return { asOf: new Date().toISOString().slice(0, 10), body };
   },
   validate(raw: unknown): LeetcodeSnapshot {
-    return parseLeetcodeSnapshot(mapResponse(raw));
+    const response = record(raw, "(fetch)");
+    if (typeof response.asOf !== "string") fail("asOf", "must be a string");
+    return parseLeetcodeSnapshot({ ...mapResponse(response.body), asOf: response.asOf });
   },
 } as const satisfies Source<LeetcodeSnapshot>;
