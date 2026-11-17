@@ -118,7 +118,7 @@ spec [0006](../specs/0006-leetcode-stats-card.md) · design in [`docs/design.md`
 ### 9. Experience & education timeline · in-progress
 A timeline of your roles and schools built from your content data (LinkedIn does not share this data with regular developers), with a LinkedIn button to the full profile.
 **Done when:** each role shows company, title, dates, and one or two highlights; education shows school, degree, and dates; adding an entry to the data updates the timeline.
-spec [0007](../specs/0007-experience-education-timeline.md) · design in [`docs/design.md`](../design.md)
+spec [0007](../specs/0007-experience-education-timeline/index.md) · design in [`docs/design.md`](../design.md)
 code in `src/sections/timeline.ts`, `src/svg.ts` (`wrapLines`), `src/guards.ts` (`checkReadmeAssets`), `src/theme.ts` (`timelineCard`)
 - [x] Design it (spec): `/architect experience & education timeline`
 - [ ] Build it: `/develop experience & education timeline`
