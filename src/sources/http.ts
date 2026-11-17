@@ -1,5 +1,8 @@
 // Shared helpers for source fetchers. Throw these so refresh can decide whether to retry.
 
+/** Sent by every source, so a site owner can see who is calling and how to reach the owner. */
+export const USER_AGENT = "nguyen-duc-loc-profile (+https://github.com/nguyen-duc-loc/nguyen-duc-loc)";
+
 export class HttpError extends Error {
   readonly status: number;
 

@@ -28,7 +28,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 7 | Tech stack | Release 1 | done |
 | 8 | LeetCode stats card | Release 1 | done |
 | 9 | Experience & education timeline | Release 2 | done |
-| 10 | Credly badge grid | Release 2 | planned |
+| 10 | Credly badge grid | Release 2 | in-progress |
 | 11 | LeetCode badges & heatmap | Release 2 | planned |
 | 12 | GitHub stats & streak | Release 3 | planned |
 | 13 | Animated contribution graph | Release 3 | planned |
@@ -127,10 +127,15 @@ code in `src/sections/timeline.ts`, `src/svg.ts` (`wrapLines`), `src/guards.ts` 
   - [x] Content caps, `docs/design.md` updated, and every check run, including both themes on GitHub (AC-12, AC-13, AC-15)
 - [x] Verify it: `/check verify experience & education timeline`
 
-### 10. Credly badge grid · needs a decision
+### 10. Credly badge grid · in-progress
 Every Credly badge you have earned, shown as a grid of badge images, each linking to its Credly page, updated automatically when you earn a new one.
 **Done when:** all current badges appear, a newly earned badge shows up after the next refresh with no manual edit, and a failed refresh keeps the last good grid.
-- [ ] Design it (spec): `/architect credly badge grid`
+spec [0008](../specs/0008-credly-badge-grid.md) · design in [`docs/design.md`](../design.md) · code in `src/sources/credly.ts`, `src/sections/credly.ts`, `data/snapshots/credly.json`, `src/sources/http.ts` (`USER_AGENT`), `src/content.ts` (`checkText`), `src/svg.ts` (`outsideImage`), `src/theme.ts` (`credlyGrid`), `src/readme.ts`
+- [x] Design it (spec): `/architect credly badge grid`
+- [ ] Build it: `/develop credly badge grid`
+  - [ ] Credly source, first snapshot, and the badge grid live, plus one manual run from GitHub's runner (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-8, AC-9)
+  - [ ] See all button, `docs/design.md` updated, and every check run, including lychee in CI and both themes on GitHub (AC-7, AC-9)
+- [ ] Verify it: `/check verify credly badge grid`
 
 ### 11. LeetCode badges & heatmap
 Grows the LeetCode section with your earned LeetCode badges and a submission heatmap (a calendar grid colored by how much you solved each day). Builds on the data source decided in feature 8.

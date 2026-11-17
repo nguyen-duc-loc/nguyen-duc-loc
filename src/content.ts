@@ -70,7 +70,11 @@ const isXmlChar = (codePoint: number): boolean =>
 const isXmlSafe = (text: string): boolean =>
   text.isWellFormed() && [...text].every((char) => isXmlChar(char.codePointAt(0) ?? 0));
 
-function checkText(path: string, text: string, max: number): string[] {
+/**
+ * The rules for one line of text: not empty, no leading or trailing whitespace, no line break, XML safe, NFC,
+ * at most `max` code points. Shared with sources, so outside text follows the same rules as content (spec 0008).
+ */
+export function checkText(path: string, text: string, max: number): string[] {
   if (text === "") return [problem(path, "must not be empty")];
   const problems: string[] = [];
   if (text !== text.trim()) problems.push(problem(path, "must not start or end with whitespace"));
