@@ -36,7 +36,9 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md`.
 
 - Never edit `README.md` or `assets/generated/` by hand. Only `pnpm build` writes them; change `content/` or `src/` instead.
 - Functional style. A section is a pure function `(ctx: BuildContext) => SectionOutput` in `src/sections/<name>.ts`, listed in order in `src/readme.ts`. Sections never touch the network or file system; data is `readonly`, typed with `as const satisfies`; module level values are constants only. I/O lives only in the entry scripts (`build.ts`, `refresh.ts`, `keepalive.ts`) and `src/sources/`.
+- Each generated file is written by exactly one section (`build` rejects duplicates). To show another section's image, emit only its `themedImage` markup and drop its `assets`, as `src/sections/timeline.ts` does with the LinkedIn button; `checkReadmeAssets` fails the build if the README names an `assets/generated/` file no section writes.
 - Outside data: one fetcher per source in `src/sources/<name>.ts` following the `Source` contract in `src/types.ts`, registered in `src/sources/index.ts`, with its first snapshot committed to `data/snapshots/<name>.json`. `build` never fetches.
+- A source also exports a pure `parse<Name>Snapshot(value: unknown)`: `validate` maps the response and ends with it, and the section reads `ctx.snapshots` only through it, so write time and read time checks match and a hand edited snapshot fails the build. Follow `src/sources/leetcode.ts` (spec 0006).
 - Output is deterministic: no timestamps, random IDs, or unsorted keys; LF line endings and exactly one trailing newline.
 - `strict` types, no `any`. Stay inside Node's type stripping subset: `.ts` import extensions, `import type`, no enums, namespaces, parameter properties, or decorators.
 - Errors: expected failures at the edges throw typed errors (`HttpError`, `ValidationError` in `src/sources/http.ts`); each entry script catches once and sets `process.exitCode`.
