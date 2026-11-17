@@ -70,6 +70,28 @@
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-solved-dark.svg">
   <img alt="LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
 </picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-badges-dark.svg">
+  <img alt="LeetCode badges: 62 earned. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-badges-light.svg" width="400">
+</picture></a>
+</p>
+
+<p align="center">
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://leetcode.com/static/images/badges/guardian.png"><img alt="Guardian, LeetCode badge earned May 2026" src="https://leetcode.com/static/images/badges/guardian.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/2026_1080_1080.png"><img alt="Annual Badge 2026, LeetCode badge earned Oct 2026" src="https://assets.leetcode.com/static_assets/others/2026_1080_1080.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/200_1080_1080.png"><img alt="200 Days Badge 2026, LeetCode badge earned Jul 2026" src="https://assets.leetcode.com/static_assets/others/200_1080_1080.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/100_1080_1080.png"><img alt="100 Days Badge 2026, LeetCode badge earned Apr 2026" src="https://assets.leetcode.com/static_assets/others/100_1080_1080.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/10801080.png"><img alt="2026 Offer Expedition Badge, LeetCode badge earned Mar 2026" src="https://assets.leetcode.com/static_assets/others/10801080.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/50_1080_1080.png"><img alt="50 Days Badge 2026, LeetCode badge earned Feb 2026" src="https://assets.leetcode.com/static_assets/others/50_1080_1080.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/marketing/lg1k.png"><img alt="1000 Days Badge, LeetCode badge earned Dec 2025" src="https://assets.leetcode.com/static_assets/marketing/lg1k.png" width="80"></picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/2025_lg.png"><img alt="Annual Badge 2025, LeetCode badge earned Oct 2025" src="https://assets.leetcode.com/static_assets/others/2025_lg.png" width="80"></picture></a>
+</p>
+
+<p align="center">
+<a href="https://leetcode.com/u/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
+  <img alt="LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+</picture></a>
 </p>
 
 <h2 align="center">Experience</h2>

@@ -29,7 +29,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 8 | LeetCode stats card | Release 1 | done |
 | 9 | Experience & education timeline | Release 2 | done |
 | 10 | Credly badge grid | Release 2 | done |
-| 11 | LeetCode badges & heatmap | Release 2 | planned |
+| 11 | LeetCode badges & heatmap | Release 2 | in-progress |
 | 12 | GitHub stats & streak | Release 3 | planned |
 | 13 | Animated contribution graph | Release 3 | planned |
 | 14 | Featured projects | Release 3 | planned |
@@ -137,10 +137,18 @@ spec [0008](../specs/0008-credly-badge-grid.md) · design in [`docs/design.md`](
   - [x] See all button, `docs/design.md` updated, and every check run, including lychee in CI and both themes on GitHub (AC-7, AC-9)
 - [x] Verify it: `/check verify credly badge grid`
 
-### 11. LeetCode badges & heatmap
+### 11. LeetCode badges & heatmap · in-progress
 Grows the LeetCode section with your earned LeetCode badges and a submission heatmap (a calendar grid colored by how much you solved each day). Builds on the data source decided in feature 8.
 **Done when:** badges and the heatmap show current data, match both themes, and refresh with the stats card.
+spec [0009](../specs/0009-leetcode-badges-heatmap.md) · design in [`docs/design.md`](../design.md)
+code in `src/sources/leetcode.ts`, `data/snapshots/leetcode.json`, `src/dates.ts`, `src/sections/leetcode.ts`, `src/sections/leetcode-badges.ts`, `src/sections/leetcode-heatmap.ts`, `src/sections/leetcode-text.ts`, `src/theme.ts` (`badgesCard`, `badgeRow`, `heatmap`)
+- [x] Design it (spec): `/architect leetcode badges & heatmap`
 - [ ] Build it: `/develop leetcode badges & heatmap`
+  - [x] LeetCode source extended (badges, active badge, calendar, `asOf`) and the new snapshot committed, with no change to the current output (AC-2, AC-3)
+  - [x] Badges card beside the solved card and the badge image row live, with the month table moved to `src/dates.ts` (AC-1, AC-4, AC-5, AC-8, AC-9, AC-10)
+  - [x] Heatmap card live: window, month blocks, levels, legend, and the three stats (AC-1, AC-6, AC-7, AC-8, AC-9, AC-10)
+  - [ ] `docs/design.md` updated and every check run, including lychee in CI, a manual run from GitHub's runner, and both themes on GitHub (AC-11, AC-12)
+- [ ] Verify it: `/check verify leetcode badges & heatmap`
 
 ## Release 3: Your work on GitHub
 
