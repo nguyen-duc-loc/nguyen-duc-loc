@@ -1,8 +1,9 @@
 // LeetCode (specs 0006 and 0009, docs/design.md "LeetCode" and its card anatomy sections): the LeetCode profile
 // page redrawn in the theme. A full width contest card (stats row, rating history line, Top % histogram) sits above
 // a half card with the problems solved arc and Easy, Med., and Hard chips, and the badges half card beside it. A
-// row of badge PNGs follows. Each card and badge links to the LeetCode profile. Data comes only from the committed
-// snapshot; the badges card lives in `leetcode-badges.ts`.
+// row of badge PNGs and a full width submission heatmap follow. Each card and badge links to the LeetCode profile.
+// Data comes only from the committed snapshot; the badges and heatmap drawing live in `leetcode-badges.ts` and
+// `leetcode-heatmap.ts`.
 
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
@@ -11,6 +12,7 @@ import { card, enter, fitText, iconSvg, themedImage } from "../svg.ts";
 import { contestCard, layout, radius, solvedCard, type TextSlot, type Theme, typography } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 import { badgeRowLines, badgesAlt, badgesCardSvg } from "./leetcode-badges.ts";
+import { heatmapAlt, heatmapCardSvg } from "./leetcode-heatmap.ts";
 import { type Anchor, groupDigits, textTag } from "./leetcode-text.ts";
 
 const HEADING = "LeetCode";
@@ -399,6 +401,12 @@ export const leetcodeStats: Section = (ctx) => {
     width: layout.half,
     render: (theme) => badgesCardSvg(theme, snapshot, solvedHeight),
   });
+  const heatmap = themedImage({
+    base: "leetcode-heatmap",
+    alt: heatmapAlt(snapshot),
+    width: "100%",
+    render: (theme) => heatmapCardSvg(theme, snapshot),
+  });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
   const block = (lines: readonly string[]): string => ['<p align="center">', ...lines, "</p>"].join("\n");
   const row = badgeRowLines(snapshot, href);
@@ -408,7 +416,8 @@ export const leetcodeStats: Section = (ctx) => {
     block([linked(contest.markdown)]),
     block([linked(solved.markdown), linked(badges.markdown)]),
     ...(row.length === 0 ? [] : [block(row)]),
+    block([linked(heatmap.markdown)]),
   ].join("\n\n");
-  const assets = [contest, solved, badges].flatMap((image) => image.assets ?? []);
+  const assets = [contest, solved, badges, heatmap].flatMap((image) => image.assets ?? []);
   return { markdown, assets };
 };

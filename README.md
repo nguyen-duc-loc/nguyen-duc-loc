@@ -87,6 +87,13 @@
 <a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/2025_lg.png"><img alt="Annual Badge 2025, LeetCode badge earned Oct 2025" src="https://assets.leetcode.com/static_assets/others/2025_lg.png" width="80"></picture></a>
 </p>
 
+<p align="center">
+<a href="https://leetcode.com/u/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
+  <img alt="LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+</picture></a>
+</p>
+
 <h2 align="center">Experience</h2>
 
 <p align="center">
