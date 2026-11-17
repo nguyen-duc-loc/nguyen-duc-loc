@@ -26,7 +26,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 5 | Animated header & typing intro | Release 1 | done |
 | 6 | About me & contact links | Release 1 | done |
 | 7 | Tech stack | Release 1 | done |
-| 8 | LeetCode stats card | Release 1 | planned |
+| 8 | LeetCode stats card | Release 1 | in-progress |
 | 9 | Experience & education timeline | Release 2 | planned |
 | 10 | Credly badge grid | Release 2 | planned |
 | 11 | LeetCode badges & heatmap | Release 2 | planned |
@@ -102,10 +102,16 @@ spec [0005](../specs/0005-tech-stack-cards.md) · design in [`docs/design.md`](.
   - [x] Content rules (registry check, 1 to 8 items), `docs/design.md` updated, and every check run, including both themes on GitHub (AC-6, AC-7, AC-9, AC-11)
 - [x] Verify it: `/check verify tech stack`
 
-### 8. LeetCode stats card · needs a decision
+### 8. LeetCode stats card · in-progress
 Your LeetCode highlight: a problems solved gauge (easy, medium, hard) and your contest rating and ranking, linked to your LeetCode profile.
 **Done when:** the card shows current solved counts and contest rating, refreshes on its own, matches both themes, and keeps showing the last good version if a refresh fails.
-- [ ] Design it (spec): `/architect leetcode stats card`
+spec [0006](../specs/0006-leetcode-stats-card.md) · design in [`docs/design.md`](../design.md) · code in `src/sources/leetcode.ts`, `src/sections/leetcode.ts`, `data/snapshots/leetcode.json`, `src/sources/http.ts`, `src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/readme.ts`
+- [x] Design it (spec): `/architect leetcode stats card`
+- [x] Build it: `/develop leetcode stats card`
+  - [x] LeetCode source, first snapshot, and the solved card live, plus one manual run from GitHub's runner (AC-1, AC-2, AC-3, AC-4, AC-5, AC-7, AC-8, AC-9, AC-10, AC-11, AC-12)
+  - [x] Contest card live: stats row, rating line, Top % histogram, `rise` class, shield icon (AC-1, AC-6, AC-7, AC-8, AC-9, AC-10, AC-11)
+  - [x] `docs/design.md` updated and every check run, including both themes on GitHub (AC-11, AC-12)
+- [ ] Verify it: `/check verify leetcode stats card`
 
 ## Release 2: Your full story
 
