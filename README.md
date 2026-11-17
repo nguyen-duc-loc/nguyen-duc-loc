@@ -71,3 +71,28 @@
   <img alt="LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
 </picture></a>
 </p>
+
+<h2 align="center">Experience</h2>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/timeline-experience-dark.svg">
+  <img alt="Experience: Junior Solutions Sales at Noventiq Vietnam, Hanoi, Vietnam, May 2025 to Present. Advise customers on Amazon Web Services (AWS) solutions in my first full time role. Cloud Engineer at CMC Telecom, Hanoi, Vietnam, Jan 2025 to May 2025. Learned AWS from zero on the job, the start of my path as a cloud engineer. Frontend Web Developer at FPT Software, Hanoi, Vietnam, Jun 2024 to Aug 2024. Worked remotely on front end web development." src="assets/generated/timeline-experience-light.svg" width="100%">
+</picture></a>
+</p>
+
+<h2 align="center">Education</h2>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/timeline-education-dark.svg">
+  <img alt="Education: Engineer&#39;s degree, Computer Networks and Data Communications at VNU University of Engineering and Technology, Sep 2021 to Feb 2026. High Distinction. High school diploma at Hong Quang High School, Sep 2018 to Jul 2021." src="assets/generated/timeline-education-light.svg" width="100%">
+</picture></a>
+</p>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-linkedin-dark.svg">
+  <img alt="Full work history on LinkedIn" src="assets/generated/contact-linkedin-light.svg" width="148">
+</picture></a>
+</p>

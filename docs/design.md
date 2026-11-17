@@ -4,7 +4,7 @@ The look every section shares, decided in [spec 0003](specs/0003-visual-theme-an
 
 **Where the values live.** `src/theme.ts` holds every color, font, size, spacing step, and timing the build uses. This file repeats them for people to read. When you change a value, change it in both places in the same commit. The build checks only `src/theme.ts`.
 
-**How sections draw.** A section draws through the helpers in `src/svg.ts` (`themedImage`, `card`, `svgDocument`, `enter`, `fitText`, `pillButton`, `iconSvg`) and names colors only by class (`fill-accent`, `stroke-border`, `stop-accent2`). A section never writes a hex value, a color name, a font name, a size, or a timing itself.
+**How sections draw.** A section draws through the helpers in `src/svg.ts` (`themedImage`, `card`, `svgDocument`, `enter`, `fitText`, `wrapLines`, `pillButton`, `iconSvg`) and names colors only by class (`fill-accent`, `stroke-border`, `stop-accent2`). A section never writes a hex value, a color name, a font name, a size, or a timing itself.
 
 ## Character
 
@@ -131,6 +131,8 @@ System fonts differ by OS, so text width can't be measured at build time. `fitTe
 
 This never overflows and always gives the same result. On narrow fonts it may shrink or squeeze text a little more than needed.
 
+**Wrapping body text.** `wrapLines(text, slot)` splits text that may run longer than one line, with the same estimate. A line holds at most `floor(slot.width / (0.6 × slot.style.size))` characters (counted as `[...line].length`). Words, split on runs of spaces, fill each line greedily. A word longer than a whole line goes on its own line. Each line comes back with its own `fitText(line, slot)` result, so an overlong word is squeezed with `textLength` and `lengthAdjust="spacingAndGlyphs"`. Text is never cut off and never ends in `…`. Lines end ragged, and a little short of the slot on most fonts.
+
 ## Header banner and typing line (built by feature 5)
 
 **Banner.** A `layout.full` SVG about 220 tall. It has a linear gradient from `stop-accent` to `stop-accent2` at about 135 degrees. The name is in `display` and the title in `heading`, both `fill-onAccent` and centered. The bottom edge is two layered waves filled with the same gradient: the front wave opaque, the back wave at 50% `fill-opacity`. The back wave drifts per `motion.wave`. Everything below the wave is transparent, so the banner blends into every GitHub theme with no seam. Wave paths are computed from constants.
@@ -167,7 +169,7 @@ Every button is drawn by `pillButton(theme, { icon, label })` as a `contact-<nam
 - The label is in `fill-text` at x = 44 (`margin + padX + icon + gap`), y = 24, with `dominant-baseline="central"` and `text-anchor="start"`. It uses the `button` style, sized by `fitText` in an 84px slot (from the label start to `padX` before the pill's right edge) with a 12px minimum.
 - Buttons have no animation.
 
-Label `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so buttons need no new pair. Feature 9's LinkedIn button reuses `pillButton`.
+Label `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so buttons need no new pair. The timeline's LinkedIn button (feature 9) reuses the `contact-linkedin` files About me writes. It returns only the markup, so no file is written twice.
 
 ## Tech stack (built by feature 7)
 
@@ -250,6 +252,53 @@ Drawn by `card()` at 400 × 196 (`2 × pad + 3 × chipHeight + 2 × chipGap`). T
 | Chip value | `<solved>/<total>`, plain digits, at x + 12 (`chipValueX`), center y = y + 31 (`chipValueY`), slot 88 (`chipValueSlot`) | `body` via `fitText` (min 12), `fill-text` |
 
 Text uses `dominant-baseline="central"`, except the solved number line.
+
+## Experience and education (built by feature 9)
+
+Decided in [spec 0007](specs/0007-experience-education-timeline/index.md). At the end of the README (after LeetCode), separated by blank lines, the README has:
+
+- `<h2 align="center">Experience</h2>`
+- a `<p align="center">` block holding the experience card
+- `<h2 align="center">Education</h2>`
+- a `<p align="center">` block holding the education card
+- a `<p align="center">` block holding the LinkedIn button
+
+No block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).linkedin`. The button is `<a href>` to the same URL around a `<picture>` of the existing `contact-linkedin-light.svg` and `contact-linkedin-dark.svg`, at `width="148"`, alt text `Full work history on LinkedIn`. `checkReadmeAssets` fails the build if those files ever stop being written.
+
+| Card | Files | Width |
+|---|---|---|
+| Experience | `timeline-experience-light.svg`, `timeline-experience-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 404 tall with three roles) |
+| Education | `timeline-education-light.svg`, `timeline-education-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 212 tall with two schools) |
+
+Both lists sort newest `start` first. On a tie, a current entry (`end: null`) comes first, then the later `end`, then file order. Dates use a fixed English month table, never the locale or the clock: `May 2025`, `May 2025 – Present`, `Jan 2025 – May 2025` (space, en dash, space), or one month alone when `start` equals `end`. No duration is shown, so the output never changes with the date.
+
+Alt text carries every word the card shows, with ` to ` in place of the en dash:
+
+- Experience: `Experience: ` then each role as `<title> at <company>[, <location>], <dates>. <highlight> <highlight>`.
+- Education: `Education: ` then each school as `<degree>[, <field>] at <school>, <dates>.[ <note>]`.
+
+Each highlight and note gets a final `.` unless it already ends in `.`, `!`, or `?`. `companyUrl` is not shown: a link inside an `<img>` can't be clicked. The content check allows 1 to 6 roles and 1 to 4 schools, which keeps the experience card under about 1,200px tall.
+
+## Timeline card anatomy
+
+Drawn by `card()` at 850 wide. All text is 20px or larger. The values live in `timelineCard`; the rest come from `layout` and `typography`. The cards are static.
+
+| Element | Geometry | Style |
+|---|---|---|
+| Rail | `line` at x = 40 (`railX`), from the first dot's center y to the last dot's center y. Left out with one entry | `stroke-border`, `stroke-width` 2 (`railWidth`) |
+| Dot | `circle` at (40, row 0 center y), r = 7 (`dotRadius`), drawn after the rail | `stroke-width` 2 (`dotStroke`). Current: `fill-accent stroke-accent`. Past: `fill-surface stroke-accent` (a hollow ring). "Present" in the dates also marks the current entry, so color is never the only cue |
+| Text column | x = 72 (`textX`) to x = 826 (`layout.full − layout.pad`), 754 wide | |
+| Row 0, left | Title or school name at x = 72, `text-anchor="start"`, `fitText` in a 510 slot (754 − `dateSlot` 228 − `titleGap` 16), min 20. Never wraps | `heading`, `fill-accent` |
+| Row 0, right | Dates at x = 826, `text-anchor="end"`, `fitText` in 228 (`dateSlot`), min 20 | `lead`, `fill-muted` |
+| Role row 1 | Company, then `<tspan class="fill-muted"> · <location></tspan>` when set, at x = 72, one `fitText` over the whole string in 754, min 20 | `lead`, `fill-text` |
+| Role highlights | Per highlight: `•` at x = 72 on its first row, lines from `wrapLines` at x = 92 (`textX + bulletIndent` 20) in a 734 slot (61 characters), min 20 | `•` `lead` `fill-muted`; text `lead` `fill-text` |
+| School degree | `<degree>[, <field>]` lines from `wrapLines` at x = 72 in 754 (62 characters), min 20 | `lead`, `fill-text` |
+| School note | Note lines from `wrapLines` at x = 72 in 754, min 20 | `lead`, `fill-accent` |
+| Rows | Row k center y = `entryTop + 14 + k × 28` (`lineHeight` 28), `dominant-baseline="central"` | |
+| Entries | The first `entryTop` is 24 (`layout.pad`). Each next one is the previous top + rows × 28 + 24 (`entryGap`) | |
+| Height | `48 + 28 × (all rows) + 24 × (entries − 1)` | |
+
+Text `text`, `muted`, and `accent` on `surface` are already in the contrast table, so the cards need no new pair.
 
 ## Icon registry
 
@@ -352,6 +401,7 @@ Before anything is written, `pnpm build` fails if:
 - any contrast pair is below its minimum, or a token isn't lowercase `#rrggbb`;
 - a generated SVG contains a script, an outside link, an event attribute, `@import`, a doctype or entity, or an endless animation (it may link only to `#<id>`);
 - a generated SVG's name doesn't end in `-light.svg` or `-dark.svg`, or it has no twin;
-- an SVG's first `<style>` doesn't start with its own theme's color classes, or it writes a color anywhere else.
+- an SVG's first `<style>` doesn't start with its own theme's color classes, or it writes a color anywhere else;
+- the README names an `assets/generated/` file (in `src` or `srcset`) that no section writes.
 
 Review covers what the build can't measure: sizes and timings come from `src/theme.ts`, and motion ends within `motion.budget`.
