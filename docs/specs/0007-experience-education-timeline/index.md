@@ -1,7 +1,7 @@
 # 0007. Experience and education as two full width timeline cards, linked to LinkedIn
 
 **Date**: 2026-11-17
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
