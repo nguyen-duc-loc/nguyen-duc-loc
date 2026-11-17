@@ -24,7 +24,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 3 | Profile content data | Foundation | done |
 | 4 | Visual theme & animation style | Foundation | done |
 | 5 | Animated header & typing intro | Release 1 | done |
-| 6 | About me & contact links | Release 1 | planned |
+| 6 | About me & contact links | Release 1 | done |
 | 7 | Tech stack | Release 1 | planned |
 | 8 | LeetCode stats card | Release 1 | planned |
 | 9 | Experience & education timeline | Release 2 | planned |
@@ -81,10 +81,16 @@ An animated banner with your name and title, and a typing line that types a few 
 design in [`docs/design.md`](../design.md) · code in `src/sections/header.ts`, `src/sections/typing.ts`, `src/readme.ts`
 - [x] Build it: `/develop animated header & typing intro`
 
-### 6. About me & contact links
+### 6. About me & contact links · done
 A short bio and a row of badge style buttons for LinkedIn, Credly, LeetCode, and email.
 **Done when:** the bio reads from your content data, and every button opens the right profile.
-- [ ] Build it: `/develop about me & contact links`
+spec [0004](../specs/0004-about-contact-links.md) · design in [`docs/design.md`](../design.md) · code in `src/sections/about.ts`, `src/icons.ts`, `src/svg.ts`, `src/theme.ts`, `src/readme.ts`
+- [x] Design it (spec): `/architect about me & contact links`
+- [x] Build it: `/develop about me & contact links`
+  - [x] About me heading, bio, and location live (AC-1, AC-7)
+  - [x] Contact buttons: theme values, icon registry, pill buttons, linked row (AC-2, AC-3, AC-4, AC-5, AC-7)
+  - [x] `docs/design.md` updated and every check run, including lychee in CI (AC-6, AC-7, AC-8)
+- [x] Verify it: `/check verify about me & contact links`
 
 ### 7. Tech stack
 Your languages, frameworks, tools, and cloud platforms as icons, grouped by category.

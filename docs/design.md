@@ -4,7 +4,7 @@ The look every section shares, decided in [spec 0003](specs/0003-visual-theme-an
 
 **Where the values live.** `src/theme.ts` holds every color, font, size, spacing step, and timing the build uses. This file repeats them for people to read. When you change a value, change it in both places in the same commit. The build checks only `src/theme.ts`.
 
-**How sections draw.** A section draws through the helpers in `src/svg.ts` (`themedImage`, `card`, `svgDocument`, `enter`, `fitText`) and names colors only by class (`fill-accent`, `stroke-border`, `stop-accent2`). A section never writes a hex value, a color name, a font name, a size, or a timing itself.
+**How sections draw.** A section draws through the helpers in `src/svg.ts` (`themedImage`, `card`, `svgDocument`, `enter`, `fitText`, `pillButton`, `iconSvg`) and names colors only by class (`fill-accent`, `stroke-border`, `stop-accent2`). A section never writes a hex value, a color name, a font name, a size, or a timing itself.
 
 ## Character
 
@@ -80,10 +80,11 @@ Every SVG uses `sans` by default. Add the class `font-mono` to use `mono`.
 | `label` | 12 | 400 | sans | Labels on half cards |
 | `number` | 24 | 600 | mono | Key numbers |
 | `typing` | 22 | 400 | mono | The typing line |
+| `button` | 14 | 600 | sans | Contact button labels |
 
 Write `font-size` and `font-weight` from these styles (through `fitText` for the size).
 
-**Text on full width images.** A full width image shrinks to about 42% on a phone, so it uses only `display`, `title`, `heading`, `lead`, `number`, and `typing` (20px and up). `body` and `label` appear only on half cards.
+**Text on full width images.** A full width image shrinks to about 42% on a phone, so it uses only `display`, `title`, `heading`, `lead`, `number`, and `typing` (20px and up). `body` and `label` appear only on half cards. `button` appears only on contact buttons, which render at their own fixed width and never shrink with the page.
 
 **Large text.** `accent2` may color text only at `display`, `title`, or `number` size (WCAG large text: at least 24px, or 18.66px at weight 700).
 
@@ -94,10 +95,16 @@ Write `font-size` and `font-weight` from these styles (through `fitText` for the
 | `space` | 4, 8, 12, 16, 24, 32 (px) |
 | `radius.card` | 12 |
 | `radius.small` | 6 (bars, chips) |
+| `radius.pill` | 20 (contact buttons) |
 | `layout.full` | 850 wide, rendered at `width="100%"` |
 | `layout.half` | 400 wide, rendered at `width="400"`, so two sit side by side on desktop and wrap on narrow screens |
 | `layout.pad` | 24 (inner padding of a card) |
 | `layout.border` | 1 (card border width) |
+| `button.width`, `button.height` | 140, 40 (the pill) |
+| `button.margin` | 4, transparent on every side, so a button file is 148 × 48, rendered at `width="148"` |
+| `button.padX` | 16 (pill edge to icon) |
+| `button.icon` | 16 (icon size) |
+| `button.gap` | 8 (icon to label) |
 
 ## Card anatomy
 
@@ -122,6 +129,54 @@ This never overflows and always gives the same result. On narrow fonts it may sh
 **Banner.** A `layout.full` SVG about 220 tall. It has a linear gradient from `stop-accent` to `stop-accent2` at about 135 degrees. The name is in `display` and the title in `heading`, both `fill-onAccent` and centered. The bottom edge is two layered waves filled with the same gradient: the front wave opaque, the back wave at 50% `fill-opacity`. The back wave drifts per `motion.wave`. Everything below the wave is transparent, so the banner blends into every GitHub theme with no seam. Wave paths are computed from constants.
 
 **Typing line.** A transparent `layout.full` SVG, centered under the banner, in `typing` and `fill-accent` (checked against `page`). Each typing state is a whole prefix frame (for example `Cloud D` plus the cursor `▌`), and only one frame shows at a time. Each frame's visibility is an `opacity` keyframe. The base style shows only the final frame, so turning animation off leaves the last phrase. Nothing places the cursor by measured width.
+
+## About me (built by feature 6)
+
+Decided in [spec 0004](specs/0004-about-contact-links.md). Right after the typing line, the README has, in order and separated by blank lines:
+
+- `<h2 align="center">About me</h2>`
+- `<p align="center">` with `profile.bio`
+- `<p align="center">` with `📍 ` plus `profile.location`
+- one `<p align="center">` block holding the contact buttons: LinkedIn, Credly, LeetCode, Email, in that order. There is no GitHub button, since the visitor is already on GitHub.
+
+The heading, bio, and location are real Markdown text, so GitHub colors them for every theme and people can select and translate them. Bio and location pass through `escapeXml` once. GitHub drops `style` and keeps `align`, so the text is centered with `align`.
+
+Each button is `<a href="URL">` wrapping the `<picture>` from `themedImage`, because a link inside an `<img>` SVG is dead. The button block has no blank lines inside it, so GitHub reads it as one HTML block. The line breaks between the `<a>` tags render as a single space, and each button's drawn 4px margin keeps the spacing even, across a row and between wrapped rows.
+
+| Button | Label | Alt text | Link |
+|---|---|---|---|
+| LinkedIn | `LinkedIn` | `LinkedIn profile` | `profileUrls(accounts).linkedin` |
+| Credly | `Credly` | `Credly badges` | `profileUrls(accounts).credly` |
+| LeetCode | `LeetCode` | `LeetCode profile` | `profileUrls(accounts).leetcode` |
+| Email | `Email` | `Email <profile.email>` | `mailtoUrl(profile.email)` |
+
+## Button anatomy
+
+Every button is drawn by `pillButton(theme, { icon, label })` as a `contact-<name>-light.svg` and `contact-<name>-dark.svg` pair, 148 × 48:
+
+- Everything outside the pill is transparent (`button.margin`, 4px on every side).
+- The pill is a `rect` at `x="4.5" y="4.5"`, 139 × 39, `rx` of `radius.pill`, classes `fill-surface stroke-border`, and `stroke-width` of `layout.border`. It uses the same half pixel inset as `card()`.
+- The icon is `iconSvg(icon, 20, 16, 16, "fill-accent")`: x is `margin + padX`, and it is centered vertically.
+- The label is in `fill-text` at x = 44 (`margin + padX + icon + gap`), y = 24, with `dominant-baseline="central"` and `text-anchor="start"`. It uses the `button` style, sized by `fitText` in an 84px slot (from the label start to `padX` before the pill's right edge) with a 12px minimum.
+- Buttons have no animation.
+
+Label `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so buttons need no new pair. Feature 9's LinkedIn button reuses `pillButton`.
+
+## Icon registry
+
+Every icon on the profile comes from `src/icons.ts`. Each entry is one `path` on a 24 × 24 grid plus a `source`:
+
+- `simple-icons@<version>` for a path copied from Simple Icons (CC0). Every copied entry shares one pinned release. Refreshing icons means copying every copied entry from the new release in the same commit.
+- `hand drawn` for a glyph Simple Icons lacks, drawn as one filled path. Holes are cut by drawing them in the opposite direction, so no `fill-rule` is needed.
+
+Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One class paints the whole icon, and icons use `fill-accent`, never brand colors. Keys are Simple Icons slugs, or a plain name for a glyph Simple Icons doesn't cover. `IconName` is the set of keys, so asking for a missing icon is a type error. Draw an icon with `iconSvg(name, x, y, size, classes)`, which nests a `<svg viewBox="0 0 24 24">`.
+
+| Icon | Source |
+|---|---|
+| `credly` | `simple-icons@16.38.0` |
+| `email` | hand drawn: an envelope with its flap cut out as a V |
+| `leetcode` | `simple-icons@16.38.0` |
+| `linkedin` | hand drawn (Simple Icons 16.38.0 has no LinkedIn): a lowercase "in" cut out of a rounded square |
 
 ## Motion
 

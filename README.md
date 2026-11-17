@@ -9,3 +9,28 @@
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/typing-dark.svg">
   <img alt="Typing intro: Cloud Developer, LeetCode Guardian" src="assets/generated/typing-light.svg" width="100%">
 </picture>
+
+<h2 align="center">About me</h2>
+
+<p align="center">You can&#39;t beat someone who is having fun.</p>
+
+<p align="center">📍 Hanoi, Vietnam</p>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-linkedin-dark.svg">
+  <img alt="LinkedIn profile" src="assets/generated/contact-linkedin-light.svg" width="148">
+</picture></a>
+<a href="https://www.credly.com/users/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-credly-dark.svg">
+  <img alt="Credly badges" src="assets/generated/contact-credly-light.svg" width="148">
+</picture></a>
+<a href="https://leetcode.com/u/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-leetcode-dark.svg">
+  <img alt="LeetCode profile" src="assets/generated/contact-leetcode-light.svg" width="148">
+</picture></a>
+<a href="mailto:nguyenducloc404@gmail.com"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-email-dark.svg">
+  <img alt="Email nguyenducloc404@gmail.com" src="assets/generated/contact-email-light.svg" width="148">
+</picture></a>
+</p>
