@@ -89,3 +89,10 @@
   <img alt="Education: Engineer&#39;s degree, Computer Networks and Data Communications at VNU University of Engineering and Technology, Sep 2021 to Feb 2026. High Distinction. High school diploma at Hong Quang High School, Sep 2018 to Jul 2021." src="assets/generated/timeline-education-light.svg" width="100%">
 </picture></a>
 </p>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-linkedin-dark.svg">
+  <img alt="Full work history on LinkedIn" src="assets/generated/contact-linkedin-light.svg" width="148">
+</picture></a>
+</p>
