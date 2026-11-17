@@ -7,7 +7,7 @@ _Steps derived from spec 0001 acceptance criteria. `/check verify` runs these; `
 - [ ] Edit only `title` in `content/profile.ts`, push without rebuilding → the push run commits `README.md` as `github-actions[bot]` with `chore(refresh): update generated profile`, and the profile shows the new title → AC-3 (title row of Value sourcing)
 - [ ] Edit only `name` in `content/profile.ts`, push without rebuilding → the profile shows the new name → AC-3 (name row of Value sourcing)
 - [ ] Actions tab, "Run workflow" on `main` with nothing changed → the run is green and creates no commit → AC-4
-- [ ] Actions tab, the workflow lists a schedule of 02:17 `Asia/Ho_Chi_Minh`; the next morning a scheduled run appears → AC-4 (schedule row of Value sourcing)
+- [ ] `.github/workflows/profile.yml` has `cron: "17 19 * * *"` and no `timezone` key; the next scheduled run starts shortly after 19:17 UTC (02:17 in Vietnam), not near 02:17 UTC → AC-4 (schedule row of Value sourcing)
 - [ ] "Run workflow" on a branch other than `main` → it builds and refreshes, and pushes nothing → AC-3 (main only rule)
 - [ ] Open a PR that edits `src/sections/header.ts` without running `pnpm build` → the PR check fails at "Check the build changed nothing" and pushes nothing → AC-9
 - [ ] Open a PR that edits a section and includes the rebuilt `README.md` → the PR check passes → AC-9
