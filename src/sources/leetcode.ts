@@ -4,10 +4,9 @@
 
 import { content } from "../../content/index.ts";
 import type { Source } from "../types.ts";
-import { HttpError, ValidationError } from "./http.ts";
+import { HttpError, USER_AGENT, ValidationError } from "./http.ts";
 
 const ENDPOINT = "https://leetcode.com/graphql";
-const USER_AGENT = "nguyen-duc-loc-profile (+https://github.com/nguyen-duc-loc/nguyen-duc-loc)";
 /** Keeps a long GraphQL error message from flooding the refresh log. */
 const DETAIL_MAX = 300;
 
