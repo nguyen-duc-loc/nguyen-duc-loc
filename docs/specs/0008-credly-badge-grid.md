@@ -1,7 +1,7 @@
 # 0008. Credly badges from the public badges JSON, shown as a grid of linked Credly images grouped by issuer
 
 **Date**: 2026-11-17
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
