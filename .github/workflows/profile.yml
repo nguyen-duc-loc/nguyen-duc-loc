@@ -2,9 +2,9 @@ name: profile
 
 on:
   schedule:
-    # 02:17 in Vietnam. Same as "17 19 * * *" in UTC, since Vietnam has no daylight saving.
-    - cron: "17 2 * * *"
-      timezone: Asia/Ho_Chi_Minh
+    # 19:17 UTC, which is 02:17 in Vietnam (UTC+7, no daylight saving). Plain UTC on purpose:
+    # with `timezone: Asia/Ho_Chi_Minh` the first scheduled run fired at 02:28 UTC, as if the zone was ignored.
+    - cron: "17 19 * * *"
   workflow_dispatch:
   push:
     branches: [main]
