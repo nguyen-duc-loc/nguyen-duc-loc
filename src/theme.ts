@@ -174,6 +174,48 @@ export const solvedCard = {
   chipValueSlot: 88,
 } as const satisfies { readonly [name: string]: number };
 
+/**
+ * LeetCode contest card (spec 0006, docs/design.md "Contest card anatomy"): `layout.full` wide. A left pane with the
+ * stats row and the rating history chart, a divider at `dividerX + 0.5`, and a right pane with the Top value and the
+ * rating histogram. `*X` and `*Slot` place each stat column; every text on this card is 20px or larger.
+ */
+export const contestCard = {
+  height: 300,
+  paneRight: 616,
+  dividerX: 640,
+  rightX: 664,
+  rightWidth: 162,
+  labelY: 34,
+  valueY: 68,
+  ratingX: 24,
+  ratingSlot: 104,
+  levelIconX: 144,
+  levelIconY: 31,
+  levelIcon: 40,
+  levelX: 192,
+  levelSlot: 120,
+  rankX: 328,
+  rankSlot: 176,
+  attendedX: 520,
+  attendedSlot: 96,
+  chartLeft: 28,
+  chartRight: 612,
+  chartTop: 120,
+  chartBottom: 240,
+  flatSpan: 100,
+  lineWidth: 2,
+  dotRadius: 5,
+  tipGap: 10,
+  tipHeight: 28,
+  tipPadX: 8,
+  yearY: 266,
+  barsBottom: 276,
+  barsMaxHeight: 168,
+  barGap: 2,
+  barMinHeight: 2,
+  barRadius: 1,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",
