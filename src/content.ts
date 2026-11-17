@@ -10,6 +10,9 @@ const TYPING_PHRASE_MAX = 40;
 const LONG_TEXT_MAX = 120;
 /** Keeps all four tech stack cards at 1 to 4 chip rows, since they share the tallest height (spec 0005). */
 const STACK_CATEGORY_MAX = 8;
+/** Keeps the timeline cards a readable height: about 1,200px at 6 roles (spec 0007). */
+const EXPERIENCE_MAX = 6;
+const EDUCATION_MAX = 4;
 
 const LINE_BREAK = /[\r\n\u2028\u2029]/;
 const HTTPS_URL = /^https:\/\/\S+$/;
@@ -215,9 +218,9 @@ export function checkContent(content: Content): readonly string[] {
   return [
     ...checkProfile(content.profile),
     ...checkStack(content.stack),
-    ...checkCount("experience", content.experience, 1),
+    ...checkCount("experience", content.experience, 1, EXPERIENCE_MAX),
     ...content.experience.flatMap((role, i) => checkRole(role, i)),
-    ...checkCount("education", content.education, 1),
+    ...checkCount("education", content.education, 1, EDUCATION_MAX),
     ...content.education.flatMap((school, i) => checkSchool(school, i)),
     ...checkCount("projects", content.projects, 0, 6),
     ...content.projects.flatMap((project, i) => checkProject(project, i, projectNames)),
