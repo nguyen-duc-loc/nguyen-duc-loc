@@ -137,6 +137,43 @@ export const stackCard = {
   iconGap: 8,
 } as const satisfies { readonly [name: string]: number };
 
+/**
+ * LeetCode solved card (spec 0006, docs/design.md "Solved card anatomy"): a 270 degree arc of Easy, Medium, and
+ * Hard segments around (`cx`, `cy`), plus three difficulty chips on the right. Angles are in degrees. The card is
+ * `2 × layout.pad + 3 × chipHeight + 2 × chipGap` tall. Chip offsets (`dotX` to `chipValueY`) are from the chip's
+ * top left corner.
+ */
+export const solvedCard = {
+  cx: 136,
+  cy: 107,
+  radius: 80,
+  stroke: 6,
+  span: 270,
+  segmentGap: 6,
+  trackOpacity: 0.25,
+  numberBaseline: 112,
+  numberSlot: 88,
+  checkX: 104,
+  checkY: 122,
+  checkSize: 14,
+  solvedX: 122,
+  solvedY: 129,
+  attemptingY: 162,
+  attemptingSlot: 96,
+  chipX: 264,
+  chipWidth: 112,
+  chipHeight: 44,
+  chipGap: 8,
+  dotX: 16,
+  dotY: 14,
+  dotRadius: 4,
+  chipLabelX: 26,
+  chipLabelY: 14,
+  chipValueX: 12,
+  chipValueY: 31,
+  chipValueSlot: 88,
+} as const satisfies { readonly [name: string]: number };
+
 /** Every animation in every SVG ends by `budget` ms (WCAG 2.2.2), then holds its final frame. */
 export const motion = {
   easing: "cubic-bezier(0.2, 0, 0, 1)",

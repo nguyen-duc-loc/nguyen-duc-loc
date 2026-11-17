@@ -1,0 +1,271 @@
+{
+  "contest": {
+    "attended": 31,
+    "badge": "Guardian",
+    "globalRanking": 6064,
+    "rating": 2247.01,
+    "topPercentage": 0.72,
+    "totalParticipants": 892590
+  },
+  "difficulties": {
+    "easy": {
+      "attempting": 0,
+      "solved": 661,
+      "total": 976
+    },
+    "hard": {
+      "attempting": 2,
+      "solved": 414,
+      "total": 990
+    },
+    "medium": {
+      "attempting": 1,
+      "solved": 1170,
+      "total": 2148
+    }
+  },
+  "histogram": [
+    {
+      "ratingEnd": 1200,
+      "ratingStart": 0,
+      "userCount": 6224
+    },
+    {
+      "ratingEnd": 1250,
+      "ratingStart": 1200,
+      "userCount": 6656
+    },
+    {
+      "ratingEnd": 1300,
+      "ratingStart": 1250,
+      "userCount": 15606
+    },
+    {
+      "ratingEnd": 1350,
+      "ratingStart": 1300,
+      "userCount": 35754
+    },
+    {
+      "ratingEnd": 1400,
+      "ratingStart": 1350,
+      "userCount": 77870
+    },
+    {
+      "ratingEnd": 1450,
+      "ratingStart": 1400,
+      "userCount": 201196
+    },
+    {
+      "ratingEnd": 1500,
+      "ratingStart": 1450,
+      "userCount": 159970
+    },
+    {
+      "ratingEnd": 1550,
+      "ratingStart": 1500,
+      "userCount": 110021
+    },
+    {
+      "ratingEnd": 1600,
+      "ratingStart": 1550,
+      "userCount": 75671
+    },
+    {
+      "ratingEnd": 1650,
+      "ratingStart": 1600,
+      "userCount": 54364
+    },
+    {
+      "ratingEnd": 1700,
+      "ratingStart": 1650,
+      "userCount": 40305
+    },
+    {
+      "ratingEnd": 1750,
+      "ratingStart": 1700,
+      "userCount": 30459
+    },
+    {
+      "ratingEnd": 1800,
+      "ratingStart": 1750,
+      "userCount": 22553
+    },
+    {
+      "ratingEnd": 1850,
+      "ratingStart": 1800,
+      "userCount": 17221
+    },
+    {
+      "ratingEnd": 1900,
+      "ratingStart": 1850,
+      "userCount": 16715
+    },
+    {
+      "ratingEnd": 1950,
+      "ratingStart": 1900,
+      "userCount": 11347
+    },
+    {
+      "ratingEnd": 2000,
+      "ratingStart": 1950,
+      "userCount": 7376
+    },
+    {
+      "ratingEnd": 2050,
+      "ratingStart": 2000,
+      "userCount": 6027
+    },
+    {
+      "ratingEnd": 2100,
+      "ratingStart": 2050,
+      "userCount": 3968
+    },
+    {
+      "ratingEnd": 2150,
+      "ratingStart": 2100,
+      "userCount": 3225
+    },
+    {
+      "ratingEnd": 2200,
+      "ratingStart": 2150,
+      "userCount": 2748
+    },
+    {
+      "ratingEnd": 2250,
+      "ratingStart": 2200,
+      "userCount": 2022
+    },
+    {
+      "ratingEnd": 9950,
+      "ratingStart": 2250,
+      "userCount": 6486
+    }
+  ],
+  "history": [
+    {
+      "rating": 1564.633,
+      "startTime": 1665844200
+    },
+    {
+      "rating": 1535.806,
+      "startTime": 1665887400
+    },
+    {
+      "rating": 1559.857,
+      "startTime": 1666492200
+    },
+    {
+      "rating": 1536.907,
+      "startTime": 1667097000
+    },
+    {
+      "rating": 1496.057,
+      "startTime": 1667701800
+    },
+    {
+      "rating": 1466.936,
+      "startTime": 1668263400
+    },
+    {
+      "rating": 1493.963,
+      "startTime": 1683426600
+    },
+    {
+      "rating": 1552.571,
+      "startTime": 1697293800
+    },
+    {
+      "rating": 1634.586,
+      "startTime": 1697337000
+    },
+    {
+      "rating": 1679.217,
+      "startTime": 1702780200
+    },
+    {
+      "rating": 1786.155,
+      "startTime": 1708223400
+    },
+    {
+      "rating": 1795.061,
+      "startTime": 1708828200
+    },
+    {
+      "rating": 1838.327,
+      "startTime": 1709389800
+    },
+    {
+      "rating": 1871.288,
+      "startTime": 1709433000
+    },
+    {
+      "rating": 1888.031,
+      "startTime": 1710037800
+    },
+    {
+      "rating": 1951.998,
+      "startTime": 1710599400
+    },
+    {
+      "rating": 1972.814,
+      "startTime": 1710642600
+    },
+    {
+      "rating": 2038.462,
+      "startTime": 1711247400
+    },
+    {
+      "rating": 2069.806,
+      "startTime": 1711852200
+    },
+    {
+      "rating": 2074.181,
+      "startTime": 1712457000
+    },
+    {
+      "rating": 2107.412,
+      "startTime": 1713018600
+    },
+    {
+      "rating": 2111.446,
+      "startTime": 1713061800
+    },
+    {
+      "rating": 2166.359,
+      "startTime": 1713666600
+    },
+    {
+      "rating": 2156.463,
+      "startTime": 1714228200
+    },
+    {
+      "rating": 2167.848,
+      "startTime": 1714271400
+    },
+    {
+      "rating": 2173.022,
+      "startTime": 1714876200
+    },
+    {
+      "rating": 2150.036,
+      "startTime": 1715437800
+    },
+    {
+      "rating": 2158.345,
+      "startTime": 1715481000
+    },
+    {
+      "rating": 2146.714,
+      "startTime": 1716085800
+    },
+    {
+      "rating": 2169.29,
+      "startTime": 1716647400
+    },
+    {
+      "rating": 2247.01,
+      "startTime": 1716690600
+    }
+  ],
+  "username": "nguyenducloc"
+}

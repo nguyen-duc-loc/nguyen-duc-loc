@@ -55,3 +55,12 @@
   <img alt="Cloud: AWS" src="assets/generated/stack-cloud-light.svg" width="400">
 </picture>
 </p>
+
+<h2 align="center">LeetCode</h2>
+
+<p align="center">
+<a href="https://leetcode.com/u/nguyenducloc"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-solved-dark.svg">
+  <img alt="LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
+</picture></a>
+</p>
