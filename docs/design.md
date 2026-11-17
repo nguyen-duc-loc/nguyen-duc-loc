@@ -255,7 +255,7 @@ Text uses `dominant-baseline="central"`, except the solved number line.
 
 ## Experience and education (built by feature 9)
 
-Decided in [spec 0007](specs/0007-experience-education-timeline.md). At the end of the README (after LeetCode), separated by blank lines, the README has:
+Decided in [spec 0007](specs/0007-experience-education-timeline/index.md). At the end of the README (after LeetCode), separated by blank lines, the README has:
 
 - `<h2 align="center">Experience</h2>`
 - a `<p align="center">` block holding the experience card
