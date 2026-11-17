@@ -146,7 +146,7 @@ Each `src/sources/<name>.ts` exports `{ name, sortKey, fetch(signal: AbortSignal
 
 | Concern | Decision |
 |---|---|
-| Triggers | `schedule: cron "17 2 * * *"` with `timezone: Asia/Ho_Chi_Minh` (add a comment that `17 19 * * *` in UTC is the same time, since Vietnam has no daylight saving) · `workflow_dispatch` · `push` to `main` with `paths: content/**, src/**, data/snapshots/**, assets/static/**, package.json, pnpm-lock.yaml, tsconfig.json, pnpm-workspace.yaml, biome.json, .markdownlint-cli2.jsonc, lychee.toml, .node-version, .github/workflows/profile.yml` · `pull_request` to `main` |
+| Triggers | `schedule: cron "17 19 * * *"` in plain UTC, with no `timezone` key, plus a comment that 19:17 UTC is 02:17 in Vietnam (UTC+7, no daylight saving, so the two never drift apart). Don't switch back to `cron "17 2 * * *"` with `timezone: Asia/Ho_Chi_Minh` unless a test shows GitHub honors the zone: verify on 2026-11-17 saw the only scheduled run with that setup start at 02:28 UTC (09:28 in Vietnam), as if the zone was ignored · `workflow_dispatch` · `push` to `main` with `paths: content/**, src/**, data/snapshots/**, assets/static/**, package.json, pnpm-lock.yaml, tsconfig.json, pnpm-workspace.yaml, biome.json, .markdownlint-cli2.jsonc, lychee.toml, .node-version, .github/workflows/profile.yml` · `pull_request` to `main` |
 | Permissions | Top level `permissions: {}`. The `profile` job gets `contents: write` only. The `readme` job gets `contents: read` only. On pull requests from Dependabot or forks, GitHub makes the token read only anyway |
 | Concurrency | `group: profile-${{ github.ref }}`, `cancel-in-progress: false`, so each branch and each PR has its own group. A running workflow run always finishes. GitHub lets only one run wait per group, and a newer waiting run cancels the older one. That is harmless inside one group: on `main` the newest waiting run carries the newest commit (each run checks out the commit that triggered it), and on a PR it carries the newest push to that PR. Groups never cancel each other, so a PR check can never be cancelled by a run on `main` or on another PR. Do not go back to one shared group: verify on 2026-11-16 showed it cancelled a PR check before it started, leaving the PR with no check at all |
 | Setup | `actions/checkout` (v7) with `persist-credentials: false`, then `pnpm/action-setup` (v6) with no `version:` input (it reads `packageManager`), then `actions/setup-node` (v7) with `node-version-file: .node-version` and `cache: pnpm`, then `pnpm install --frozen-lockfile`. In the `profile` job, the install step sets `SKIP_INSTALL_SIMPLE_GIT_HOOKS: "1"` in `env:`, so the bot's commits never run the local pre-commit hook |
@@ -184,7 +184,7 @@ From this folder: `git init -b main`, run `pnpm install` and `pnpm build` locall
 | refresh | Which sources to fetch | The `src/sources/index.ts` registry |
 | refresh | Failed source list and error lines | The `Promise.allSettled` results, written to `GITHUB_OUTPUT` and `GITHUB_STEP_SUMMARY` |
 | refresh | Array order inside a snapshot | The source's declared `sortKey` |
-| workflow | Schedule time and timezone | The workflow `cron` and `timezone` keys (02:17, `Asia/Ho_Chi_Minh`, engineer answers) |
+| workflow | Schedule time | The workflow `cron` key, `17 19 * * *` in UTC: your answer of 02:17 `Asia/Ho_Chi_Minh`, converted to UTC (Vietnam has no daylight saving) |
 | workflow | Build or refresh, commit or not | `github.event_name` and `github.ref` |
 | workflow | Bot identity | Fixed values in the Git identity row |
 | workflow | Push credentials | The built in `GITHUB_TOKEN`, passed as `GH_TOKEN` (no stored secrets) |
@@ -227,6 +227,7 @@ The first shippable slice is the whole pipeline with one section. That means the
 - Committed SVGs and snapshots make the repo grow slowly over time. This is small for text SVGs, but heavy animated GIFs (feature 13) would add up faster.
 - Node's type stripping rules out enums, namespaces, and decorators, so code follows that subset.
 - The daily schedule can run late at busy times. GitHub may delay scheduled runs and can drop some under heavy load.
+- The schedule is written in UTC, so the workflow file doesn't show the Vietnam time directly. The comment beside the cron does. This holds only while Vietnam keeps UTC+7 with no daylight saving. We use UTC because the first run with `timezone: Asia/Ho_Chi_Minh` fired as if the cron were UTC (due 02:17 UTC, started 02:28 UTC; a single observation, cause not proven), and plain UTC gives the right time either way.
 - The 60 day rule is only partly covered. GitHub's docs don't say whether commits made by the workflow count as "repository activity". If they don't, the keepalive commit won't prevent the disable either (see Follow-up).
 - A rejected push during a race fails one run, which emails you. That is noise, though harmless.
 
