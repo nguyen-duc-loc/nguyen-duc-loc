@@ -1,7 +1,7 @@
 # 0006. LeetCode stats from the public GraphQL endpoint, drawn as a contest card and a solved card like the LeetCode profile page
 
 **Date**: 2026-11-16
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
