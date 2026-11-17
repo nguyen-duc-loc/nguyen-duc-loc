@@ -119,10 +119,11 @@ spec [0006](../specs/0006-leetcode-stats-card.md) · design in [`docs/design.md`
 A timeline of your roles and schools built from your content data (LinkedIn does not share this data with regular developers), with a LinkedIn button to the full profile.
 **Done when:** each role shows company, title, dates, and one or two highlights; education shows school, degree, and dates; adding an entry to the data updates the timeline.
 spec [0007](../specs/0007-experience-education-timeline.md) · design in [`docs/design.md`](../design.md)
+code in `src/sections/timeline.ts`, `src/svg.ts` (`wrapLines`), `src/guards.ts` (`checkReadmeAssets`), `src/theme.ts` (`timelineCard`)
 - [x] Design it (spec): `/architect experience & education timeline`
 - [ ] Build it: `/develop experience & education timeline`
-  - [ ] Both timeline cards live: theme values, `wrapLines`, sort and dates, rail and dots, alt text, linked cards under their headings (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15)
-  - [ ] LinkedIn button reusing the contact files, plus the README asset reference guard (AC-10, AC-11)
+  - [x] Both timeline cards live: theme values, `wrapLines`, sort and dates, rail and dots, alt text, linked cards under their headings (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15)
+  - [x] LinkedIn button reusing the contact files, plus the README asset reference guard (AC-10, AC-11)
   - [ ] Content caps, `docs/design.md` updated, and every check run, including both themes on GitHub (AC-12, AC-13, AC-15)
 - [ ] Verify it: `/check verify experience & education timeline`
 
