@@ -63,6 +63,7 @@ Chosen here and installed (config in `biome.json`, `.markdownlint-cli2.jsonc`, `
 - integration: on
 - branch prefix: feat/
 - commit: per-milestone
+- commit trailer: none (no `Co-Authored-By` or other AI attribution lines in commit or squash messages)
 
 ## Agent skills
 
