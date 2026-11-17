@@ -86,6 +86,28 @@ export function fitText(text: string, slot: TextSlot): FitResult {
   return size < slot.minSize ? { size: slot.minSize, textLength: slot.width } : { size };
 }
 
+export type WrappedLine = { readonly text: string; readonly fit: FitResult };
+
+/**
+ * Splits `text` into lines for `slot`, with the same `0.6 × size` estimate as `fitText`: words are filled greedily
+ * into lines of at most `floor(width × 5 / (3 × size))` characters. A word longer than a whole line gets its own
+ * line, which `fitText` then squeezes. Text is never cut off.
+ */
+export function wrapLines(text: string, slot: TextSlot): readonly WrappedLine[] {
+  const max = Math.max(1, Math.floor((slot.width * 5) / (3 * slot.style.size)));
+  const words = text.split(/ +/).filter((word) => word !== "");
+  const lines: string[] = [];
+  for (const word of words) {
+    const last = lines.at(-1);
+    if (last !== undefined && [...last].length + 1 + [...word].length <= max) {
+      lines[lines.length - 1] = `${last} ${word}`;
+    } else {
+      lines.push(word);
+    }
+  }
+  return lines.map((line) => ({ text: line, fit: fitText(line, slot) }));
+}
+
 export type ThemedImageOptions = {
   /** Asset base name: writes `<base>-light.svg` and `<base>-dark.svg`. */
   readonly base: string;
