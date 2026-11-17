@@ -1,7 +1,7 @@
 # 0009. LeetCode badges card, badge row, and submission heatmap from the existing LeetCode source
 
 **Date**: 2026-11-17
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

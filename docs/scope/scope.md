@@ -141,11 +141,12 @@ spec [0008](../specs/0008-credly-badge-grid.md) · design in [`docs/design.md`](
 Grows the LeetCode section with your earned LeetCode badges and a submission heatmap (a calendar grid colored by how much you solved each day). Builds on the data source decided in feature 8.
 **Done when:** badges and the heatmap show current data, match both themes, and refresh with the stats card.
 spec [0009](../specs/0009-leetcode-badges-heatmap.md) · design in [`docs/design.md`](../design.md)
+code in `src/sources/leetcode.ts`, `data/snapshots/leetcode.json`, `src/dates.ts`, `src/sections/leetcode.ts`, `src/sections/leetcode-badges.ts`, `src/sections/leetcode-heatmap.ts`, `src/sections/leetcode-text.ts`, `src/theme.ts` (`badgesCard`, `badgeRow`, `heatmap`)
 - [x] Design it (spec): `/architect leetcode badges & heatmap`
 - [ ] Build it: `/develop leetcode badges & heatmap`
-  - [ ] LeetCode source extended (badges, active badge, calendar, `asOf`) and the new snapshot committed, with no change to the current output (AC-2, AC-3)
-  - [ ] Badges card beside the solved card and the badge image row live, with the month table moved to `src/dates.ts` (AC-1, AC-4, AC-5, AC-8, AC-9, AC-10)
-  - [ ] Heatmap card live: window, month blocks, levels, legend, and the three stats (AC-1, AC-6, AC-7, AC-8, AC-9, AC-10)
+  - [x] LeetCode source extended (badges, active badge, calendar, `asOf`) and the new snapshot committed, with no change to the current output (AC-2, AC-3)
+  - [x] Badges card beside the solved card and the badge image row live, with the month table moved to `src/dates.ts` (AC-1, AC-4, AC-5, AC-8, AC-9, AC-10)
+  - [x] Heatmap card live: window, month blocks, levels, legend, and the three stats (AC-1, AC-6, AC-7, AC-8, AC-9, AC-10)
   - [ ] `docs/design.md` updated and every check run, including lychee in CI, a manual run from GitHub's runner, and both themes on GitHub (AC-11, AC-12)
 - [ ] Verify it: `/check verify leetcode badges & heatmap`
 
