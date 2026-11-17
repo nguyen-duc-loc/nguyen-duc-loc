@@ -55,7 +55,7 @@ Every SVG's only `<style>` starts with the color class block from `themeCss(them
 .fill-<token>{fill:<hex>}.stroke-<token>{stroke:<hex>}.stop-<token>{stop-color:<hex>}
 ```
 
-Use `class="fill-accent"`, `class="stroke-border"`, or `<stop class="stop-accent2" offset="1"/>`. For transparency, use `opacity` or `fill-opacity`. The only color values allowed anywhere else in an SVG are `none`, `currentColor`, `transparent`, `inherit`, and `url(#<id>)`.
+Use `class="fill-accent"`, `class="stroke-border"`, or `<stop class="stop-accent2" offset="1"/>`. For transparency, use `opacity`, `fill-opacity`, or `stroke-opacity`. The only color values allowed anywhere else in an SVG are `none`, `currentColor`, `transparent`, `inherit`, and `url(#<id>)`.
 
 **Adding a color.** A feature that needs a new color (a contribution graph ramp, brand icon colors) adds it as a token in both themes in `src/theme.ts`, with a contrast pair if it carries text. It never writes the color by hand.
 
@@ -189,6 +189,68 @@ Every stack card is drawn by `card()` at `layout.half` (400) wide. All values ar
 
 Name `text` on `surface` and icon `accent` on `surface` are already in the contrast table, so stack cards need no new pair.
 
+## LeetCode (built by feature 8)
+
+Decided in [spec 0006](specs/0006-leetcode-stats-card.md). Right after the Tech stack block, the README has `<h2 align="center">LeetCode</h2>`, a blank line, a `<p align="center">` block holding the contest card, a blank line, and a `<p align="center">` block holding the solved card. Neither block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).leetcode`, so a click opens the LeetCode profile.
+
+| Card | Files | Width |
+|---|---|---|
+| Contest | `leetcode-contest-light.svg`, `leetcode-contest-dark.svg` | `width="100%"` (`layout.full`, 850 × 300) |
+| Solved | `leetcode-solved-light.svg`, `leetcode-solved-dark.svg` | `width="400"` (`layout.half`, 400 × 196) |
+
+The data comes only from `data/snapshots/leetcode.json`, read through `parseLeetcodeSnapshot`. Numbers follow fixed rules, never the locale: the contest card and all alt text group integers with commas (`6,064`), the solved card prints plain digits like LeetCode (`2245/4114`), ratings are rounded with `Math.round`, Top is `toFixed(2)` plus `%`, and years are UTC.
+
+Alt text states the same numbers a sighted visitor sees:
+
+- Contest: `LeetCode contest rating 2,247, level Guardian, global ranking 6,064 of 892,590, top 0.72%, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024.` With no badge it drops `, level <badge>`. One contest reads `1 contest attended`. One history point reads `Rating history: 2,247 in 2024.`, and two points in the same year read `Rating history: 1,565 to 2,247 in 2024.`
+- Solved: `LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting.`
+
+Difficulty colors (Easy `success`, Medium `warning`, Hard `danger`) only paint shapes: the arc, the chip dots, and the check icon. Every word and number is `fill-text` or `fill-muted`, because Latte yellow is too faint to read as text.
+
+**Faint status track (a recorded exception).** The solved card's empty arc uses the segment's own status color at `stroke-opacity` 0.25 (`solvedCard.trackOpacity`) instead of `track`, as on LeetCode. Everywhere else, empty gauges and bars use `track`.
+
+## Contest card anatomy
+
+Drawn by `card()` at 850 × 300. All text is 20px or larger. The values live in `contestCard`; the rest come from `layout`, `radius`, `typography`, and `motion`.
+
+| Element | Geometry | Style |
+|---|---|---|
+| Panes | Left pane x 24 to 616 (`paneRight`). Divider `line` at x = 640.5 (`dividerX` + 0.5), y 24 to 276. Right pane x 664 (`rightX`) to 826, 162 wide (`rightWidth`) | Divider `stroke-border`, `stroke-width` of `layout.border` |
+| Stats columns | x and slot: Rating 24 / 104 (`ratingX`, `ratingSlot`), Level 192 / 120 (`levelX`, `levelSlot`), Global ranking 328 / 176 (`rankX`, `rankSlot`), Attended 520 / 96 (`attendedX`, `attendedSlot`), Top 664 / 162 | |
+| Shield | `iconSvg("shield", 144, 31, 40, "fill-accent2")` (`levelIconX`, `levelIconY`, `levelIcon`) | |
+| Labels | `Rating`, `Level`, `Global ranking`, `Attended`, `Top`, center y = 34 (`labelY`), `text-anchor="start"` | `lead`, `fill-muted` |
+| Values | Center y = 68 (`valueY`), each through `fitText` in its slot | Rating `title` `fill-accent` (min 20). Level `number` `fill-accent2` (min 24, so `accent2` text stays large). Global ranking `number` `fill-text`, the rank then a `fill-muted` `<tspan>` with `/` and the participants, one `fitText` over the whole string (min 20). Attended `number` `fill-text` (min 20). Top `title` `fill-accent` (min 20) |
+| Chart box | x 28 to 612 (`chartLeft`, `chartRight`), y 120 to 240 (`chartTop`, `chartBottom`) | |
+| Chart x, y | `x = 28 + (t − t₀) / (t₁ − t₀) × 584` by `startTime` (one point: x = 612). `y = 240 − (r − rMin) / span × 120`, where `span = rMax − rMin`, or 100 (`flatSpan`) with `rMin` lowered by 50 when all ratings are equal | |
+| Line | `path` `M x y L x y …` through every point, `toFixed(1)`; omitted with one point | `fill="none"`, `gauge stroke-accent`, `stroke-width` 2 (`lineWidth`), round joins and caps, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |
+| Last point | `circle` r = 5 (`dotRadius`) at the last point | `fill-accent` |
+| Last point label | Rect `ceil(0.6 × 20 × chars) + 2 × 8` wide (`tipPadX`), 28 tall (`tipHeight`), right edge at `dotX − 5 − 10` (`tipGap`), centered on `dotY`, `rx` of `radius.small`. Text: the last history rating, rounded and grouped, centered in the rect. It covers the end of the line on purpose | Rect `fill-surface stroke-border`, `stroke-width` of `layout.border`; text `lead` `fill-text` |
+| Year labels | UTC year of the first point at x = 24 (`start`) and of the last at x = 616 (`end`), center y = 266 (`yearY`). One point: only the last, at 616. Same year: only one, at 24 | `lead`, `fill-muted` |
+| Histogram | `step = floor((162 + 2) / n)` (`barGap` 2), bar width `step − 2`, bar i at x = 664 + i × step, bottom y = 276 (`barsBottom`), height `max(2, round(userCount / maxCount × 168))` (`barMinHeight`, `barsMaxHeight`), `rx` 1 (`barRadius`) | `rise`; the current bucket `fill-accent`, others `fill-track` |
+| Current bucket | The bucket with `ratingStart ≤ rating < ratingEnd`; else the last bucket with `ratingStart ≤ rating`; else none | |
+
+With a `null` badge, the shield and the Level column are left out, and the other columns keep their x positions.
+
+## Solved card anatomy
+
+Drawn by `card()` at 400 × 196 (`2 × pad + 3 × chipHeight + 2 × chipGap`). The values live in `solvedCard`. Arc coordinates are `toFixed(2)`.
+
+| Element | Geometry | Style |
+|---|---|---|
+| Ring | Center (136, 107) (`cx`, `cy`), r = 80 (`radius`). θ in degrees clockwise from 12 o'clock: `x = cx + r·sin θ`, `y = cy − r·cos θ`. The arc spans 270° (`span`), from −135° to +135° | |
+| Segments | Easy, Medium, Hard, with 6° (`segmentGap`) between them. Segment i spans `(270 − 2 × 6) × total_i / Σ total` | |
+| Track | The full segment, `stroke-width` 6 (`stroke`), round caps | `fill="none"`, `stroke-<status>` at `stroke-opacity` 0.25 (`trackOpacity`) |
+| Solved arc | From the segment start, `span_i × solved_i / total_i`; left out when solved is 0 | Same at full opacity, plus `gauge`, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |
+| Solved number | One `<text>` at x = 136, baseline y = 112 (`numberBaseline`), `text-anchor="middle"`, `dominant-baseline="alphabetic"`: total solved, then a `<tspan>` with `/` and total questions | Number `title` `fill-text` via `fitText` in 88 (`numberSlot`, min 24); tspan `body` `fill-muted` |
+| Solved row | `iconSvg("check", 104, 122, 14, "fill-success")` (`checkX`, `checkY`, `checkSize`), then `Solved` at x = 122 (`solvedX`), center y = 129 (`solvedY`) | `body`, `fill-text` |
+| Attempting | `<n> Attempting` at x = 136, center y = 162 (`attemptingY`), in the arc's gap | `label`, `fill-muted`, `fitText` in 96 (`attemptingSlot`, min 12) |
+| Chips | x = 264 (`chipX`), y = 24, 76, 128 (`pad + i × (chipHeight + chipGap)`), 112 × 44 (`chipWidth`, `chipHeight`), `chipGap` 8. Rect at (x + 0.5, y + 0.5), 111 × 43, `rx` of `radius.small` | `fill-surface stroke-border`, `stroke-width` of `layout.border` |
+| Chip dot | `circle` at (x + 16, y + 14) (`dotX`, `dotY`), r = 4 (`dotRadius`) | `fill-<status>` |
+| Chip label | `Easy`, `Med.`, `Hard` at x + 26 (`chipLabelX`), center y = y + 14 (`chipLabelY`) | `body`, `fill-muted` |
+| Chip value | `<solved>/<total>`, plain digits, at x + 12 (`chipValueX`), center y = y + 31 (`chipValueY`), slot 88 (`chipValueSlot`) | `body` via `fitText` (min 12), `fill-text` |
+
+Text uses `dominant-baseline="central"`, except the solved number line.
+
 ## Icon registry
 
 Every icon on the profile comes from `src/icons.ts`. Each entry is one `path` on a 24 × 24 grid plus a `source`:
@@ -200,6 +262,7 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 
 | Icon | Source |
 |---|---|
+| `check` | hand drawn: a check mark as one filled stroke |
 | `cplusplus` | `simple-icons@16.38.0` |
 | `credly` | `simple-icons@16.38.0` |
 | `docker` | `simple-icons@16.38.0` |
@@ -213,6 +276,7 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 | `linux` | `simple-icons@16.38.0` |
 | `nextdotjs` | `simple-icons@16.38.0` |
 | `react` | `simple-icons@16.38.0` |
+| `shield` | hand drawn: a shield outline, the inner shield cut out |
 | `terraform` | `simple-icons@16.38.0` |
 | `typescript` | `simple-icons@16.38.0` |
 
@@ -236,6 +300,7 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 - `enter`: fades and slides an item in. Use `enter(i, "<classes>")`, which also sets `animation-delay` to `i × 100 ms`.
 - `grow`: a bar fills from its left edge with `scaleX`.
 - `gauge`: a gauge fills with `stroke-dashoffset`. Set the custom property `--gauge-empty` on the element to the dash offset of an empty gauge.
+- `rise`: a vertical bar fills from its bottom edge with `scaleY`, over `motion.fill`.
 
 ### Inventory (the only places motion is allowed)
 
@@ -243,7 +308,7 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 |---|---|---|---|
 | Header banner | 5 | Name and title enter once. The back wave drifts and settles (`motion.wave`). | Name, title, and both waves in place |
 | Typing line | 5 | Types "Cloud Developer", deletes it, types "LeetCode Guardian", then rests (`motion.typing`). Phrases come from `typingPhrases`. At most three phrases, with holds shortened so the whole run ends within `motion.budget`. | The last phrase, no cursor |
-| Stat cards (LeetCode, GitHub) | 8, 12 | Content enters once, staggered. Gauges and bars fill once. Numbers fade in; they don't count up. | Full numbers, filled gauges |
+| Stat cards (LeetCode, GitHub) | 8, 12 | Content enters once, staggered. Gauges and bars fill once. Numbers fade in; they don't count up. LeetCode: the contest stats enter as `enter(0)` to `enter(4)` and the years as `enter(5)`; the history line draws once (`gauge`) and the histogram bars rise once (`rise`), both from 0 ms; the last point and its label enter last (`enter(9)`, done at 1500 ms). On the solved card, the center number, the Solved row, Attempting, and the three chips enter as `enter(0)` to `enter(5)`, and the solved arcs fill once (`gauge`). | Full numbers, filled gauges, drawn line, full bars |
 | Contribution graph | 13 | Decided in feature 13's spec. Ends within `motion.budget`, or that spec records a reasoned exception. | Decided there |
 | Everything else (about, buttons, tech stack, timeline, Credly grid, projects, LeetCode badges and heatmap) | 6, 7, 9, 10, 11, 14 | None | Itself |
 
