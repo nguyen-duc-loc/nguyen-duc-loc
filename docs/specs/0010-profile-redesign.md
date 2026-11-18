@@ -34,9 +34,20 @@ A redesign that replaces parts of earlier decisions: the Catppuccin palette of s
 - **Outside images.** A source may list image URLs its sections embed (`Source.images`). `pnpm refresh` downloads each, shrinks it to a 144 px PNG with a small built in PNG codec (`src/png.ts`, no dependency), and stores it in `data/snapshots/images/` by URL hash, which the daily bot already commits. `pnpm build` reads them into `ctx.images` and never fetches; a missing image falls back (the shield, or left out of the art row).
 - **Guard.** An SVG that uses a `fill-`, `stroke-`, or `stop-` class `themeCss` doesn't define fails the build.
 
+### Third round (same day)
+
+- **Greeting.** The typing line types `Hi there 👋`, then rests on `Welcome to my GitHub` (no name: the banner shows it).
+- **Brand logos are whole files.** Hand converted layered paths gave wrong logos in one theme or the other, so every brand logo is now its full color SVG, vendored in `src/brands.ts` from thesvg.org (with a `dark` file where the light one doesn't read on a dark page) and embedded as a `data:image/svg+xml` image. LeetCode keeps the Wikimedia Commons mark (thesvg.org has only a one color LeetCode). Go is thesvg.org's file in Go Blue. Brandfetch needs an API key, so nothing comes from it. This replaces the Simple Icons paths, the layered icons, and `brandColors`; `src/icons.ts` keeps only the hand drawn glyphs. The SVG guard allows a `data:image/svg+xml` image only when it is exactly one of the vendored files, and `checkBrands` checks those files.
+- **Education.** The honors note is a gold pill (`honor` token) led by `stars` ★ (new optional content field, 1 to 5; High Distinction has 4).
+- **LeetCode weights.** Emphasized numbers and names are medium (500), not bold.
+- **LeetCode badges card.** No LeetCode logo. The most recent badge shows its own art beside its label and name.
+- **Monthly badges.** Under the heatmap, each month with its Daily Coding Challenge badge shows that badge's art in place of the month name, as LeetCode does. Image requests now carry a size (`ImageRequest`), so each picture is stored at about twice its drawn size.
+- **Tables.** Both tables use percent column widths (certifications 25/75, tech stack 10/90), which makes GitHub draw them as wide as the README; the certifications issuer column is wider.
+- **Tech stack.** AWS is spelled out as Amazon Web Services.
+
 ## Code area
 
-`src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/guards.ts`, `src/build.ts`, `src/refresh.ts`, `src/png.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `src/sources/leetcode.ts`, `src/sources/images.ts`, `content/*`, `assets/static/logos/`, `data/snapshots/images/`, `docs/design.md`
+`src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/brands.ts`, `src/images.ts`, `src/guards.ts`, `src/build.ts`, `src/refresh.ts`, `src/png.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `src/sources/leetcode.ts`, `src/sources/images.ts`, `content/*`, `assets/static/logos/`, `data/snapshots/images/`, `docs/design.md`
 
 ## Requirements
 
@@ -52,6 +63,8 @@ A redesign that replaces parts of earlier decisions: the Catppuccin palette of s
 - AC-10: LeetCode, Gmail, and AWS show their full color logos.
 - AC-11: Experience and education have no card and no LinkedIn button; certifications have no Credly button and a narrow issuer column.
 - AC-12: The contest level shows the Guardian art in blue text; the solved and badges cards share one row, with badge art in the badges card; the heatmap is LeetCode green in LeetCode's layout.
+- AC-13: Every brand logo shows its real colors in both themes.
+- AC-14: High Distinction stands out with 4 stars; LeetCode emphasis is medium weight; the most recent badge and each month's challenge badge show their art; both tables fill the README width.
 
 ## Ratify
 
