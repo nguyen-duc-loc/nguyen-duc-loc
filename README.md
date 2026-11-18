@@ -68,7 +68,7 @@
 <p align="center">
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-solved-dark.svg">
-  <img alt="LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
+  <img alt="LeetCode problems solved: 2,246 of 4,115. Easy 661 of 976, Medium 1,170 of 2,148, Hard 415 of 991. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
 </picture></a>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-badges-dark.svg">
@@ -90,7 +90,7 @@
 <p align="center">
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
-  <img alt="LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+  <img alt="LeetCode submissions from Nov 19, 2025 to Nov 18, 2026: 640 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
 </picture></a>
 </p>
 

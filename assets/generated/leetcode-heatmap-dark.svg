@@ -7,7 +7,6 @@
 <text class="fill-text font-mono" x="348" y="68" dominant-baseline="central" text-anchor="start" font-size="24" font-weight="600">362</text>
 <text class="fill-muted" x="592" y="34" dominant-baseline="central" text-anchor="start" font-size="20" font-weight="400">Max streak</text>
 <text class="fill-text font-mono" x="592" y="68" dominant-baseline="central" text-anchor="start" font-size="24" font-weight="600">292</text>
-<rect x="49" y="122" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
 <rect x="49" y="133" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
 <rect x="49" y="144" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
 <rect x="49" y="155" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
@@ -383,7 +382,8 @@
 <rect x="781" y="166" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
 <rect x="792" y="100" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
 <rect x="792" y="111" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
-<rect x="792" y="122" width="9" height="9" rx="2" class="fill-track"/>
+<rect x="792" y="122" width="9" height="9" rx="2" class="fill-accent" fill-opacity="0.25"/>
+<rect x="792" y="133" width="9" height="9" rx="2" class="fill-track"/>
 <text class="fill-muted" x="785.5" y="198" dominant-baseline="central" text-anchor="middle" font-size="20" font-weight="400">Nov</text>
 <text class="fill-muted" x="709" y="230" dominant-baseline="central" text-anchor="end" font-size="20" font-weight="400">Less</text>
 <rect x="717" y="225.5" width="9" height="9" rx="2" class="fill-track"/>
