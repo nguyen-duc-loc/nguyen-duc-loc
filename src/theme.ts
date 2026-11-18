@@ -20,6 +20,10 @@ export type TokenName =
   | "success"
   | "warning"
   | "danger"
+  | "successText"
+  | "warningText"
+  | "dangerText"
+  | "heat"
   | "logoTile";
 export type Theme = { readonly name: ThemeName } & { readonly [K in TokenName]: Hex };
 export type ContrastPair = { readonly fg: TokenName; readonly bg: TokenName; readonly min: 3 | 4.5 };
@@ -40,12 +44,18 @@ export const tokenNames = [
   "success",
   "warning",
   "danger",
+  "successText",
+  "warningText",
+  "dangerText",
+  "heat",
   "logoTile",
 ] as const satisfies readonly TokenName[];
 
 /**
  * GitHub's own Primer colors (spec 0010), so cards sit on the page like GitHub's own UI. `page` is GitHub's page
- * background, used only by checks. `success`, `warning`, and `danger` are LeetCode's own difficulty colors.
+ * background, used only by checks. `success`, `warning`, and `danger` are LeetCode's own difficulty colors, and the
+ * `*Text` tokens are the same hues dark enough (light) or bright enough (dark) to read as text on `track`. `heat` is
+ * LeetCode's green, for the submission heatmap.
  */
 export const themes = {
   light: {
@@ -62,6 +72,10 @@ export const themes = {
     success: "#00af9b",
     warning: "#ffb800",
     danger: "#ff2d55",
+    successText: "#00705f",
+    warningText: "#805600",
+    dangerText: "#c0262d",
+    heat: "#2cbb5d",
     logoTile: "#ffffff",
   },
   dark: {
@@ -78,31 +92,38 @@ export const themes = {
     success: "#1cbaba",
     warning: "#ffb700",
     danger: "#f63737",
+    successText: "#1cbaba",
+    warningText: "#ffb700",
+    dangerText: "#ff6b6b",
+    heat: "#2cbb5d",
     logoTile: "#ffffff",
   },
 } as const satisfies { readonly [K in ThemeName]: Theme };
 
 /**
- * Each brand's own color (spec 0010), drawn through `fill-brand-<icon>`. Values are the `hex` of the pinned Simple
- * Icons release (`simple-icons@16.38.0`), except the hand drawn LinkedIn (LinkedIn's brand blue). Icons without an
- * entry here (`check`, `email`, and the heading glyphs) are drawn in a theme token instead.
+ * Each brand's own color (spec 0010), drawn through `fill-brand-<icon>`. A plain icon has one color: the `hex` of the
+ * pinned Simple Icons release (`simple-icons@16.38.0`), or LinkedIn's brand blue for the hand drawn LinkedIn. A
+ * layered icon has one color per layer, in the layer order of `src/icons.ts`, from its source file, drawn through
+ * `fill-brand-<icon>-<layer>`. Icons without an entry (`check`, `shield`, and the heading glyphs) use a theme token.
  */
 export const brandColors = {
+  aws: ["#252f3e", "#ff9900"],
   cplusplus: "#00599c",
   credly: "#ff6b00",
   docker: "#2496ed",
   git: "#f03c2e",
+  gmail: ["#4285f4", "#34a853", "#fbbc04", "#ea4335", "#c5221f"],
   gnubash: "#4eaa25",
   go: "#00add8",
   kubernetes: "#326ce5",
-  leetcode: "#ffa116",
+  leetcode: ["#ffa116", "#b3b3b3", "#000000"],
   linkedin: "#0a66c2",
   linux: "#fcc624",
   nextdotjs: "#000000",
   react: "#61dafb",
   terraform: "#844fba",
   typescript: "#3178c6",
-} as const satisfies { readonly [K in IconName]?: Hex };
+} as const satisfies { readonly [K in IconName]?: Hex | readonly Hex[] };
 
 export type BrandName = keyof typeof brandColors;
 
@@ -118,9 +139,15 @@ export const contrastPairs = [
   { fg: "muted", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "page", min: 4.5 },
+  { fg: "text", bg: "page", min: 4.5 },
+  { fg: "muted", bg: "page", min: 4.5 },
   { fg: "accent2", bg: "surface", min: 4.5 },
   { fg: "onAccent", bg: "accent", min: 4.5 },
   { fg: "onAccent", bg: "accent2", min: 4.5 },
+  { fg: "text", bg: "track", min: 4.5 },
+  { fg: "successText", bg: "track", min: 4.5 },
+  { fg: "warningText", bg: "track", min: 4.5 },
+  { fg: "dangerText", bg: "track", min: 4.5 },
 ] as const satisfies readonly ContrastPair[];
 
 /** GitHub's own font stacks. System fonts only: an SVG in `<img>` can't load web fonts. */
@@ -171,13 +198,19 @@ export const stackChip = { height: 32, padX: 10, icon: 18, iconGap: 8, margin: 2
 };
 
 /**
- * LeetCode solved card (spec 0006, docs/design.md "Solved card anatomy"): a 270 degree arc of Easy, Medium, and
- * Hard segments around (`cx`, `cy`), plus three difficulty chips on the right. Angles are in degrees. The card is
- * `2 × layout.pad + 3 × chipHeight + 2 × chipGap` tall. Chip offsets (`dotX` to `chipValueY`) are from the chip's
- * top left corner.
+ * The LeetCode summary row (spec 0010): the solved card and the badges card side by side in one `layout.full` wide
+ * image, so they always share a row. Each card is `(layout.full − gap) / 2` wide.
+ */
+export const summaryRow = { height: 196, gap: 16 } as const satisfies { readonly [name: string]: number };
+
+/**
+ * LeetCode solved card (spec 0006, chips restyled by spec 0010; docs/design.md "Solved card anatomy"): a 270 degree
+ * arc of Easy, Medium, and Hard segments around (`cx`, `cy`), plus three difficulty chips on the right, drawn like
+ * LeetCode's: a `track` tile with the colored difficulty name over the count. Angles are in degrees. Chip offsets
+ * are from the chip's top left corner.
  */
 export const solvedCard = {
-  cx: 136,
+  cx: 140,
   cy: 107,
   radius: 80,
   stroke: 6,
@@ -185,26 +218,21 @@ export const solvedCard = {
   segmentGap: 6,
   trackOpacity: 0.25,
   numberBaseline: 112,
-  numberSlot: 88,
-  checkX: 104,
+  numberSlot: 96,
+  checkX: 108,
   checkY: 122,
   checkSize: 14,
-  solvedX: 122,
+  solvedX: 126,
   solvedY: 129,
   attemptingY: 162,
   attemptingSlot: 96,
-  chipX: 264,
+  chipX: 281,
   chipWidth: 112,
   chipHeight: 44,
   chipGap: 8,
-  dotX: 16,
-  dotY: 14,
-  dotRadius: 4,
-  chipLabelX: 26,
   chipLabelY: 14,
-  chipValueX: 12,
   chipValueY: 31,
-  chipValueSlot: 88,
+  chipValueSlot: 96,
 } as const satisfies { readonly [name: string]: number };
 
 /**
@@ -243,16 +271,18 @@ export const contestCard = {
 } as const satisfies { readonly [name: string]: number };
 
 /**
- * Experience and education cards (spec 0007, reshaped by spec 0010; docs/design.md "Timeline card anatomy"):
- * `layout.full` wide, each entry with its `logo` px logo tile at `layout.pad` and text from `textX` to
- * `layout.full − layout.pad`. Row 0 holds the name and the dates, right aligned in `dateSlot`, `titleGap` apart.
+ * Experience and education (spec 0007, reshaped by spec 0010; docs/design.md "Timeline anatomy"): `layout.full`
+ * wide and drawn on the page, with no card. Each entry has its `logo` px logo tile at `padX` and text from `textX`
+ * to `layout.full − padX`. Row 0 holds the name and the dates, right aligned in `dateSlot`, `titleGap` apart.
  * Rows are `lineHeight` apart, entries `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
  */
 export const timelineCard = {
+  padX: 1,
+  padY: 4,
   logo: 48,
   logoInset: 4,
   logoRadius: 8,
-  textX: 88,
+  textX: 65,
   bulletIndent: 16,
   dateSlot: 200,
   titleGap: 16,
@@ -260,60 +290,59 @@ export const timelineCard = {
   entryGap: 24,
 } as const satisfies { readonly [name: string]: number };
 
-/** Certifications (specs 0008 and 0010, docs/design.md "Certifications"): each Credly badge PNG is `badgeWidth` px. */
-export const credlyGrid = { badgeWidth: 96 } as const satisfies { readonly [name: string]: number };
+/**
+ * Certifications (specs 0008 and 0010, docs/design.md "Certifications"): each Credly badge PNG is `badgeWidth` px,
+ * and the issuer cell is `issuerWidth` px wide, so long issuer names wrap and the badges get the room.
+ */
+export const credlyGrid = { badgeWidth: 96, issuerWidth: 140 } as const satisfies { readonly [name: string]: number };
 
 /**
- * LeetCode badges half card (spec 0009, docs/design.md "Badges card anatomy"): `layout.half` wide and as tall as
- * the solved card. Every y is a text center (`dominant-baseline="central"`), every x is `layout.pad`.
+ * LeetCode badges card (spec 0009, redrawn by spec 0010; docs/design.md "Badges card anatomy"): the right card of the
+ * summary row. Every y is a text center (`dominant-baseline="central"`), every text x is `layout.pad`. The featured
+ * badge images sit in a row centered on `artCenterX`, the middle one `artLarge` px and the others `artSmall` px.
  */
 export const badgesCard = {
-  headingY: 32,
+  headingY: 30,
   icon: 20,
-  iconY: 22,
-  countY: 66,
-  recentY: 104,
-  nameY: 128,
-  nameSlot: 352,
+  iconY: 20,
+  countY: 58,
+  artCenterX: 236,
+  artCenterY: 88,
+  artSmall: 60,
+  artLarge: 76,
+  artGap: 20,
+  recentY: 148,
+  nameY: 170,
+  nameSlot: 369,
   nameMin: 12,
-  monthY: 152,
 } as const satisfies { readonly [name: string]: number };
 
-/** The LeetCode badge image row (spec 0009): at most `max` PNGs, each `width` px wide. */
-export const badgeRow = { max: 8, width: 80 } as const satisfies { readonly [name: string]: number };
-
 /**
- * LeetCode submission heatmap (spec 0009, docs/design.md "Heatmap card anatomy"): `layout.full` × `height`, the
- * `windowDays` ending on the snapshot's `asOf`. A day's level is the highest k with `count ≥ level<k>Min`, drawn
- * with `fill-opacity` `opacity<k>`; level 0 is `fill-track`.
+ * LeetCode submission heatmap (spec 0009, redrawn like LeetCode's by spec 0010; docs/design.md "Heatmap card
+ * anatomy"): `layout.full` × `height`, the `windowDays` ending on the snapshot's `asOf`. A sentence with the
+ * submission count on the left and the active days and max streak on the right, then the grid and the month names.
+ * A day's level is the highest k with `count ≥ level<k>Min`, drawn in `heat` at `fill-opacity` `opacity<k>`; level 0
+ * is `fill-track`.
  */
 export const heatmap = {
-  height: 232,
+  height: 196,
   windowDays: 365,
-  labelY: 32,
-  valueY: 62,
-  submissionsX: 24,
-  submissionsSlot: 300,
-  activeX: 348,
-  activeSlot: 220,
-  streakX: 592,
-  streakSlot: 234,
-  gridTop: 92,
+  headY: 34,
+  headGap: 24,
+  gridTop: 68,
   cell: 9,
   cellGap: 2,
   cellRadius: 2,
   monthGap: 6,
-  monthY: 182,
+  monthY: 162,
   monthMinColumns: 3,
-  legendY: 208,
-  legendGap: 8,
   level1Min: 1,
   level2Min: 2,
   level3Min: 3,
   level4Min: 5,
-  opacity1: 0.25,
-  opacity2: 0.5,
-  opacity3: 0.75,
+  opacity1: 0.3,
+  opacity2: 0.55,
+  opacity3: 0.8,
   opacity4: 1,
 } as const satisfies { readonly [name: string]: number };
 
@@ -342,18 +371,24 @@ export function contrastRatio(a: Hex, b: Hex): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-/** The brand's own color, or the theme's `text` when it would vanish on `page` or `surface` (`brandMinContrast`). */
-export function brandColor(theme: Theme, brand: BrandName): Hex {
-  const hex: Hex = brandColors[brand];
+/** `hex`, or the theme's `text` when it would vanish on `page` or `surface` (`brandMinContrast`). */
+export function visibleBrandColor(theme: Theme, hex: Hex): Hex {
   const lowest = Math.min(contrastRatio(hex, theme.page), contrastRatio(hex, theme.surface));
   return lowest < brandMinContrast ? theme.text : hex;
+}
+
+/** `[class suffix, hex]` for each color of a brand: `<brand>` for a plain icon, `<brand>-<layer>` for a layered one. */
+function brandEntries(theme: Theme, brand: BrandName): readonly (readonly [string, Hex])[] {
+  const colors: Hex | readonly Hex[] = brandColors[brand];
+  if (typeof colors === "string") return [[brand, visibleBrandColor(theme, colors)]];
+  return colors.map((hex, i) => [`${brand}-${i}`, visibleBrandColor(theme, hex)] as const);
 }
 
 const brandNames = Object.keys(brandColors).toSorted() as readonly BrandName[];
 
 /**
  * The color class block every SVG's `<style>` starts with: fill, stroke, and stop classes per drawn token, then a
- * `fill-brand-<icon>` class per brand, in key order.
+ * `fill-brand-<icon>` (or `fill-brand-<icon>-<layer>`) class per brand color, in key order.
  */
 export function themeCss(theme: Theme): string {
   const tokens = tokenNames
@@ -362,9 +397,10 @@ export function themeCss(theme: Theme): string {
       const hex = theme[token];
       return `.fill-${token}{fill:${hex}}.stroke-${token}{stroke:${hex}}.stop-${token}{stop-color:${hex}}`;
     });
-  const brands = brandNames.map((brand) => {
-    const hex = brandColor(theme, brand);
-    return `.fill-brand-${brand}{fill:${hex}}.stroke-brand-${brand}{stroke:${hex}}`;
-  });
+  const brands = brandNames.flatMap((brand) =>
+    brandEntries(theme, brand).map(
+      ([name, hex]) => `.fill-brand-${name}{fill:${hex}}.stroke-brand-${name}{stroke:${hex}}`,
+    ),
+  );
   return [...tokens, ...brands].join("");
 }

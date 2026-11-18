@@ -22,5 +22,5 @@ export const stack = {
     { name: "Linux", icon: "linux" },
     { name: "Kubernetes", icon: "kubernetes" },
   ],
-  cloud: [{ name: "AWS" }],
+  cloud: [{ name: "AWS", icon: "aws" }],
 } as const satisfies Stack;

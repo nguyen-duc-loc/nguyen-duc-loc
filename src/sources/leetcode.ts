@@ -401,6 +401,33 @@ async function errorDetail(response: Response): Promise<string | undefined> {
 /** What `fetch` hands to `validate`: the parsed body and the UTC date it was read. */
 export type LeetcodeResponse = { readonly asOf: string; readonly body: unknown };
 
+/** Monthly Daily Coding Challenge badges: counted, never featured unless chosen on LeetCode. */
+const DAILY_CHALLENGE = "DCC";
+/** How many badges the badges card shows (spec 0010), like LeetCode's own profile. */
+export const FEATURED_BADGES = 3;
+
+/** The chosen badge first, then the newest badges that aren't monthly, up to `max` (spec 0009 AC-4). */
+export function featuredBadges({ badges, activeBadgeId }: LeetcodeSnapshot, max: number): readonly LeetcodeBadge[] {
+  const active = badges.find((badge) => badge.id === activeBadgeId);
+  const rest = badges.filter((badge) => badge.category !== DAILY_CHALLENGE && badge !== active).toReversed();
+  return (active === undefined ? rest : [active, ...rest]).slice(0, max);
+}
+
+/** The contest level's own badge (Knight, Guardian), the newest one named like `contest.badge`, if earned. */
+export function levelBadge({ contest, badges }: LeetcodeSnapshot): LeetcodeBadge | undefined {
+  return badges.findLast((badge) => badge.name === contest.badge);
+}
+
+/** Every outside image the LeetCode cards embed (spec 0010): the level badge and the featured badges. */
+export function leetcodeImages(snapshot: LeetcodeSnapshot): readonly string[] {
+  const level = levelBadge(snapshot);
+  const urls = [
+    ...(level === undefined ? [] : [level.icon]),
+    ...featuredBadges(snapshot, FEATURED_BADGES).map((b) => b.icon),
+  ];
+  return [...new Set(urls)].toSorted();
+}
+
 export const leetcode = {
   name: "leetcode",
   sortKey: "startTime",
@@ -420,5 +447,8 @@ export const leetcode = {
     const response = record(raw, "(fetch)");
     if (typeof response.asOf !== "string") fail("asOf", "must be a string");
     return parseLeetcodeSnapshot({ ...mapResponse(response.body), asOf: response.asOf });
+  },
+  images(snapshot: unknown): readonly string[] {
+    return leetcodeImages(parseLeetcodeSnapshot(snapshot));
   },
 } as const satisfies Source<LeetcodeSnapshot>;

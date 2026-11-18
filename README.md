@@ -12,11 +12,9 @@
 
 <h2><picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/heading-about-dark.svg"><img alt="" src="assets/generated/heading-about-light.svg" width="24"></picture> About me</h2>
 
-<p align="center">You can&#39;t beat someone who is having fun.</p>
+<p><i>“You can&#39;t beat someone who is having fun.”</i></p>
 
-<p align="center">📍 Hanoi, Vietnam</p>
-
-<p align="center">
+<p>
 <a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-linkedin-dark.svg">
   <img alt="LinkedIn profile" src="assets/generated/contact-linkedin-light.svg" width="148">
@@ -30,8 +28,8 @@
   <img alt="LeetCode profile" src="assets/generated/contact-leetcode-light.svg" width="148">
 </picture></a>
 <a href="mailto:nguyenducloc404@gmail.com"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-email-dark.svg">
-  <img alt="Email nguyenducloc404@gmail.com" src="assets/generated/contact-email-light.svg" width="148">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-gmail-dark.svg">
+  <img alt="Email nguyenducloc404@gmail.com" src="assets/generated/contact-gmail-light.svg" width="148">
 </picture></a>
 </p>
 
@@ -53,18 +51,11 @@
 </picture></a>
 </p>
 
-<p>
-<a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-linkedin-dark.svg">
-  <img alt="Full work history on LinkedIn" src="assets/generated/contact-linkedin-light.svg" width="148">
-</picture></a>
-</p>
-
 <h2><picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/heading-certifications-dark.svg"><img alt="" src="assets/generated/heading-certifications-light.svg" width="24"></picture> Certifications</h2>
 
 <table>
 <tr>
-<td><b>Amazon Web Services Training and Certification</b></td>
+<td width="140"><b>Amazon Web Services Training and Certification</b></td>
 <td>
 <a href="https://www.credly.com/badges/a91ec8d7-61ac-4942-9602-81dd390937ee"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/2d84e428-9078-49b6-a804-13c15383d0de/image.png"><img alt="AWS Certified Solutions Architect – Professional, issued by Amazon Web Services Training and Certification" src="https://images.credly.com/images/2d84e428-9078-49b6-a804-13c15383d0de/image.png" width="96"></picture></a>
 <a href="https://www.credly.com/badges/47479d9b-a0df-4b9b-a21e-131b7e2e47fd"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png"><img alt="AWS Certified Solutions Architect – Associate, issued by Amazon Web Services Training and Certification" src="https://images.credly.com/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png" width="96"></picture></a>
@@ -74,32 +65,25 @@
 </td>
 </tr>
 <tr>
-<td><b>Google Cloud</b></td>
+<td width="140"><b>Google Cloud</b></td>
 <td>
 <a href="https://www.credly.com/badges/c85be083-e1d5-41b5-ace8-1e7a527f232d"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/614465c6-1d80-4ae6-a323-753de224422a/image.png"><img alt="Professional Cloud Developer Certification, issued by Google Cloud" src="https://images.credly.com/images/614465c6-1d80-4ae6-a323-753de224422a/image.png" width="96"></picture></a>
 <a href="https://www.credly.com/badges/ad37e15a-bf02-4f1f-bc34-f0bf2c5164fe"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/08096465-cbfc-4c3e-93e5-93c5aa61f23e/image.png"><img alt="Associate Cloud Engineer Certification, issued by Google Cloud" src="https://images.credly.com/images/08096465-cbfc-4c3e-93e5-93c5aa61f23e/image.png" width="96"></picture></a>
 </td>
 </tr>
 <tr>
-<td><b>IBM Professional Certification</b></td>
+<td width="140"><b>IBM Professional Certification</b></td>
 <td>
 <a href="https://www.credly.com/badges/b11d2520-6967-412a-9ada-c5f9b20f1ac0"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob"><img alt="HashiCorp Certified: Terraform Associate (004), issued by IBM Professional Certification" src="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob" width="96"></picture></a>
 </td>
 </tr>
 <tr>
-<td><b>The Linux Foundation</b></td>
+<td width="140"><b>The Linux Foundation</b></td>
 <td>
 <a href="https://www.credly.com/badges/c6dedda7-444d-4e13-9ae2-6598c073c82c"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png"><img alt="FinOps Certified Engineer, issued by The Linux Foundation" src="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png" width="96"></picture></a>
 </td>
 </tr>
 </table>
-
-<p>
-<a href="https://www.credly.com/users/nguyenducloc"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/contact-credly-dark.svg">
-  <img alt="All badges on Credly" src="assets/generated/contact-credly-light.svg" width="148">
-</picture></a>
-</p>
 
 <h2><picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/heading-stack-dark.svg"><img alt="" src="assets/generated/heading-stack-light.svg" width="24"></picture> Tech stack</h2>
 
@@ -133,7 +117,7 @@
 <tr>
 <td><b>Cloud</b></td>
 <td>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="AWS" src="assets/generated/stack-aws-light.svg" width="48"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="AWS" src="assets/generated/stack-aws-light.svg" width="86"></picture>
 </td>
 </tr>
 </table>
@@ -149,24 +133,9 @@
 
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-solved-dark.svg">
-  <img alt="LeetCode problems solved: 2,246 of 4,115. Easy 661 of 976, Medium 1,170 of 2,148, Hard 415 of 991. 3 attempting." src="assets/generated/leetcode-solved-light.svg" width="400">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-summary-dark.svg">
+  <img alt="LeetCode problems solved: 2,246 of 4,115. Easy 661 of 976, Medium 1,170 of 2,148, Hard 415 of 991. 3 attempting. LeetCode badges: 62 earned, featuring Guardian, Annual Badge 2026, 200 Days Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-summary-light.svg" width="100%">
 </picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-badges-dark.svg">
-  <img alt="LeetCode badges: 62 earned. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-badges-light.svg" width="400">
-</picture></a>
-</p>
-
-<p>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://leetcode.com/static/images/badges/guardian.png"><img alt="Guardian, LeetCode badge earned May 2026" src="https://leetcode.com/static/images/badges/guardian.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/2026_1080_1080.png"><img alt="Annual Badge 2026, LeetCode badge earned Oct 2026" src="https://assets.leetcode.com/static_assets/others/2026_1080_1080.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/200_1080_1080.png"><img alt="200 Days Badge 2026, LeetCode badge earned Jul 2026" src="https://assets.leetcode.com/static_assets/others/200_1080_1080.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/100_1080_1080.png"><img alt="100 Days Badge 2026, LeetCode badge earned Apr 2026" src="https://assets.leetcode.com/static_assets/others/100_1080_1080.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/10801080.png"><img alt="2026 Offer Expedition Badge, LeetCode badge earned Mar 2026" src="https://assets.leetcode.com/static_assets/others/10801080.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/50_1080_1080.png"><img alt="50 Days Badge 2026, LeetCode badge earned Feb 2026" src="https://assets.leetcode.com/static_assets/others/50_1080_1080.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/marketing/lg1k.png"><img alt="1000 Days Badge, LeetCode badge earned Dec 2025" src="https://assets.leetcode.com/static_assets/marketing/lg1k.png" width="80"></picture></a>
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.leetcode.com/static_assets/others/2025_lg.png"><img alt="Annual Badge 2025, LeetCode badge earned Oct 2025" src="https://assets.leetcode.com/static_assets/others/2025_lg.png" width="80"></picture></a>
 </p>
 
 <p>

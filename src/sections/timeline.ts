@@ -1,22 +1,19 @@
 // Experience and education (spec 0007, reshaped by spec 0010; docs/design.md "Experience and education" and
-// "Timeline card anatomy"): two static full width cards, newest entry first, each entry led by the company's or
-// school's logo on a white tile (or its initial when content names no logo). Both cards link to LinkedIn, which
-// holds the full history. Everything comes from content/ and the logo files, so adding an entry there updates the
+// "Timeline card anatomy"): two static full width images drawn on the page (no card), newest entry first, each
+// entry led by the company's or school's logo on a white tile (or its initial when content names no logo). Both
+// images link to LinkedIn, which holds the full history. Everything comes from content/ and the logo files, so adding an entry there updates the
 // cards with no code change.
 
 import type { Role, School, YearMonth } from "../../content/types.ts";
 import { profileUrls } from "../content.ts";
 import { MONTHS } from "../dates.ts";
 import { escapeXml } from "../escape.ts";
-import { card, type FitResult, fitText, pillButton, sectionHeading, themedImage, wrapLines } from "../svg.ts";
-import { button, layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
+import { type FitResult, fitText, sectionHeading, svgDocument, themedImage, wrapLines } from "../svg.ts";
+import { layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
 const EXPERIENCE_HEADING = "Experience";
 const EDUCATION_HEADING = "Education";
-/** Reuses the About me LinkedIn pill files (spec 0004), so this section writes no button asset. */
-const BUTTON_BASE = "contact-linkedin";
-const BUTTON_ALT = "Full work history on LinkedIn";
 const MIN_SIZE = 12;
 
 // --- Sort (spec 0002): newest start first; on a tie, current first, then the later end, then file order ---
@@ -74,7 +71,8 @@ function textTag({ x, y, anchor, classes, style, fit }: TextOptions, inner: stri
 // --- Layout (AC-3, AC-4, AC-8) ---
 
 const { textX, bulletIndent, dateSlot, titleGap, lineHeight, entryGap } = timelineCard;
-const textRight = layout.full - layout.pad;
+const { padY } = timelineCard;
+const textRight = layout.full - timelineCard.padX;
 const columnWidth = textRight - textX;
 
 const slot = (width: number, style: TypeStyle): TextSlot => ({ width, style, minSize: MIN_SIZE });
@@ -190,16 +188,16 @@ const entryBox = (entry: Entry): number => Math.max(entry.rows.length * lineHeig
 /** The top y of each entry, then the card height (AC-8). */
 function entryTops(entries: readonly Entry[]): { readonly tops: readonly number[]; readonly height: number } {
   const tops = entries.map((_entry, i) =>
-    entries.slice(0, i).reduce<number>((top, previous) => top + entryBox(previous) + entryGap, layout.pad),
+    entries.slice(0, i).reduce<number>((top, previous) => top + entryBox(previous) + entryGap, padY),
   );
   const boxes = entries.reduce((sum, entry) => sum + entryBox(entry), 0);
-  return { tops, height: 2 * layout.pad + boxes + entryGap * (entries.length - 1) };
+  return { tops, height: 2 * padY + boxes + entryGap * (entries.length - 1) };
 }
 
 /** The white logo tile at the entry's top left, with the logo fitted inside, or the initial on a `track` tile. */
 function tile(mark: Mark, top: number): string {
   const { logo: size, logoInset: inset, logoRadius } = timelineCard;
-  const x = layout.pad;
+  const x = timelineCard.padX;
   const fill = mark.kind === "logo" ? "fill-logoTile" : "fill-track";
   const rect = `<rect x="${x + 0.5}" y="${top + 0.5}" width="${size - 1}" height="${size - 1}" rx="${logoRadius}" class="${fill} stroke-border" stroke-width="${layout.border}"/>`;
   const inner =
@@ -209,7 +207,7 @@ function tile(mark: Mark, top: number): string {
   return `${rect}\n${inner}`;
 }
 
-/** Each entry's tile and rows (AC-6). Static: no animation class. */
+/** Each entry's tile and rows (AC-6), on the page itself: no card (spec 0010). Static: no animation class. */
 function timelineSvg(theme: Theme, entries: readonly Entry[]): string {
   const { tops, height } = entryTops(entries);
   const rowY = (top: number, k: number): number => top + lineHeight / 2 + k * lineHeight;
@@ -217,7 +215,7 @@ function timelineSvg(theme: Theme, entries: readonly Entry[]): string {
     tile(entry.mark, tops[i]),
     ...entry.rows.map((row, k) => row(rowY(tops[i], k))),
   ]);
-  return card(theme, { width: layout.full, height, body: drawn.join("\n") });
+  return svgDocument(theme, { width: layout.full, height, body: drawn.join("\n") });
 }
 
 // --- Alt text (AC-9): every word the card shows, built from the same content ---
@@ -264,13 +262,6 @@ export const timeline: Section = ({ content, logos }) => {
         schools.map((school) => schoolEntry(school, logos)),
       ),
   });
-  // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
-  const { markdown: buttonMarkdown } = themedImage({
-    base: BUTTON_BASE,
-    alt: BUTTON_ALT,
-    width: button.width + 2 * button.margin,
-    render: (theme) => pillButton(theme, { icon: "linkedin", label: "LinkedIn" }),
-  });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
   const block = (markdown: string): string => ["<p>", markdown, "</p>"].join("\n");
   const experienceHeading = sectionHeading({ key: "experience", title: EXPERIENCE_HEADING, icon: "briefcase" });
@@ -281,7 +272,6 @@ export const timeline: Section = ({ content, logos }) => {
     block(linked(experience.markdown)),
     educationHeading.markdown,
     block(linked(education.markdown)),
-    block(linked(buttonMarkdown)),
   ].join("\n\n");
   const assets = [experienceHeading, experience, educationHeading, education].flatMap((image) => image.assets ?? []);
   return { markdown, assets };

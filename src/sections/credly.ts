@@ -1,21 +1,17 @@
 // Certifications (spec 0008, reshaped into a table by spec 0010; docs/design.md "Certifications"): one table row
 // per issuer, the issuer's name on the left and its active Credly badges on the right, each Credly's own image
-// linked to its badge page. The Credly pill from About me follows as a see all button. Data comes only from the
-// committed snapshot; this section writes only its heading icon.
+// linked to its badge page. The issuer column is kept narrow (`credlyGrid.issuerWidth`, names wrap) so the badges get
+// the room. Data comes only from the committed snapshot; this section writes only its heading icon.
 
-import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import { type CredlyBadge, type CredlySnapshot, parseCredlySnapshot } from "../sources/credly.ts";
-import { outsideImage, pillButton, sectionHeading, themedImage } from "../svg.ts";
-import { button, credlyGrid } from "../theme.ts";
+import { outsideImage, sectionHeading } from "../svg.ts";
+import { credlyGrid } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
 const HEADING = "Certifications";
 const SOURCE = "credly";
 const BADGE_PAGE = "https://www.credly.com/badges/";
-/** Reuses the About me Credly pill files (spec 0004), so this section writes no button asset. */
-const BUTTON_BASE = "contact-credly";
-const BUTTON_ALT = "All badges on Credly";
 /** Within an issuer, higher levels first. Any other level, or none, sorts after these. */
 const LEVEL_ORDER = ["Advanced", "Intermediate", "Foundational"] as const satisfies readonly string[];
 
@@ -80,18 +76,17 @@ function byIssuer(badges: readonly CredlyBadge[]): readonly (readonly [string, r
 export const credlyBadges: Section = (ctx) => {
   const { badges } = readCredly(ctx);
   const heading = sectionHeading({ key: "certifications", title: HEADING, icon: "award" });
-  // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
-  const { markdown: buttonMarkdown } = themedImage({
-    base: BUTTON_BASE,
-    alt: BUTTON_ALT,
-    width: button.width + 2 * button.margin,
-    render: (theme) => pillButton(theme, { icon: "credly", label: "Credly" }),
-  });
-  const seeAll = `<a href="${escapeXml(profileUrls(ctx.content.profile.accounts).credly)}">${buttonMarkdown}</a>`;
   const rows = byIssuer(badges).map(([issuer, group]) =>
-    ["<tr>", `<td><b>${escapeXml(issuer)}</b></td>`, "<td>", ...group.map(badgeLine), "</td>", "</tr>"].join("\n"),
+    [
+      "<tr>",
+      `<td width="${credlyGrid.issuerWidth}"><b>${escapeXml(issuer)}</b></td>`,
+      "<td>",
+      ...group.map(badgeLine),
+      "</td>",
+      "</tr>",
+    ].join("\n"),
   );
   const table = ["<table>", ...rows, "</table>"].join("\n");
-  const markdown = [heading.markdown, table, ["<p>", seeAll, "</p>"].join("\n")].join("\n\n");
+  const markdown = [heading.markdown, table].join("\n\n");
   return { markdown, assets: heading.assets };
 };

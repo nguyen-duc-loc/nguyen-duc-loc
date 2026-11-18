@@ -1,17 +1,25 @@
 // LeetCode (specs 0006, 0009, and 0010, docs/design.md "LeetCode" and its card anatomy sections): the LeetCode
-// profile page redrawn in the theme. A full width contest card (stats row, rating history line) sits above
-// a half card with the problems solved arc and Easy, Med., and Hard chips, and the badges half card beside it. A
-// row of badge PNGs and a full width submission heatmap follow. Each card and badge links to the LeetCode profile.
-// Data comes only from the committed snapshot; the badges and heatmap drawing live in `leetcode-badges.ts` and
-// `leetcode-heatmap.ts`.
+// profile page redrawn in the theme. A full width contest card (stats row, rating history line) sits above the
+// summary row (the solved card and the badges card side by side in one image) and the submission heatmap. Each
+// image links to the LeetCode profile. Data comes only from the committed snapshot and the stored badge images; the
+// badges and heatmap drawing live in `leetcode-badges.ts` and `leetcode-heatmap.ts`.
 
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
-import { type Difficulty, type LeetcodeSnapshot, parseLeetcodeSnapshot } from "../sources/leetcode.ts";
-import { card, enter, fitText, iconSvg, sectionHeading, textWidth, themedImage } from "../svg.ts";
-import { contestCard, layout, radius, solvedCard, type TextSlot, type Theme, typography } from "../theme.ts";
+import { type Difficulty, type LeetcodeSnapshot, levelBadge, parseLeetcodeSnapshot } from "../sources/leetcode.ts";
+import { card, enter, fitText, iconSvg, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
+import {
+  contestCard,
+  layout,
+  radius,
+  solvedCard,
+  summaryRow,
+  type TextSlot,
+  type Theme,
+  typography,
+} from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
-import { badgeRowLines, badgesAlt, badgesCardSvg } from "./leetcode-badges.ts";
+import { badgesAlt, badgesCardBody } from "./leetcode-badges.ts";
 import { heatmapAlt, heatmapCardSvg } from "./leetcode-heatmap.ts";
 import { type Anchor, groupDigits, textTag } from "./leetcode-text.ts";
 
@@ -28,7 +36,7 @@ type DifficultyLabel = {
   readonly status: Status;
 };
 
-/** Arc and chip order. Status colors only paint shapes; every word stays `fill-text` or `fill-muted`. */
+/** Arc and chip order. Chip names use the `*Text` status tokens, which are checked as text on `track`. */
 const difficulties = [
   { key: "easy", label: "Easy", name: "Easy", status: "success" },
   { key: "medium", label: "Med.", name: "Medium", status: "warning" },
@@ -41,7 +49,7 @@ const f2 = (n: number): string => n.toFixed(2);
 
 // --- Solved card ---
 
-const solvedHeight = 2 * layout.pad + 3 * solvedCard.chipHeight + 2 * solvedCard.chipGap;
+const halfWidth = (layout.full - summaryRow.gap) / 2;
 
 const numberSlot = { width: solvedCard.numberSlot, style: typography.title, minSize: 20 } as const satisfies TextSlot;
 const attemptingSlot = {
@@ -51,7 +59,7 @@ const attemptingSlot = {
 } as const satisfies TextSlot;
 const chipValueSlot = {
   width: solvedCard.chipValueSlot,
-  style: typography.body,
+  style: typography.button,
   minSize: typography.label.size,
 } as const satisfies TextSlot;
 
@@ -144,28 +152,28 @@ function solvedCenter(totals: Totals): string {
 }
 
 function chips(snapshot: LeetcodeSnapshot): string {
-  const { chipX: x, chipWidth, chipHeight, chipGap, dotX, dotY, dotRadius, chipLabelX, chipLabelY } = solvedCard;
-  const { chipValueX, chipValueY } = solvedCard;
+  const { chipX: x, chipWidth, chipHeight, chipGap, chipLabelY, chipValueY } = solvedCard;
+  const center = x + chipWidth / 2;
+  const chipTop = (summaryRow.height - 3 * chipHeight - 2 * chipGap) / 2;
   return difficulties
     .map(({ key, label, status }, i) => {
-      const y = layout.pad + i * (chipHeight + chipGap);
+      const y = chipTop + i * (chipHeight + chipGap);
       const { solved, total } = snapshot.difficulties[key];
       const value = `${solved}/${total}`;
       return [
         `<g ${enter(3 + i)}>`,
-        `<rect x="${x + 0.5}" y="${y + 0.5}" width="${chipWidth - 1}" height="${chipHeight - 1}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
-        `<circle cx="${x + dotX}" cy="${y + dotY}" r="${dotRadius}" class="fill-${status}"/>`,
+        `<rect x="${x}" y="${y}" width="${chipWidth}" height="${chipHeight}" rx="${radius.small}" class="fill-track"/>`,
         textTag(
-          { x: x + chipLabelX, y: y + chipLabelY, anchor: "start", classes: "fill-muted", style: typography.body },
+          { x: center, y: y + chipLabelY, anchor: "middle", classes: `fill-${status}Text`, style: typography.label },
           label,
         ),
         textTag(
           {
-            x: x + chipValueX,
+            x: center,
             y: y + chipValueY,
-            anchor: "start",
+            anchor: "middle",
             classes: "fill-text",
-            style: typography.body,
+            style: typography.button,
             fit: fitText(value, chipValueSlot),
           },
           value,
@@ -176,9 +184,23 @@ function chips(snapshot: LeetcodeSnapshot): string {
     .join("\n");
 }
 
-function solvedCardSvg(theme: Theme, snapshot: LeetcodeSnapshot): string {
-  const body = [arcs(snapshot), solvedCenter(totalsOf(snapshot)), chips(snapshot)].join("\n");
-  return card(theme, { width: layout.half, height: solvedHeight, body });
+/** A card frame at `x`, the same shape `card()` draws, for the two cards that share the summary image. */
+function frame(x: number, width: number): string {
+  return `<rect x="${x + 0.5}" y="0.5" width="${width - 1}" height="${summaryRow.height - 1}" rx="${radius.card}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`;
+}
+
+/** The solved card and the badges card side by side (spec 0010). */
+function summarySvg(theme: Theme, snapshot: LeetcodeSnapshot, images: BuildContext["images"]): string {
+  const right = halfWidth + summaryRow.gap;
+  const body = [
+    frame(0, halfWidth),
+    arcs(snapshot),
+    solvedCenter(totalsOf(snapshot)),
+    chips(snapshot),
+    frame(right, halfWidth),
+    `<svg x="${right}" y="0" width="${halfWidth}" height="${summaryRow.height}">${badgesCardBody(snapshot, images, halfWidth)}</svg>`,
+  ].join("\n");
+  return svgDocument(theme, { width: layout.full, height: summaryRow.height, body });
 }
 
 function solvedAlt(snapshot: LeetcodeSnapshot): string {
@@ -217,7 +239,18 @@ function statValue(x: number, slot: TextSlot, classes: string, plain: string, in
   return textTag({ x, y: cc.valueY, anchor: "start", classes, style: slot.style, fit: fitText(plain, slot) }, inner);
 }
 
-function contestStats({ contest }: LeetcodeSnapshot): string {
+/** The level's own badge art when refresh stored it (Guardian), else the shield icon. */
+function levelIcon(snapshot: LeetcodeSnapshot, images: BuildContext["images"]): string {
+  const badge = levelBadge(snapshot);
+  const href = badge === undefined ? undefined : images.get(badge.icon);
+  const { levelIconX: x, levelIconY: y, levelIcon: size } = cc;
+  return href === undefined
+    ? iconSvg("shield", x, y, size, "fill-accent")
+    : `<image x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet" href="${href}"/>`;
+}
+
+function contestStats(snapshot: LeetcodeSnapshot, images: BuildContext["images"]): string {
+  const { contest } = snapshot;
   const rank = groupDigits(contest.globalRanking);
   const participants = groupDigits(contest.totalParticipants);
   const level =
@@ -225,9 +258,9 @@ function contestStats({ contest }: LeetcodeSnapshot): string {
       ? []
       : [
           `<g ${enter(1)}>`,
-          iconSvg("shield", cc.levelIconX, cc.levelIconY, cc.levelIcon, "fill-accent2"),
+          levelIcon(snapshot, images),
           statLabel(cc.levelX, "Level"),
-          statValue(cc.levelX, levelSlot, "fill-accent2", contest.badge),
+          statValue(cc.levelX, levelSlot, "fill-accent", contest.badge),
           "</g>",
         ];
   return [
@@ -295,7 +328,7 @@ function ratingChart(history: LeetcodeSnapshot["history"]): string {
     points.length === 1
       ? []
       : [
-          `<path d="${points.map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ")}" fill="none" class="gauge stroke-brand-leetcode" stroke-width="${cc.lineWidth}" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>`,
+          `<path d="${points.map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ")}" fill="none" class="gauge stroke-brand-leetcode-0" stroke-width="${cc.lineWidth}" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>`,
         ];
 
   // The last point and its label: the label sits left of the dot and covers the end of the line on purpose.
@@ -306,7 +339,7 @@ function ratingChart(history: LeetcodeSnapshot["history"]): string {
   const tipX = last.x - cc.dotRadius - cc.tipGap - width;
   const tip = [
     `<g ${enter(9)}>`,
-    `<circle cx="${last.x}" cy="${last.y}" r="${cc.dotRadius}" class="fill-brand-leetcode"/>`,
+    `<circle cx="${last.x}" cy="${last.y}" r="${cc.dotRadius}" class="fill-brand-leetcode-0"/>`,
     `<rect x="${tipX.toFixed(1)}" y="${(last.y - cc.tipHeight / 2).toFixed(1)}" width="${width}" height="${cc.tipHeight}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
     textTag(
       { x: Number((tipX + width / 2).toFixed(1)), y: last.y, anchor: "middle", classes: "fill-text", style: lead },
@@ -330,8 +363,8 @@ function ratingChart(history: LeetcodeSnapshot["history"]): string {
   return [`<g ${enter(5)}>${years.join("")}</g>`, ...line, ...tip].join("\n");
 }
 
-function contestCardSvg(theme: Theme, snapshot: LeetcodeSnapshot): string {
-  const body = [contestStats(snapshot), ratingChart(snapshot.history)].join("\n");
+function contestCardSvg(theme: Theme, snapshot: LeetcodeSnapshot, images: BuildContext["images"]): string {
+  const body = [contestStats(snapshot, images), ratingChart(snapshot.history)].join("\n");
   return card(theme, { width: layout.full, height: cc.height, body });
 }
 
@@ -373,24 +406,19 @@ function readLeetcode({ content, snapshots }: BuildContext): LeetcodeSnapshot {
 
 export const leetcodeStats: Section = (ctx) => {
   const snapshot = readLeetcode(ctx);
+  const { images } = ctx;
   const href = escapeXml(profileUrls(ctx.content.profile.accounts).leetcode);
   const contest = themedImage({
     base: "leetcode-contest",
     alt: contestAlt(snapshot),
     width: "100%",
-    render: (theme) => contestCardSvg(theme, snapshot),
+    render: (theme) => contestCardSvg(theme, snapshot, images),
   });
-  const solved = themedImage({
-    base: "leetcode-solved",
-    alt: solvedAlt(snapshot),
-    width: layout.half,
-    render: (theme) => solvedCardSvg(theme, snapshot),
-  });
-  const badges = themedImage({
-    base: "leetcode-badges",
-    alt: badgesAlt(snapshot),
-    width: layout.half,
-    render: (theme) => badgesCardSvg(theme, snapshot, solvedHeight),
+  const summary = themedImage({
+    base: "leetcode-summary",
+    alt: `${solvedAlt(snapshot)} ${badgesAlt(snapshot)}`,
+    width: "100%",
+    render: (theme) => summarySvg(theme, snapshot, images),
   });
   const heatmap = themedImage({
     base: "leetcode-heatmap",
@@ -400,16 +428,14 @@ export const leetcodeStats: Section = (ctx) => {
   });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
   const block = (lines: readonly string[]): string => ["<p>", ...lines, "</p>"].join("\n");
-  const row = badgeRowLines(snapshot, href);
   const heading = sectionHeading({ key: "leetcode", title: HEADING, icon: "leetcode" });
 
   const markdown = [
     heading.markdown,
     block([linked(contest.markdown)]),
-    block([linked(solved.markdown), linked(badges.markdown)]),
-    ...(row.length === 0 ? [] : [block(row)]),
+    block([linked(summary.markdown)]),
     block([linked(heatmap.markdown)]),
   ].join("\n\n");
-  const assets = [heading, contest, solved, badges, heatmap].flatMap((image) => image.assets ?? []);
+  const assets = [heading, contest, summary, heatmap].flatMap((image) => image.assets ?? []);
   return { markdown, assets };
 };

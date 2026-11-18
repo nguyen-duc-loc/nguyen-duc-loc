@@ -8,6 +8,11 @@ export type BuildContext = {
   readonly snapshots: ReadonlyMap<string, unknown>;
   /** Every logo content names (spec 0010), keyed by file name, as a `data:image/...;base64,` URI. */
   readonly logos: ReadonlyMap<string, string>;
+  /**
+   * Outside images the sources asked for (`Source.images`), keyed by their URL, as small `data:image/png;base64,`
+   * URIs (spec 0010). An image refresh couldn't fetch is missing, so a section must have a fallback.
+   */
+  readonly images: ReadonlyMap<string, string>;
 };
 
 /** A self contained file written under assets/generated/. */
@@ -32,4 +37,9 @@ export type Source<Snapshot = unknown> = {
   fetch(signal: AbortSignal): Promise<unknown>;
   /** Throws (ideally a ValidationError) when the raw response is not usable. */
   validate(raw: unknown): Snapshot;
+  /**
+   * Outside image URLs the sections embed for this snapshot (spec 0010). `pnpm refresh` stores a small copy of each
+   * in `data/snapshots/images/`, and `pnpm build` reads them from there; build never fetches.
+   */
+  images?(snapshot: unknown): readonly string[];
 };

@@ -8,6 +8,7 @@ import { checkContrast, checkReadme, checkReadmeAssets, checkSvgAssets } from ".
 import { GENERATED_DIR, LOGO_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
 import { readSnapshot } from "./snapshots.ts";
+import { readImages } from "./sources/images.ts";
 import { sources } from "./sources/index.ts";
 import { contrastPairs, themes } from "./theme.ts";
 import type { GeneratedAsset } from "./types.ts";
@@ -38,6 +39,12 @@ async function readLogos(files: readonly string[]): Promise<ReadonlyMap<string, 
   return logos;
 }
 
+/** Every outside image URL the registered sources ask for, for the snapshots on disk (spec 0010). */
+export function imageUrls(snapshots: ReadonlyMap<string, unknown>): readonly string[] {
+  const urls = sources.flatMap((source) => source.images?.(snapshots.get(source.name)) ?? []);
+  return [...new Set(urls)].toSorted();
+}
+
 function checkAssets(assets: readonly GeneratedAsset[]): string[] {
   const problems: string[] = [];
   const seen = new Set<string>();
@@ -53,7 +60,7 @@ function checkAssets(assets: readonly GeneratedAsset[]): string[] {
 }
 
 export async function build(): Promise<void> {
-  // 1. Check content (a failed check writes nothing), then load snapshots and logos.
+  // 1. Check content (a failed check writes nothing), then load snapshots, logos, and stored outside images.
   assertContent(content);
   const snapshots = new Map<string, unknown>();
   for (const source of sources) {
@@ -62,7 +69,8 @@ export async function build(): Promise<void> {
 
   // 2. Render in memory, then 3. run the guards. A failed guard writes nothing.
   const logos = await readLogos(logoFiles(content));
-  const { readme, assets } = renderReadme({ content, snapshots, logos });
+  const images = await readImages(imageUrls(snapshots));
+  const { readme, assets } = renderReadme({ content, snapshots, logos, images });
   const problems = [
     ...checkReadme(readme),
     ...checkReadmeAssets(readme, assets),

@@ -128,6 +128,8 @@ const HEX_COLOR = /#[0-9a-f]{3,8}(?![\w-])/gi;
 const LOCAL_URL = /url\(\s*["']?\s*#[A-Za-z_][\w.-]*\s*["']?\s*\)/gi;
 const ALLOWED_COLOR = /^(none|currentcolor|transparent|inherit|url\(\s*["']?\s*#[A-Za-z_][\w.-]*\s*["']?\s*\))$/i;
 
+const CLASS_ATTR = /\sclass\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+const COLOR_CLASS = /^(?:fill|stroke|stop)-/;
 const SVG_FILE = /\.svg$/i;
 const THEMED_FILE = /^(.+)-(light|dark)\.svg$/;
 
@@ -193,6 +195,12 @@ function checkColors(svg: string, theme: Theme): string[] {
   for (const m of rest.matchAll(COLOR_FUNCTION))
     problems.push(`color function ${m[1]}() must use a color class instead`);
   for (const m of rest.matchAll(HEX_COLOR)) problems.push(`hex color ${m[0]} must use a color class instead`);
+  // A color class the block doesn't define would draw in the default black (spec 0010).
+  const defined = new Set([...block.matchAll(/\.([a-zA-Z0-9-]+)\{/g)].map((m) => m[1]));
+  const used = [...markup.matchAll(CLASS_ATTR)].flatMap((m) => (m[1] ?? m[2]).split(/\s+/));
+  for (const name of new Set(used.filter((c) => COLOR_CLASS.test(c) && !defined.has(c)))) {
+    problems.push(`color class ${name} is not defined by themeCss`);
+  }
   return problems;
 }
 

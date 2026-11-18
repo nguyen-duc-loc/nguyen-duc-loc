@@ -2,7 +2,7 @@
 // Colors are class names only (`fill-accent`, `stroke-border`, `stop-accent2`); the values come from themeCss.
 
 import { escapeXml } from "./escape.ts";
-import { type IconName, icons } from "./icons.ts";
+import { type Icon, type IconName, iconAspect, icons } from "./icons.ts";
 import {
   type BrandName,
   brandColors,
@@ -160,9 +160,21 @@ export function iconClass(name: IconName, fallback: string): string {
   return isBrand(name) ? `fill-brand-${name}` : fallback;
 }
 
-/** An icon from `src/icons.ts` as a nested `size` × `size` SVG at (x, y), painted by `classes`. */
+/** The drawn width of an icon `size` px tall: wider than `size` only for a wide layered logo (AWS). */
+export function iconWidth(name: IconName, size: number): number {
+  return Math.round(size * iconAspect(icons[name]));
+}
+
+/**
+ * An icon from `src/icons.ts` as a nested SVG at (x, y), `size` tall and `iconWidth` wide. A plain icon is painted by
+ * `classes`; a layered logo always paints each layer in its own brand color, so `classes` is not used for it.
+ */
 export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
-  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${icons[name].path}"/></svg>`;
+  const icon: Icon = icons[name];
+  const box = `x="${x}" y="${y}" width="${iconWidth(name, size)}" height="${size}"`;
+  if (!("layers" in icon)) return `<svg ${box} viewBox="0 0 24 24"><path class="${classes}" d="${icon.path}"/></svg>`;
+  const paths = icon.layers.map((d, i) => `<path class="fill-brand-${name}-${i}" d="${d}"/>`).join("");
+  return `<svg ${box} viewBox="${icon.viewBox}">${paths}</svg>`;
 }
 
 export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
@@ -179,11 +191,12 @@ export function textWidth(text: string, size: number): number {
  */
 export function pillButton(theme: Theme, { icon, label }: PillButtonOptions): string {
   const { width, height, margin, padX, gap } = button;
-  const slot = { width: width - padX - button.icon - gap - padX, style: typography.button, minSize: 12 };
+  const drawn = iconWidth(icon, button.icon);
+  const slot = { width: width - padX - drawn - gap - padX, style: typography.button, minSize: 12 };
   const fit = fitText(label, slot);
   const labelWidth = fit.textLength ?? textWidth(label, fit.size);
-  const groupX = margin + Math.round((width - (button.icon + gap + labelWidth)) / 2);
-  const labelX = groupX + button.icon + gap;
+  const groupX = margin + Math.round((width - (drawn + gap + labelWidth)) / 2);
+  const labelX = groupX + drawn + gap;
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const body = [
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 1}" height="${height - 1}" rx="${radius.pill}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,

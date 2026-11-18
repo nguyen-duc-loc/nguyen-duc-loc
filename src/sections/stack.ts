@@ -5,7 +5,7 @@
 
 import type { Stack, StackItem } from "../../content/types.ts";
 import { escapeXml } from "../escape.ts";
-import { fitText, iconClass, iconSvg, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
+import { fitText, iconClass, iconSvg, iconWidth, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
 import { layout, radius, stackChip, type TextSlot, type Theme, typography } from "../theme.ts";
 import type { Section } from "../types.ts";
 
@@ -36,7 +36,7 @@ type ChipSize = { readonly width: number; readonly nameWidth: number };
 
 function chipSize(item: StackItem): ChipSize {
   const nameWidth = Math.min(NAME_MAX, textWidth(item.name, style.size));
-  const iconPart = item.icon === undefined ? 0 : iconSize + iconGap;
+  const iconPart = item.icon === undefined ? 0 : iconWidth(item.icon, iconSize) + iconGap;
   return { width: 2 * margin + 2 * padX + iconPart + nameWidth, nameWidth };
 }
 
@@ -46,7 +46,7 @@ function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize):
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const fullHeight = height + 2 * margin;
   const left = margin + padX;
-  const nameX = item.icon === undefined ? left : left + iconSize + iconGap;
+  const nameX = item.icon === undefined ? left : left + iconWidth(item.icon, iconSize) + iconGap;
   const body = [
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 2 * margin - 1}" height="${height - 1}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
     ...(item.icon === undefined
