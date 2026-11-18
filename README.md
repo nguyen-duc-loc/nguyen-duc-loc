@@ -7,7 +7,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/typing-dark.svg">
-  <img alt="Welcome to my GitHub profile. Hi there, I&#39;m Loc 👋" src="assets/generated/typing-light.svg" width="100%">
+  <img alt="Hi there 👋. Welcome to my GitHub" src="assets/generated/typing-light.svg" width="100%">
 </picture>
 
 <h2><picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/heading-about-dark.svg"><img alt="" src="assets/generated/heading-about-light.svg" width="24"></picture> About me</h2>
@@ -47,7 +47,7 @@
 <p>
 <a href="https://www.linkedin.com/in/nguyenducloc404"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/timeline-education-dark.svg">
-  <img alt="Education: Engineer&#39;s degree, Computer Networks and Data Communications at VNU University of Engineering and Technology, Sep 2021 to Feb 2026. High Distinction. High school diploma at Hong Quang High School, Sep 2018 to Jul 2021." src="assets/generated/timeline-education-light.svg" width="100%">
+  <img alt="Education: Engineer&#39;s degree, Computer Networks and Data Communications at VNU University of Engineering and Technology, Sep 2021 to Feb 2026. High Distinction (4 stars). High school diploma at Hong Quang High School, Sep 2018 to Jul 2021." src="assets/generated/timeline-education-light.svg" width="100%">
 </picture></a>
 </p>
 
@@ -55,8 +55,8 @@
 
 <table>
 <tr>
-<td width="140"><b>Amazon Web Services Training and Certification</b></td>
-<td>
+<td width="25%"><b>Amazon Web Services Training and Certification</b></td>
+<td width="75%">
 <a href="https://www.credly.com/badges/a91ec8d7-61ac-4942-9602-81dd390937ee"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/2d84e428-9078-49b6-a804-13c15383d0de/image.png"><img alt="AWS Certified Solutions Architect – Professional, issued by Amazon Web Services Training and Certification" src="https://images.credly.com/images/2d84e428-9078-49b6-a804-13c15383d0de/image.png" width="96"></picture></a>
 <a href="https://www.credly.com/badges/47479d9b-a0df-4b9b-a21e-131b7e2e47fd"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png"><img alt="AWS Certified Solutions Architect – Associate, issued by Amazon Web Services Training and Certification" src="https://images.credly.com/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png" width="96"></picture></a>
 <a href="https://www.credly.com/badges/3e5121d4-834c-4349-93f7-4b668289e068"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png"><img alt="AWS Certified Developer – Associate, issued by Amazon Web Services Training and Certification" src="https://images.credly.com/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png" width="96"></picture></a>
@@ -65,21 +65,21 @@
 </td>
 </tr>
 <tr>
-<td width="140"><b>Google Cloud</b></td>
-<td>
+<td width="25%"><b>Google Cloud</b></td>
+<td width="75%">
 <a href="https://www.credly.com/badges/c85be083-e1d5-41b5-ace8-1e7a527f232d"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/614465c6-1d80-4ae6-a323-753de224422a/image.png"><img alt="Professional Cloud Developer Certification, issued by Google Cloud" src="https://images.credly.com/images/614465c6-1d80-4ae6-a323-753de224422a/image.png" width="96"></picture></a>
 <a href="https://www.credly.com/badges/ad37e15a-bf02-4f1f-bc34-f0bf2c5164fe"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/08096465-cbfc-4c3e-93e5-93c5aa61f23e/image.png"><img alt="Associate Cloud Engineer Certification, issued by Google Cloud" src="https://images.credly.com/images/08096465-cbfc-4c3e-93e5-93c5aa61f23e/image.png" width="96"></picture></a>
 </td>
 </tr>
 <tr>
-<td width="140"><b>IBM Professional Certification</b></td>
-<td>
+<td width="25%"><b>IBM Professional Certification</b></td>
+<td width="75%">
 <a href="https://www.credly.com/badges/b11d2520-6967-412a-9ada-c5f9b20f1ac0"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob"><img alt="HashiCorp Certified: Terraform Associate (004), issued by IBM Professional Certification" src="https://images.credly.com/images/6f614b71-3f2e-488e-8b29-71e90d4dbf80/blob" width="96"></picture></a>
 </td>
 </tr>
 <tr>
-<td width="140"><b>The Linux Foundation</b></td>
-<td>
+<td width="25%"><b>The Linux Foundation</b></td>
+<td width="75%">
 <a href="https://www.credly.com/badges/c6dedda7-444d-4e13-9ae2-6598c073c82c"><picture><source media="(prefers-color-scheme: dark)" srcset="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png"><img alt="FinOps Certified Engineer, issued by The Linux Foundation" src="https://images.credly.com/images/90c78afd-e885-4525-8f5e-e5834d8cb13d/image.png" width="96"></picture></a>
 </td>
 </tr>
@@ -89,35 +89,35 @@
 
 <table>
 <tr>
-<td><b>Languages</b></td>
-<td>
+<td width="10%"><b>Languages</b></td>
+<td width="90%">
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-typescript-dark.svg"><img alt="TypeScript" src="assets/generated/stack-typescript-light.svg" width="128"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-go-dark.svg"><img alt="Go" src="assets/generated/stack-go-light.svg" width="66"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-cplusplus-dark.svg"><img alt="C++" src="assets/generated/stack-cplusplus-light.svg" width="74"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-gnubash-dark.svg"><img alt="Bash" src="assets/generated/stack-gnubash-light.svg" width="82"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-go-dark.svg"><img alt="Go" src="assets/generated/stack-go-light.svg" width="96"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-cplusplus-dark.svg"><img alt="C++" src="assets/generated/stack-cplusplus-light.svg" width="72"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-bash-dark.svg"><img alt="Bash" src="assets/generated/stack-bash-light.svg" width="82"></picture>
 </td>
 </tr>
 <tr>
-<td><b>Frameworks</b></td>
-<td>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-react-dark.svg"><img alt="React" src="assets/generated/stack-react-light.svg" width="89"></picture>
+<td width="10%"><b>Frameworks</b></td>
+<td width="90%">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-react-dark.svg"><img alt="React" src="assets/generated/stack-react-light.svg" width="91"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-nextdotjs-dark.svg"><img alt="Next.js" src="assets/generated/stack-nextdotjs-light.svg" width="105"></picture>
 </td>
 </tr>
 <tr>
-<td><b>Tools</b></td>
-<td>
+<td width="10%"><b>Tools</b></td>
+<td width="90%">
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-git-dark.svg"><img alt="Git" src="assets/generated/stack-git-light.svg" width="74"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-docker-dark.svg"><img alt="Docker" src="assets/generated/stack-docker-light.svg" width="97"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-terraform-dark.svg"><img alt="Terraform" src="assets/generated/stack-terraform-light.svg" width="121"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-linux-dark.svg"><img alt="Linux" src="assets/generated/stack-linux-light.svg" width="89"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-kubernetes-dark.svg"><img alt="Kubernetes" src="assets/generated/stack-kubernetes-light.svg" width="128"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-terraform-dark.svg"><img alt="Terraform" src="assets/generated/stack-terraform-light.svg" width="116"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-linux-dark.svg"><img alt="Linux" src="assets/generated/stack-linux-light.svg" width="87"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-kubernetes-dark.svg"><img alt="Kubernetes" src="assets/generated/stack-kubernetes-light.svg" width="129"></picture>
 </td>
 </tr>
 <tr>
-<td><b>Cloud</b></td>
-<td>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="AWS" src="assets/generated/stack-aws-light.svg" width="86"></picture>
+<td width="10%"><b>Cloud</b></td>
+<td width="90%">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="Amazon Web Services" src="assets/generated/stack-aws-light.svg" width="211"></picture>
 </td>
 </tr>
 </table>

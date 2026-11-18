@@ -5,8 +5,8 @@
 
 import type { Stack, StackItem } from "../../content/types.ts";
 import { escapeXml } from "../escape.ts";
-import { fitText, iconClass, iconSvg, iconWidth, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
-import { layout, radius, stackChip, type TextSlot, type Theme, typography } from "../theme.ts";
+import { fitText, iconSvg, iconWidth, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
+import { layout, radius, stackChip, type TextSlot, type Theme, tableColumns, typography } from "../theme.ts";
 import type { Section } from "../types.ts";
 
 const HEADING = "Tech stack";
@@ -51,7 +51,7 @@ function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize):
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 2 * margin - 1}" height="${height - 1}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
     ...(item.icon === undefined
       ? []
-      : [iconSvg(item.icon, left, margin + (height - iconSize) / 2, iconSize, iconClass(item.icon, "fill-text"))]),
+      : [iconSvg(theme, item.icon, left, margin + (height - iconSize) / 2, iconSize, "fill-text")]),
     `<text class="fill-text" x="${nameX}" y="${fullHeight / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${style.weight}"${squeeze}>${escapeXml(item.name)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width, height: fullHeight, body });
@@ -71,7 +71,9 @@ export const techStack: Section = ({ content: { stack } }) => {
       });
     });
     const cell = chips.map((chip) => chip.markdown).join("\n");
-    return { markdown: `<tr>\n<td><b>${escapeXml(label)}</b></td>\n<td>\n${cell}\n</td>\n</tr>`, chips };
+    const [first, second] = tableColumns.stack;
+    const markdown = `<tr>\n<td width="${first}%"><b>${escapeXml(label)}</b></td>\n<td width="${second}%">\n${cell}\n</td>\n</tr>`;
+    return { markdown, chips };
   });
 
   const markdown = [heading.markdown, ["<table>", ...rows.map((row) => row.markdown), "</table>"].join("\n")].join(

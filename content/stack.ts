@@ -1,6 +1,6 @@
 // Your tech stack, shown in file order within each group. Each group holds 1 to 8 items.
-// `icon` is a key of the icon registry in src/icons.ts (Simple Icons slugs, https://simpleicons.org).
-// For a new brand, copy its path into the registry first. Leave `icon` out when the brand has none.
+// `icon` is a brand logo in src/brands.ts (full color files, for example from https://thesvg.org).
+// For a new brand, add its files there first. Leave `icon` out when the brand has none.
 
 import type { Stack } from "./types.ts";
 
@@ -9,7 +9,7 @@ export const stack = {
     { name: "TypeScript", icon: "typescript" },
     { name: "Go", icon: "go" },
     { name: "C++", icon: "cplusplus" },
-    { name: "Bash", icon: "gnubash" },
+    { name: "Bash", icon: "bash" },
   ],
   frameworks: [
     { name: "React", icon: "react" },
@@ -22,5 +22,5 @@ export const stack = {
     { name: "Linux", icon: "linux" },
     { name: "Kubernetes", icon: "kubernetes" },
   ],
-  cloud: [{ name: "AWS", icon: "aws" }],
+  cloud: [{ name: "Amazon Web Services", icon: "aws" }],
 } as const satisfies Stack;

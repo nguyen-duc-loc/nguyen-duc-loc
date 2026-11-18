@@ -3,7 +3,9 @@
 // snapshot that passes one passes the other. Module load does no I/O.
 
 import { content } from "../../content/index.ts";
-import { isRealDate } from "../dates.ts";
+import { dayNumber, isRealDate } from "../dates.ts";
+import type { ImageRequest } from "../images.ts";
+import { heatmap } from "../theme.ts";
 import type { Source } from "../types.ts";
 import { HttpError, USER_AGENT, ValidationError } from "./http.ts";
 
@@ -418,14 +420,38 @@ export function levelBadge({ contest, badges }: LeetcodeSnapshot): LeetcodeBadge
   return badges.findLast((badge) => badge.name === contest.badge);
 }
 
-/** Every outside image the LeetCode cards embed (spec 0010): the level badge and the featured badges. */
-export function leetcodeImages(snapshot: LeetcodeSnapshot): readonly string[] {
+/** The badge with the newest `earnedOn`, ties to the larger numeric `id`: the last one, since badges are sorted. */
+export function mostRecentBadge({ badges }: LeetcodeSnapshot): LeetcodeBadge | undefined {
+  return badges.at(-1);
+}
+
+/**
+ * The monthly Daily Coding Challenge badge for each `YYYY-MM` inside the heatmap window (spec 0010), proof that every
+ * daily problem of that month was solved. LeetCode dates it on the month's last day.
+ */
+export function monthlyBadges(snapshot: LeetcodeSnapshot): ReadonlyMap<string, LeetcodeBadge> {
+  const first = dayNumber(snapshot.asOf) - (heatmap.windowDays - 1);
+  const monthly = snapshot.badges.filter(
+    (badge) => badge.category === DAILY_CHALLENGE && dayNumber(badge.earnedOn) >= first,
+  );
+  return new Map(monthly.map((badge) => [badge.earnedOn.slice(0, 7), badge]));
+}
+
+/** Stored sizes (px) of each kind of embedded badge, about twice the drawn size for sharp 2× screens. */
+export const BADGE_IMAGE = { featured: 144, level: 64, recent: 96, monthly: 64 } as const satisfies {
+  readonly [kind: string]: number;
+};
+
+/** Every outside image the LeetCode cards embed (spec 0010). */
+export function leetcodeImages(snapshot: LeetcodeSnapshot): readonly ImageRequest[] {
   const level = levelBadge(snapshot);
-  const urls = [
-    ...(level === undefined ? [] : [level.icon]),
-    ...featuredBadges(snapshot, FEATURED_BADGES).map((b) => b.icon),
+  const recent = mostRecentBadge(snapshot);
+  return [
+    ...(level === undefined ? [] : [{ url: level.icon, size: BADGE_IMAGE.level }]),
+    ...featuredBadges(snapshot, FEATURED_BADGES).map((badge) => ({ url: badge.icon, size: BADGE_IMAGE.featured })),
+    ...(recent === undefined ? [] : [{ url: recent.icon, size: BADGE_IMAGE.recent }]),
+    ...[...monthlyBadges(snapshot).values()].map((badge) => ({ url: badge.icon, size: BADGE_IMAGE.monthly })),
   ];
-  return [...new Set(urls)].toSorted();
 }
 
 export const leetcode = {
@@ -448,7 +474,7 @@ export const leetcode = {
     if (typeof response.asOf !== "string") fail("asOf", "must be a string");
     return parseLeetcodeSnapshot({ ...mapResponse(response.body), asOf: response.asOf });
   },
-  images(snapshot: unknown): readonly string[] {
+  images(snapshot: unknown): readonly ImageRequest[] {
     return leetcodeImages(parseLeetcodeSnapshot(snapshot));
   },
 } as const satisfies Source<LeetcodeSnapshot>;

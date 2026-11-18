@@ -2,7 +2,7 @@
 // Pure functions: no network, no file system, no clock.
 
 import type { Accounts, Content, Profile, Project, Role, School, Stack } from "../content/types.ts";
-import { icons } from "./icons.ts";
+import { isIconName } from "./icons.ts";
 
 const SHORT_TEXT_MAX = 80;
 const BIO_MAX = 300;
@@ -106,10 +106,10 @@ function checkUnique(entries: readonly Entry[], index: number): string[] {
   return earlier ? [problem(entries[index].path, `duplicate of ${earlier.path}`)] : [];
 }
 
-/** A stack icon must be a key of the registry. `Object.hasOwn`, so `toString` or `constructor` never pass. */
+/** A stack icon must be a key of a registry. `Object.hasOwn`, so `toString` or `constructor` never pass. */
 function checkStackIcon(path: string, icon: string | undefined): string[] {
-  if (icon === undefined || Object.hasOwn(icons, icon)) return [];
-  return [problem(path, "must be an icon in src/icons.ts")];
+  if (icon === undefined || isIconName(icon)) return [];
+  return [problem(path, "must be a brand in src/brands.ts or an icon in src/icons.ts")];
 }
 
 function checkPattern(path: string, value: string, pattern: RegExp): string[] {
@@ -122,6 +122,13 @@ function checkOptionalUrl(path: string, url: string | undefined): string[] {
   if (!isXmlSafe(url)) return [problem(path, XML_MESSAGE)];
   if (HTTPS_URL.test(url) && URL.canParse(url)) return [];
   return [problem(path, "must be an https URL")];
+}
+
+function checkStars(base: string, { note, stars }: School): string[] {
+  if (stars === undefined) return [];
+  if (!Number.isInteger(stars) || stars < 1 || stars > 5)
+    return [problem(`${base}.stars`, "must be a whole number from 1 to 5")];
+  return note === undefined ? [problem(`${base}.stars`, "needs a note")] : [];
 }
 
 function checkLogo(path: string, logo: string | undefined): string[] {
@@ -208,6 +215,7 @@ function checkSchool(school: School, i: number): string[] {
     ...checkDates(base, school),
     ...checkOptionalText(`${base}.note`, school.note, LONG_TEXT_MAX),
     ...checkLogo(`${base}.logo`, school.logo),
+    ...checkStars(base, school),
   ];
 }
 

@@ -1,11 +1,10 @@
 // Shared SVG helpers every section draws through (spec 0003). Pure: strings in, strings out.
 // Colors are class names only (`fill-accent`, `stroke-border`, `stop-accent2`); the values come from themeCss.
 
+import { brands } from "./brands.ts";
 import { escapeXml } from "./escape.ts";
-import { type Icon, type IconName, iconAspect, icons } from "./icons.ts";
+import { type IconName, icons, isBrand } from "./icons.ts";
 import {
-  type BrandName,
-  brandColors,
   button,
   fonts,
   layout,
@@ -153,28 +152,44 @@ export function outsideImage({ src, alt, width }: OutsideImageOptions): string {
   return `<picture><source media="(prefers-color-scheme: dark)" srcset="${url}"><img alt="${escapeXml(alt)}" src="${url}" width="${width}"></picture>`;
 }
 
-const isBrand = (name: IconName): name is BrandName => Object.hasOwn(brandColors, name);
+const VIEW_BOX = /viewBox="([^"]*)"/;
 
-/** The brand's own color class for a brand icon (spec 0010), else `fallback` (a token class like `fill-accent`). */
-export function iconClass(name: IconName, fallback: string): string {
-  return isBrand(name) ? `fill-brand-${name}` : fallback;
+/** A brand's file for `theme`: its `dark` file on the dark theme when it has one, else its `light` file. */
+function brandFile(theme: Theme, name: IconName): string | undefined {
+  if (!isBrand(name)) return undefined;
+  const brand: { readonly light: string; readonly dark?: string } = brands[name];
+  return theme.name === "dark" ? (brand.dark ?? brand.light) : brand.light;
 }
 
-/** The drawn width of an icon `size` px tall: wider than `size` only for a wide layered logo (AWS). */
+/** Width over height of an icon: 1 for a glyph, from the light file's `viewBox` for a brand logo. */
+function aspect(name: IconName): number {
+  if (!isBrand(name)) return 1;
+  const box = VIEW_BOX.exec(brands[name].light)?.[1]
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  return box === undefined || box.length !== 4 || !(box[2] > 0 && box[3] > 0) ? 1 : box[2] / box[3];
+}
+
+/** The drawn width of an icon `size` px tall: wider than `size` for a wide logo (AWS, Go). */
 export function iconWidth(name: IconName, size: number): number {
-  return Math.round(size * iconAspect(icons[name]));
+  return Math.round(size * aspect(name));
 }
 
 /**
- * An icon from `src/icons.ts` as a nested SVG at (x, y), `size` tall and `iconWidth` wide. A plain icon is painted by
- * `classes`; a layered logo always paints each layer in its own brand color, so `classes` is not used for it.
+ * An icon at (x, y), `size` tall and `iconWidth` wide. A glyph from `src/icons.ts` is a nested SVG painted by
+ * `classes`. A brand logo from `src/brands.ts` is its whole full color file for the theme, embedded as a
+ * `data:image/svg+xml` image, so `classes` is not used for it (spec 0010).
  */
-export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
-  const icon: Icon = icons[name];
-  const box = `x="${x}" y="${y}" width="${iconWidth(name, size)}" height="${size}"`;
-  if (!("layers" in icon)) return `<svg ${box} viewBox="0 0 24 24"><path class="${classes}" d="${icon.path}"/></svg>`;
-  const paths = icon.layers.map((d, i) => `<path class="fill-brand-${name}-${i}" d="${d}"/>`).join("");
-  return `<svg ${box} viewBox="${icon.viewBox}">${paths}</svg>`;
+export function iconSvg(theme: Theme, name: IconName, x: number, y: number, size: number, classes: string): string {
+  const width = iconWidth(name, size);
+  const file = brandFile(theme, name);
+  if (file !== undefined) {
+    const href = `data:image/svg+xml;base64,${Buffer.from(file).toString("base64")}`;
+    return `<image x="${x}" y="${y}" width="${width}" height="${size}" preserveAspectRatio="xMidYMid meet" href="${href}"/>`;
+  }
+  const glyph = isBrand(name) ? undefined : icons[name];
+  return `<svg x="${x}" y="${y}" width="${width}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${glyph?.path ?? ""}"/></svg>`;
 }
 
 export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
@@ -200,7 +215,7 @@ export function pillButton(theme: Theme, { icon, label }: PillButtonOptions): st
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const body = [
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 1}" height="${height - 1}" rx="${radius.pill}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
-    iconSvg(icon, groupX, margin + (height - button.icon) / 2, button.icon, iconClass(icon, "fill-accent")),
+    iconSvg(theme, icon, groupX, margin + (height - button.icon) / 2, button.icon, "fill-accent"),
     `<text class="fill-text" x="${labelX}" y="${margin + height / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${slot.style.weight}"${squeeze}>${escapeXml(label)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width: width + 2 * margin, height: height + 2 * margin, body });
@@ -230,7 +245,7 @@ export function sectionHeading({ key, title, icon }: SectionHeadingOptions): Sec
       svgDocument(theme, {
         width: HEADING_ICON,
         height: HEADING_ICON,
-        body: iconSvg(icon, 0, 0, HEADING_ICON, iconClass(icon, "fill-accent")),
+        body: iconSvg(theme, icon, 0, 0, HEADING_ICON, "fill-accent"),
       }),
   });
   return { markdown: `<h2>${image.markdown} ${escapeXml(title)}</h2>`, assets: image.assets };

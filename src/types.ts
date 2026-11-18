@@ -1,4 +1,5 @@
 import type { Content } from "../content/types.ts";
+import type { ImageRequest } from "./images.ts";
 
 /** Everything a section may read. Sections never touch the network or the file system. */
 export type BuildContext = {
@@ -9,7 +10,7 @@ export type BuildContext = {
   /** Every logo content names (spec 0010), keyed by file name, as a `data:image/...;base64,` URI. */
   readonly logos: ReadonlyMap<string, string>;
   /**
-   * Outside images the sources asked for (`Source.images`), keyed by their URL, as small `data:image/png;base64,`
+   * Outside images the sources asked for (`Source.images`), keyed by `imageKey`, as small `data:image/png;base64,`
    * URIs (spec 0010). An image refresh couldn't fetch is missing, so a section must have a fallback.
    */
   readonly images: ReadonlyMap<string, string>;
@@ -41,5 +42,5 @@ export type Source<Snapshot = unknown> = {
    * Outside image URLs the sections embed for this snapshot (spec 0010). `pnpm refresh` stores a small copy of each
    * in `data/snapshots/images/`, and `pnpm build` reads them from there; build never fetches.
    */
-  images?(snapshot: unknown): readonly string[];
+  images?(snapshot: unknown): readonly ImageRequest[];
 };

@@ -173,9 +173,46 @@ function roleEntry(role: Role, logos: Logos): Entry {
   };
 }
 
+const STAR = "\u2605";
+
+/**
+ * The honors note as a gold pill (spec 0010): `stars` ★ then the note, in `honor` on a faint `honor` tint, so it
+ * stands out from the degree line. One line: a long note is squeezed, never wrapped.
+ */
+function honorRow(note: string, stars: number): Row {
+  const { honorHeight, honorPadX, starGap } = timelineCard;
+  const style = typography.strong;
+  const starsWidth = stars * style.size;
+  const textX0 = starsWidth === 0 ? honorPadX : honorPadX + starsWidth + starGap;
+  const slot = { width: columnWidth - textX0 - honorPadX, style, minSize: MIN_SIZE } as const satisfies TextSlot;
+  const fit = fitText(note, slot);
+  // A tighter estimate than `fitText`'s, then pinned with `textLength`, so the pill hugs the text on every font.
+  const noteWidth =
+    fit.textLength ?? Math.min(slot.width, Math.ceil(timelineCard.honorCharWidth * fit.size * [...note].length));
+  const width = textX0 + noteWidth + honorPadX;
+  return (y) =>
+    [
+      `<rect x="${textX + 0.5}" y="${y - honorHeight / 2 + 0.5}" width="${width - 1}" height="${honorHeight - 1}" rx="${honorHeight / 2}" class="fill-honor stroke-honor" fill-opacity="0.12" stroke-width="${layout.border}"/>`,
+      ...(stars === 0
+        ? []
+        : [textTag({ x: textX + honorPadX, y, anchor: "start", classes: "fill-honor", style }, STAR.repeat(stars))]),
+      textTag(
+        {
+          x: textX + textX0,
+          y,
+          anchor: "start",
+          classes: "fill-honor",
+          style,
+          fit: { size: fit.size, textLength: noteWidth },
+        },
+        escapeXml(note),
+      ),
+    ].join("\n");
+}
+
 function schoolEntry(school: School, logos: Logos): Entry {
   const degree = school.field === undefined ? school.degree : `${school.degree}, ${school.field}`;
-  const noteRows = school.note === undefined ? [] : wrappedRows(school.note, textX, columnSlot, "fill-accent");
+  const noteRows = school.note === undefined ? [] : [honorRow(school.note, school.stars ?? 0)];
   return {
     mark: markOf(school.school, school.logo, logos),
     rows: [nameRow(school.school, school), ...wrappedRows(degree, textX, columnSlot, "fill-text"), ...noteRows],
@@ -232,7 +269,9 @@ function roleAlt(role: Role): string {
 function schoolAlt(school: School): string {
   const degree = school.field === undefined ? school.degree : `${school.degree}, ${school.field}`;
   const head = `${degree} at ${school.school}, ${formatRange(school, ALT_SEPARATOR)}.`;
-  return school.note === undefined ? head : `${head} ${sentence(school.note)}`;
+  if (school.note === undefined) return head;
+  const stars = school.stars === undefined ? "" : ` (${school.stars} stars)`;
+  return `${head} ${sentence(`${school.note}${stars}`)}`;
 }
 
 // --- Section (AC-1, AC-10) ---

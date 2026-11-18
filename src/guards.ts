@@ -1,6 +1,7 @@
 // Output checks run on the rendered output before anything is written: the README (spec 0001, AC-8),
 // theme contrast, and the inside of every generated SVG (spec 0003). Pure: each returns a list of problems.
 
+import { brands } from "./brands.ts";
 import { type ContrastPair, contrastRatio, type Theme, type ThemeName, themeCss, themes, tokenNames } from "./theme.ts";
 import type { GeneratedAsset } from "./types.ts";
 
@@ -117,6 +118,19 @@ const CSS_URL = /url\(([^)]*)\)/gi;
 const LOCAL_REF = /^#[A-Za-z_][\w.-]*$/;
 /** An embedded raster image (spec 0010, the timeline logos): self contained, and base64 has no markup characters. */
 const DATA_IMAGE = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/;
+const DATA_SVG = /^data:image\/svg\+xml;base64,([A-Za-z0-9+/]+={0,2})$/;
+/** Every vendored brand file (spec 0010): the only SVGs another SVG may embed. */
+const BRAND_FILES: ReadonlySet<string> = new Set(
+  Object.values(brands).flatMap((brand: { readonly light: string; readonly dark?: string }) =>
+    brand.dark === undefined ? [brand.light] : [brand.light, brand.dark],
+  ),
+);
+
+/** A `data:image/svg+xml` URI whose content is exactly one of the vendored brand files. */
+function isBrandImage(value: string): boolean {
+  const m = DATA_SVG.exec(value);
+  return m !== null && BRAND_FILES.has(Buffer.from(m[1], "base64").toString("utf8"));
+}
 const INFINITE = /infinite/i;
 
 const COLOR_PROPS = "fill|stroke|stop-color|color|flood-color|lighting-color|background-color|background";
@@ -163,7 +177,7 @@ function checkSelfContained(svg: string): string[] {
   const markup = markupOf(svg);
   for (const m of markup.matchAll(LINK_ATTR)) {
     const value = (m[2] ?? m[3] ?? m[4]).trim();
-    if (DATA_IMAGE.test(value)) continue;
+    if (DATA_IMAGE.test(value) || isBrandImage(value)) continue;
     if (!LOCAL_REF.test(value)) problems.push(`${m[1]} must point to #<id>, not ${value.slice(0, 80)}`);
   }
   for (const m of markup.matchAll(CSS_URL)) {
@@ -202,6 +216,18 @@ function checkColors(svg: string, theme: Theme): string[] {
     problems.push(`color class ${name} is not defined by themeCss`);
   }
   return problems;
+}
+
+/**
+ * Every vendored brand file (spec 0010) is self contained: no script, event attribute, doctype, `@import`, or link
+ * other than `#<id>`. Colors are not checked: a brand file keeps its own.
+ */
+export function checkBrands(): string[] {
+  return Object.entries(brands).flatMap(([name, brand]: [string, { readonly light: string; readonly dark?: string }]) =>
+    [brand.light, ...(brand.dark === undefined ? [] : [brand.dark])].flatMap((file, i) =>
+      checkSelfContained(file).map((p) => `brand: ${name} ${i === 0 ? "light" : "dark"}: ${p}`),
+    ),
+  );
 }
 
 /** Self containment, light and dark twins, and the color rule, for every generated SVG sorted by name. */

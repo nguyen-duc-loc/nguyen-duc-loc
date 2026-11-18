@@ -1,12 +1,13 @@
 // Certifications (spec 0008, reshaped into a table by spec 0010; docs/design.md "Certifications"): one table row
 // per issuer, the issuer's name on the left and its active Credly badges on the right, each Credly's own image
-// linked to its badge page. The issuer column is kept narrow (`credlyGrid.issuerWidth`, names wrap) so the badges get
-// the room. Data comes only from the committed snapshot; this section writes only its heading icon.
+// linked to its badge page. The columns are sized in percent (`tableColumns.certifications`), so the table fills the
+// README width and the badges get the room. Data comes only from the committed snapshot; this section writes only
+// its heading icon.
 
 import { escapeXml } from "../escape.ts";
 import { type CredlyBadge, type CredlySnapshot, parseCredlySnapshot } from "../sources/credly.ts";
 import { outsideImage, sectionHeading } from "../svg.ts";
-import { credlyGrid } from "../theme.ts";
+import { credlyGrid, tableColumns } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
 const HEADING = "Certifications";
@@ -79,8 +80,8 @@ export const credlyBadges: Section = (ctx) => {
   const rows = byIssuer(badges).map(([issuer, group]) =>
     [
       "<tr>",
-      `<td width="${credlyGrid.issuerWidth}"><b>${escapeXml(issuer)}</b></td>`,
-      "<td>",
+      `<td width="${tableColumns.certifications[0]}%"><b>${escapeXml(issuer)}</b></td>`,
+      `<td width="${tableColumns.certifications[1]}%">`,
       ...group.map(badgeLine),
       "</td>",
       "</tr>",

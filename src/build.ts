@@ -4,7 +4,8 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { content } from "../content/index.ts";
 import { assertContent, logoFiles } from "./content.ts";
-import { checkContrast, checkReadme, checkReadmeAssets, checkSvgAssets } from "./guards.ts";
+import { checkBrands, checkContrast, checkReadme, checkReadmeAssets, checkSvgAssets } from "./guards.ts";
+import { type ImageRequest, imageKey } from "./images.ts";
 import { GENERATED_DIR, LOGO_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
 import { readSnapshot } from "./snapshots.ts";
@@ -39,10 +40,11 @@ async function readLogos(files: readonly string[]): Promise<ReadonlyMap<string, 
   return logos;
 }
 
-/** Every outside image URL the registered sources ask for, for the snapshots on disk (spec 0010). */
-export function imageUrls(snapshots: ReadonlyMap<string, unknown>): readonly string[] {
-  const urls = sources.flatMap((source) => source.images?.(snapshots.get(source.name)) ?? []);
-  return [...new Set(urls)].toSorted();
+/** Every outside image the registered sources ask for, for the snapshots on disk, unique and sorted (spec 0010). */
+export function imageRequests(snapshots: ReadonlyMap<string, unknown>): readonly ImageRequest[] {
+  const requests = sources.flatMap((source) => source.images?.(snapshots.get(source.name)) ?? []);
+  const unique = new Map(requests.map((request) => [imageKey(request), request]));
+  return [...unique.entries()].toSorted(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, request]) => request);
 }
 
 function checkAssets(assets: readonly GeneratedAsset[]): string[] {
@@ -69,13 +71,14 @@ export async function build(): Promise<void> {
 
   // 2. Render in memory, then 3. run the guards. A failed guard writes nothing.
   const logos = await readLogos(logoFiles(content));
-  const images = await readImages(imageUrls(snapshots));
+  const images = await readImages(imageRequests(snapshots));
   const { readme, assets } = renderReadme({ content, snapshots, logos, images });
   const problems = [
     ...checkReadme(readme),
     ...checkReadmeAssets(readme, assets),
     ...checkAssets(assets),
     ...checkContrast(themes, contrastPairs),
+    ...checkBrands(),
     ...checkSvgAssets(assets),
   ];
   if (problems.length > 0) {
