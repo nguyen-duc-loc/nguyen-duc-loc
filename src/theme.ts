@@ -299,7 +299,7 @@ export const timelineCard = {
   honorHeight: 26,
   honorPadX: 12,
   starWidth: 0.8,
-  starGap: 4,
+  starGap: 7,
 } as const satisfies { readonly [name: string]: number };
 
 /**
