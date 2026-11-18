@@ -49,12 +49,17 @@ function chipSize(item: StackItem): ChipSize {
   return { width: 2 * margin + 2 * padX + iconPart + nameWidth, nameWidth };
 }
 
-/** The icon at the left padding, then the name centered in the space after it, both centered on the chip's height. */
+/** The icon at the left padding, then the name filling the space after it, both centered on the chip's height. */
 function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize): string {
   // Sized against the cap, not the snug width: `fitText`'s wider estimate would shrink every name.
   const slot = { width: NAME_MAX, style, minSize: typography.label.size } as const satisfies TextSlot;
   const fit = fitText(item.name, slot);
-  const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
+  // Pinned to its estimated width with `lengthAdjust="spacing"`: a font a little wider or narrower than the estimate
+  // only nudges the letter spacing, so the gap after the icon and the right padding stay the same on every system.
+  // A name too long for the cap is squeezed instead.
+  const pin = fit.textLength
+    ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"`
+    : ` textLength="${nameWidth}" lengthAdjust="spacing"`;
   const fullHeight = height + 2 * margin;
   const left = margin + padX;
   const nameX = item.icon === undefined ? left : left + iconWidth(item.icon, iconSize) + iconGap;
@@ -63,7 +68,7 @@ function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize):
     ...(item.icon === undefined
       ? []
       : [iconSvg(theme, item.icon, left, margin + (height - iconSize) / 2, iconSize, "fill-text")]),
-    `<text class="fill-text" x="${nameX + nameWidth / 2}" y="${centeredBaseline(fullHeight / 2, fit.size)}" text-anchor="middle" font-size="${fit.size}" font-weight="${style.weight}"${squeeze}>${escapeXml(item.name)}</text>`,
+    `<text class="fill-text" x="${nameX}" y="${centeredBaseline(fullHeight / 2, fit.size)}" text-anchor="start" font-size="${fit.size}" font-weight="${style.weight}"${pin}>${escapeXml(item.name)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width, height: fullHeight, body });
 }

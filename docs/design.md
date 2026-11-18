@@ -230,7 +230,7 @@ Drawn by `svgDocument` (no card), `stackChip.height + 2 × margin` (36) tall. Al
 - Name width is `min(160, snugWidth(name, 13))` (see *Centering a short label*). The file is `2 × margin + 2 × padX + (iconWidth(icon, 18) + iconGap, when the item has an icon) + name width` wide, rendered at that `width`. The AWS logo is 30 wide, Go 48. Amazon Web Services is spelled out in content.
 - The chip is a `rect` at (2.5, 2.5), `width − 5` × 31, `rx` of `radius.small`, classes `fill-surface stroke-border`, `stroke-width` of `layout.border`.
 - With an icon: `iconSvg(theme, icon, 12, 9, 18, "fill-text")`, centered on the chip's height, then the name's space from x = `12 + iconWidth + 8`. Without one: the name's space from x = 12.
-- The name is in the `chip` style, `fill-text`, centered in its space (`text-anchor="middle"`) on baseline `centeredBaseline(18, size)`, sized by `fitText` against 160 with a 12px minimum.
+- The name is in the `chip` style, `fill-text`, from the start of its space on baseline `centeredBaseline(18, size)`, sized by `fitText` against 160 with a 12px minimum. It is pinned to its `snugWidth` with `textLength` and `lengthAdjust="spacing"`: a font a little wider or narrower than the estimate only nudges the letter spacing (glyphs are never stretched), so the gap after the icon and the right padding are the same on macOS, Windows, and Linux. A name past the 160 cap is squeezed with `spacingAndGlyphs` instead.
 
 ## LeetCode (built by features 8 and 11)
 
