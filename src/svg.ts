@@ -6,6 +6,7 @@ import { escapeXml } from "./escape.ts";
 import { type IconName, icons, isBrand } from "./icons.ts";
 import {
   button,
+  charWidths,
   fonts,
   layout,
   motion,
@@ -205,9 +206,18 @@ export function centeredBaseline(centerY: number, size: number): number {
   return Math.round((centerY + textMetrics.capCenter * size) * 10) / 10;
 }
 
-/** A snug width estimate for a short label (`textMetrics.snugAdvance`); center the label in it. */
+/** One character's width in ems (`charWidths`). */
+function charWidth(char: string): number {
+  const group = charWidths.groups.find(({ chars }) => chars.includes(char));
+  if (group !== undefined) return group.width;
+  if (char >= "A" && char <= "Z") return charWidths.upper;
+  if (char >= "0" && char <= "9") return charWidths.digit;
+  return charWidths.other;
+}
+
+/** A snug width estimate for a short label, character by character (`charWidths`); center the label in it. */
 export function snugWidth(text: string, size: number): number {
-  return Math.ceil(textMetrics.snugAdvance * size * [...text].length);
+  return Math.ceil([...text].reduce((sum, char) => sum + charWidth(char), 0) * size);
 }
 
 /** Estimated width of `text` at `size`, `0.6 × size` per character, in integers (the `fitText` estimate). */

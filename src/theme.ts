@@ -159,13 +159,25 @@ export const typography = {
 /**
  * Text metrics for centering without measuring (spec 0010). `capCenter`: a capital letter's middle sits this many ems
  * above the baseline, so a baseline at `center + capCenter × size` centers the text on every system font (more
- * steadily than `dominant-baseline="central"`, which fonts place differently). `snugAdvance`: a typical character
- * width in ems for a short label, tighter than `fitText`'s safe 0.6; text drawn with it is centered in its space, so
- * any error splits evenly on both sides.
+ * steadily than `dominant-baseline="central"`, which fonts place differently).
  */
-export const textMetrics = { capCenter: 0.35, snugAdvance: 0.52 } as const satisfies {
-  readonly [name: string]: number;
-};
+export const textMetrics = { capCenter: 0.35 } as const satisfies { readonly [name: string]: number };
+
+/**
+ * Character widths in ems for snug label estimates (spec 0010), rounded from the system UI font at weight 500 to 600
+ * (San Francisco and Segoe UI are close). Text drawn with them is centered in its space, so a small error splits
+ * evenly on both sides. A character in no group uses its kind's default.
+ */
+export const charWidths = {
+  groups: [
+    { width: 0.27, chars: " ijlI'|.,:;!" },
+    { width: 0.42, chars: "frt/()-[]1" },
+    { width: 0.9, chars: "mwMW" },
+  ],
+  upper: 0.7,
+  digit: 0.65,
+  other: 0.59,
+} as const;
 
 /** Spacing scale in px. */
 export const space = [4, 8, 12, 16, 24, 32] as const satisfies readonly number[];
