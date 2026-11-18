@@ -67,6 +67,7 @@ export const techStack: Section = ({ content: { stack } }) => {
         alt: item.name,
         width: size.width,
         inline: true,
+        align: "middle",
         render: (theme) => chipSvg(theme, item, size),
       });
     });

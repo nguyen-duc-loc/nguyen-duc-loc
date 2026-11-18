@@ -118,16 +118,21 @@ export type ThemedImageOptions = {
   readonly render: (theme: Theme) => string;
   /** One line with no spaces between tags, so a row of them wraps like words (table cells, headings). */
   readonly inline?: boolean;
+  /**
+   * `middle` centers the image on the line of text instead of resting it on the baseline (`<img align="middle">`,
+   * which GitHub keeps), so a row of chips sits centered in its table cell (spec 0010).
+   */
+  readonly align?: "middle";
 };
 
 /** A `<picture>` that follows the visitor's GitHub theme, plus both SVGs. The light file is the fallback. */
-export function themedImage({ base, alt, width, render, inline = false }: ThemedImageOptions): SectionOutput {
+export function themedImage({ base, alt, width, render, inline = false, align }: ThemedImageOptions): SectionOutput {
   const light = `${base}-light.svg`;
   const dark = `${base}-dark.svg`;
   const lines = [
     "<picture>",
     `<source media="(prefers-color-scheme: dark)" srcset="assets/generated/${dark}">`,
-    `<img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}">`,
+    `<img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}"${align === undefined ? "" : ` align="${align}"`}>`,
     "</picture>",
   ];
   const markdown = inline ? lines.join("") : [lines[0], `  ${lines[1]}`, `  ${lines[2]}`, lines[3]].join("\n");
