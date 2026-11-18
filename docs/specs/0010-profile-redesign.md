@@ -22,11 +22,21 @@ A redesign that replaces parts of earlier decisions: the Catppuccin palette of s
 - **About me buttons.** The icon and label are centered together in the pill, with the brand color icon.
 - **LeetCode contest card.** The Top % and the rating histogram are gone. The rating chart spans the card, and contests are spaced evenly by order, not by date, so years without contests leave no gap. Each year is labeled under its first contest, with a faint dashed line where it starts. The heatmap uses `success`.
 - **Experience and education logos.** `logo` in `content/experience.ts` and `content/education.ts` names a PNG or JPEG in `assets/static/logos/`. `pnpm build` reads only the files content names and passes them to sections as `ctx.logos` (data URIs), so sections stay pure. The timeline draws each logo on a white tile (`logoTile`); an entry with no logo shows its initial. The rail and dots are gone. The SVG guard allows only `data:image/png` or `data:image/jpeg` base64 URIs besides `#id` links.
-- **Logo sources.** Noventiq from the owner's file, CMC Telecom and FPT Software from Wikimedia Commons (cropped and resized), UET and Hong Quang High School from their own websites.
+- **Logo sources.** Noventiq from the owner's file, CMC Telecom and FPT Software from Wikimedia Commons (cropped and resized), UET (the emblem cut from the header logo on uet.vnu.edu.vn) and Hong Quang High School from their own websites.
+
+### Second round (same day)
+
+- **About me.** The bio is a quote: `<p><i>“…”</i></p>`, left aligned. The location is no longer shown. The buttons are left aligned too.
+- **Full color logos.** The icon registry gains layered icons: a brand's full color logo with its own `viewBox` and one path per color, painted by `fill-brand-<icon>-<layer>` (colors in `brandColors`, a too faint color falls back to `text`). LeetCode (orange, gray, black), Gmail (four color M), and AWS (letters and smile) are copied from Wikimedia Commons files, since Simple Icons 16.38.0 has no AWS and only one color LeetCode and Gmail. The Email button uses the Gmail logo, and AWS gets its logo in the tech stack.
+- **Experience and education** are drawn on the page with no card; their text is checked against `page`. The LinkedIn button under them is gone.
+- **Certifications.** The issuer cell is `<td width="140">`, so names wrap and the badges get the room. The Credly button under the table is gone.
+- **LeetCode.** The contest level shows the level's own badge art (Guardian) and its name in `accent`. The solved card and the badges card share one full width image, so they always sit on one row. The badges card shows the featured badges' art (the chosen badge in the middle), like LeetCode's own page, so the separate badge row is gone. The difficulty chips are drawn like LeetCode's (a `track` tile, the colored name over the count), using new `successText`, `warningText`, `dangerText` tokens checked as text on `track`. The heatmap follows LeetCode's layout (a summary line, no legend) in LeetCode's green (`heat`).
+- **Outside images.** A source may list image URLs its sections embed (`Source.images`). `pnpm refresh` downloads each, shrinks it to a 144 px PNG with a small built in PNG codec (`src/png.ts`, no dependency), and stores it in `data/snapshots/images/` by URL hash, which the daily bot already commits. `pnpm build` reads them into `ctx.images` and never fetches; a missing image falls back (the shield, or left out of the art row).
+- **Guard.** An SVG that uses a `fill-`, `stroke-`, or `stop-` class `themeCss` doesn't define fails the build.
 
 ## Code area
 
-`src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/guards.ts`, `src/build.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `content/*`, `assets/static/logos/`, `docs/design.md`
+`src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/guards.ts`, `src/build.ts`, `src/refresh.ts`, `src/png.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `src/sources/leetcode.ts`, `src/sources/images.ts`, `content/*`, `assets/static/logos/`, `data/snapshots/images/`, `docs/design.md`
 
 ## Requirements
 
@@ -38,6 +48,10 @@ A redesign that replaces parts of earlier decisions: the Catppuccin palette of s
 - AC-6: Each experience and education entry shows its logo, or its initial when it has none.
 - AC-7: The contact pill icon and label are centered in the pill.
 - AC-8: `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `pnpm lint:md` pass.
+- AC-9: The bio shows as an italic quote, left aligned, with no location.
+- AC-10: LeetCode, Gmail, and AWS show their full color logos.
+- AC-11: Experience and education have no card and no LinkedIn button; certifications have no Credly button and a narrow issuer column.
+- AC-12: The contest level shows the Guardian art in blue text; the solved and badges cards share one row, with badge art in the badges card; the heatmap is LeetCode green in LeetCode's layout.
 
 ## Ratify
 

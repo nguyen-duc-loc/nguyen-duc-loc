@@ -16,33 +16,39 @@ Both themes use GitHub's Primer colors, with the same token names. `success`, `w
 
 | Token | Role | Light | Dark |
 |---|---|---|---|
-| `page` | GitHub's default page background. Used only to check things drawn without a card (the typing line, brand icons). Never drawn, and has no color class. | `#ffffff` | `#0d1117` |
+| `page` | GitHub's default page background. Used only to check things drawn without a card (the typing line, the experience and education images, brand icons). Never drawn, and has no color class. | `#ffffff` | `#0d1117` |
 | `surface` | Card background (Primer canvas subtle) | `#f6f8fa` | `#151b23` |
 | `border` | Card border and dividers (decorative) | `#d1d9e0` | `#3d444d` |
 | `track` | Empty part of a gauge or bar, a logo tile with no logo (decorative) | `#e6eaef` | `#262c36` |
 | `text` | Main text | `#1f2328` | `#f0f6fc` |
 | `muted` | Secondary text and labels | `#59636e` | `#9198a1` |
-| `accent` | Timeline names, the typing line, generic heading icons, gradient start (Primer blue) | `#0969da` | `#4493f8` |
-| `accent2` | Gradient end, the LeetCode level (Primer purple) | `#8250df` | `#ab7df8` |
+| `accent` | Timeline names, the LeetCode level, the typing line, generic heading icons, gradient start (Primer blue) | `#0969da` | `#4493f8` |
+| `accent2` | Gradient end (Primer purple) | `#8250df` | `#ab7df8` |
 | `onAccent` | Text on the banner gradient | `#ffffff` | `#0d1117` |
-| `success` | Status shape, always labeled (Easy), and the heatmap cells | `#00af9b` | `#1cbaba` |
+| `success` | Status shape, always labeled (Easy) | `#00af9b` | `#1cbaba` |
 | `warning` | Status shape, always labeled (Medium) | `#ffb800` | `#ffb700` |
 | `danger` | Status shape, always labeled (Hard) | `#ff2d55` | `#f63737` |
+| `successText` | The `Easy` chip name: LeetCode's teal, darkened (light) so it reads as text on `track` | `#00705f` | `#1cbaba` |
+| `warningText` | The `Med.` chip name, the same for LeetCode's yellow | `#805600` | `#ffb700` |
+| `dangerText` | The `Hard` chip name, the same for LeetCode's red | `#c0262d` | `#ff6b6b` |
+| `heat` | Heatmap cells: LeetCode's green, at four opacities | `#2cbb5d` | `#2cbb5d` |
 | `logoTile` | The white tile behind a company or school logo, in both themes, since logos are made for white | `#ffffff` | `#ffffff` |
 
 ### Brand colors
 
-`brandColors` in `src/theme.ts` holds each brand icon's own color: the `hex` of the pinned Simple Icons release (`simple-icons@16.38.0`), and LinkedIn's brand blue `#0a66c2` for the hand drawn LinkedIn. `brandColor(theme, brand)` returns it, unless it is under `brandMinContrast` (1.5:1) against the theme's `page` or `surface`, where it would vanish; then it returns the theme's `text`. Today that swaps Linux to `text` in light mode and Next.js to `text` in dark mode. Brand icons always sit next to their name, so they are decorative and have no contrast pair.
+`brandColors` in `src/theme.ts` holds each brand icon's own colors. A plain icon has one: the `hex` of the pinned Simple Icons release (`simple-icons@16.38.0`), or LinkedIn's brand blue `#0a66c2` for the hand drawn LinkedIn. A layered icon (a full color logo, see *Icon registry*) has one color per layer, in layer order, taken from its source file. Each color goes through `visibleBrandColor(theme, hex)`, which returns the theme's `text` when the color is under `brandMinContrast` (1.5:1) against `page` or `surface`, where it would vanish. Today that swaps Linux to `text` in light mode, and Next.js, the LeetCode black stroke, and the AWS letters to `text` in dark mode. Brand icons always sit next to their name, so they are decorative and have no contrast pair.
 
-| Brand | Color | Brand | Color |
+| Brand | Colors | Brand | Colors |
 |---|---|---|---|
-| `cplusplus` | `#00599c` | `leetcode` | `#ffa116` |
-| `credly` | `#ff6b00` | `linkedin` | `#0a66c2` |
-| `docker` | `#2496ed` | `linux` | `#fcc624` |
-| `git` | `#f03c2e` | `nextdotjs` | `#000000` |
-| `gnubash` | `#4eaa25` | `react` | `#61dafb` |
-| `go` | `#00add8` | `terraform` | `#844fba` |
-| `kubernetes` | `#326ce5` | `typescript` | `#3178c6` |
+| `aws` | `#252f3e` letters, `#ff9900` smile | `leetcode` | `#ffa116` bowl, `#b3b3b3` bar, `#000000` stroke |
+| `cplusplus` | `#00599c` | `linkedin` | `#0a66c2` |
+| `credly` | `#ff6b00` | `linux` | `#fcc624` |
+| `docker` | `#2496ed` | `nextdotjs` | `#000000` |
+| `git` | `#f03c2e` | `react` | `#61dafb` |
+| `gmail` | `#4285f4`, `#34a853`, `#fbbc04`, `#ea4335`, `#c5221f` | `terraform` | `#844fba` |
+| `gnubash` | `#4eaa25` | `typescript` | `#3178c6` |
+| `go` | `#00add8` | | |
+| `kubernetes` | `#326ce5` | | |
 
 ### Contrast
 
@@ -54,11 +60,17 @@ Both themes use GitHub's Primer colors, with the same token names. `success`, `w
 | `muted` | `surface` | 4.5 | 5.74 | 5.94 |
 | `accent` | `surface` | 4.5 | 4.87 | 5.58 |
 | `accent` | `page` | 4.5 | 5.19 | 6.10 |
+| `text` | `page` | 4.5 | 15.79 | 17.38 |
+| `muted` | `page` | 4.5 | 6.11 | 6.49 |
 | `accent2` | `surface` | 4.5 | 4.73 | 5.78 |
 | `onAccent` | `accent` | 4.5 | 5.19 | 6.10 |
 | `onAccent` | `accent2` | 4.5 | 5.04 | 6.32 |
+| `text` | `track` | 4.5 | 13.07 | 12.89 |
+| `successText` | `track` | 4.5 | 4.99 | 5.87 |
+| `warningText` | `track` | 4.5 | 5.34 | 8.03 |
+| `dangerText` | `track` | 4.5 | 4.88 | 5.05 |
 
-`border`, `track`, `success`, `warning`, `danger`, and `logoTile` aren't checked on purpose. They are decorative or always labeled.
+`border`, `track`, `success`, `warning`, `danger`, `heat`, and `logoTile` aren't checked on purpose. They are decorative or always labeled.
 
 ### Color classes
 
@@ -68,7 +80,7 @@ Every SVG's only `<style>` starts with the color class block from `themeCss(them
 .fill-<token>{fill:<hex>}.stroke-<token>{stroke:<hex>}.stop-<token>{stop-color:<hex>}
 ```
 
-Then, for each brand in key order, `.fill-brand-<brand>{fill:<hex>}.stroke-brand-<brand>{stroke:<hex>}` with the color from `brandColor(theme, brand)`.
+Then, for each brand in key order, `.fill-brand-<brand>{fill:<hex>}.stroke-brand-<brand>{stroke:<hex>}` for a plain icon, or the same with `<brand>-<layer>` for each layer of a layered one (the LeetCode orange is `fill-brand-leetcode-0`). The build fails if an SVG uses a `fill-`, `stroke-`, or `stop-` class this block doesn't define.
 
 Use `class="fill-accent"`, `class="stroke-border"`, or `<stop class="stop-accent2" offset="1"/>`. Draw an icon through `iconClass(icon, fallback)`, which gives `fill-brand-<icon>` for a brand and the fallback token class otherwise. For transparency, use `opacity`, `fill-opacity`, or `stroke-opacity`. The only color values allowed anywhere else in an SVG are `none`, `currentColor`, `transparent`, `inherit`, and `url(#<id>)`.
 
@@ -167,7 +179,7 @@ The icon file is `heading-<key>-light.svg` and `-dark.svg`, 24 × 24 (GitHub dra
 
 ## Section order
 
-Header banner, typing line, About me, Experience, Education, Certifications, Tech stack, LeetCode (spec 0010). The body of each section is left aligned like its heading, except About me, which keeps its centered bio, location, and buttons.
+Header banner, typing line, About me, Experience, Education, Certifications, Tech stack, LeetCode (spec 0010). The body of each section is left aligned like its heading.
 
 ## Header banner and typing line (built by feature 5)
 
@@ -177,23 +189,22 @@ Header banner, typing line, About me, Experience, Education, Certifications, Tec
 
 ## About me (built by feature 6)
 
-Decided in [spec 0004](specs/0004-about-contact-links.md). Right after the typing line, the README has, in order and separated by blank lines:
+Decided in [spec 0004](specs/0004-about-contact-links.md), restyled by [spec 0010](specs/0010-profile-redesign.md). Right after the typing line, the README has, in order and separated by blank lines:
 
 - the `about` section heading (see *Section headings*)
-- `<p align="center">` with `profile.bio`
-- `<p align="center">` with `📍 ` plus `profile.location`
-- one `<p align="center">` block holding the contact buttons: LinkedIn, Credly, LeetCode, Email, in that order. There is no GitHub button, since the visitor is already on GitHub.
+- `<p><i>“<bio>”</i></p>`: `profile.bio` as a quote, in curly quotation marks and italic, left aligned
+- one `<p>` block holding the contact buttons: LinkedIn, Credly, LeetCode, Email, in that order. There is no GitHub button, since the visitor is already on GitHub.
 
-The bio and location are real Markdown text, so GitHub colors them for every theme and people can select and translate them. Bio and location pass through `escapeXml` once. GitHub drops `style` and keeps `align`, so the text is centered with `align`.
+The location is not shown (`profile.location` stays in content, unused). The bio is real text, so GitHub colors it for every theme and people can select and translate it. It passes through `escapeXml` once.
 
 Each button is `<a href="URL">` wrapping the `<picture>` from `themedImage`, because a link inside an `<img>` SVG is dead. The button block has no blank lines inside it, so GitHub reads it as one HTML block. The line breaks between the `<a>` tags render as a single space, and each button's drawn 4px margin keeps the spacing even, across a row and between wrapped rows.
 
-| Button | Label | Alt text | Link |
-|---|---|---|---|
-| LinkedIn | `LinkedIn` | `LinkedIn profile` | `profileUrls(accounts).linkedin` |
-| Credly | `Credly` | `Credly badges` | `profileUrls(accounts).credly` |
-| LeetCode | `LeetCode` | `LeetCode profile` | `profileUrls(accounts).leetcode` |
-| Email | `Email` | `Email <profile.email>` | `mailtoUrl(profile.email)` |
+| Button | Icon | Label | Alt text | Link |
+|---|---|---|---|---|
+| LinkedIn | `linkedin` | `LinkedIn` | `LinkedIn profile` | `profileUrls(accounts).linkedin` |
+| Credly | `credly` | `Credly` | `Credly badges` | `profileUrls(accounts).credly` |
+| LeetCode | `leetcode` | `LeetCode` | `LeetCode profile` | `profileUrls(accounts).leetcode` |
+| Email | `gmail` | `Email` | `Email <profile.email>` | `mailtoUrl(profile.email)` |
 
 ## Button anatomy
 
@@ -201,26 +212,26 @@ Every button is drawn by `pillButton(theme, { icon, label })` as a `contact-<nam
 
 - Everything outside the pill is transparent (`button.margin`, 4px on every side).
 - The pill is a `rect` at `x="4.5" y="4.5"`, 139 × 39, `rx` of `radius.pill`, classes `fill-surface stroke-border`, and `stroke-width` of `layout.border`. It uses the same half pixel inset as `card()`.
-- The icon and the label are centered together (spec 0010). The label is sized by `fitText` in an 84px slot with a 12px minimum, in the `button` style; its width is the `textWidth` estimate (or `textLength` when squeezed). The group is 16 + 8 + label width wide and starts at `margin + round((140 − group) / 2)`.
-- The icon is `iconSvg(icon, groupX, 16, 16, iconClass(icon, "fill-accent"))`: LinkedIn, Credly, and LeetCode in their brand colors, Email in `accent`.
-- The label is in `fill-text` at `groupX + 24`, y = 24, with `dominant-baseline="central"` and `text-anchor="start"`.
+- The icon and the label are centered together (spec 0010). The icon is 16 tall and `iconWidth(icon, 16)` wide (21 for the Gmail M). The label is sized by `fitText` in the slot left after `padX`, the icon, `gap`, and `padX`, with a 12px minimum, in the `button` style; its width is the `textWidth` estimate (or `textLength` when squeezed). The group is icon + 8 + label wide and starts at `margin + round((140 − group) / 2)`.
+- The icon is `iconSvg(icon, groupX, 16, 16, iconClass(icon, "fill-accent"))`, in its brand colors.
+- The label is in `fill-text` at `groupX + icon + 8`, y = 24, with `dominant-baseline="central"` and `text-anchor="start"`.
 - Buttons have no animation.
 
-The timeline's LinkedIn button and the Certifications Credly button reuse the `contact-*` files About me writes. They return only the markup, so no file is written twice.
+Only About me shows buttons.
 
 ## Tech stack (built by feature 7)
 
-Decided in [spec 0005](specs/0005-tech-stack-cards.md), made a table by [spec 0010](specs/0010-profile-redesign.md). After the Certifications see all button, the README has the `stack` section heading, a blank line, then one `<table>` with no blank lines inside. Each row is one category, in this order: Languages, Frameworks, Tools, Cloud. The left cell is the label in `<b>`. The right cell holds one chip per item in file order, one inline `<picture>` per line, so the chips wrap like words on a narrow screen.
+Decided in [spec 0005](specs/0005-tech-stack-cards.md), made a table by [spec 0010](specs/0010-profile-redesign.md). After the Certifications table, the README has the `stack` section heading, a blank line, then one `<table>` with no blank lines inside. Each row is one category, in this order: Languages, Frameworks, Tools, Cloud. The left cell is the label in `<b>`. The right cell holds one chip per item in file order, one inline `<picture>` per line, so the chips wrap like words on a narrow screen.
 
-Each chip is a `themedImage` with `inline: true`, files `stack-<key>-light.svg` and `stack-<key>-dark.svg`, where `<key>` is the item's icon key, or its name in lowercase with every run of other characters as `-` (AWS is `stack-aws`). Its alt text is the item name. No chip is a link, and nothing moves. Every stack `icon` must be a key of the icon registry: a wrong slug fails `pnpm typecheck` and the build. A category holds 1 to 8 items.
+Each chip is a `themedImage` with `inline: true`, files `stack-<key>-light.svg` and `stack-<key>-dark.svg`, where `<key>` is the item's icon key, or its name in lowercase with every run of other characters as `-` for an item with no icon. Its alt text is the item name. No chip is a link, and nothing moves. Every stack `icon` must be a key of the icon registry: a wrong slug fails `pnpm typecheck` and the build. A category holds 1 to 8 items.
 
 ## Stack chip anatomy
 
 Drawn by `svgDocument` (no card), `stackChip.height + 2 × margin` (36) tall. All values are in px.
 
-- Name width is `min(160, textWidth(name, 13))`. The file is `2 × margin + 2 × padX + (icon + iconGap, when the item has an icon) + name width` wide, rendered at that `width`.
+- Name width is `min(160, textWidth(name, 13))`. The file is `2 × margin + 2 × padX + (iconWidth(icon, 18) + iconGap, when the item has an icon) + name width` wide, rendered at that `width`. The AWS logo is 30 wide.
 - The chip is a `rect` at (2.5, 2.5), `width − 5` × 31, `rx` of `radius.small`, classes `fill-surface stroke-border`, `stroke-width` of `layout.border`.
-- With an icon: `iconSvg(icon, 12, 9, 18, iconClass(icon, "fill-text"))`, then the name at x = 38. Without one (AWS today): the name at x = 12.
+- With an icon: `iconSvg(icon, 12, 9, 18, iconClass(icon, "fill-text"))`, then the name at x = `12 + iconWidth + 8`. Without one: the name at x = 12.
 - The name is in the `chip` style, `fill-text`, center y = 18, sized by `fitText` in its width with a 12px minimum.
 
 ## LeetCode (built by features 8 and 11)
@@ -228,40 +239,32 @@ Drawn by `svgDocument` (no card), `stackChip.height + 2 × margin` (36) tall. Al
 Decided in [spec 0006](specs/0006-leetcode-stats-card.md), grown by [spec 0009](specs/0009-leetcode-badges-heatmap.md), and reshaped by [spec 0010](specs/0010-profile-redesign.md). Right after the Tech stack table, the README has the `leetcode` section heading, then these `<p>` blocks, separated by blank lines:
 
 1. The contest card.
-2. The solved card, then the badges card on the next line, so they sit side by side on desktop and stack on a phone.
-3. The badge row (left out when no badge qualifies).
-4. The heatmap card.
+2. The summary row: the solved card and the badges card side by side in one image (spec 0010), so they always share a row.
+3. The heatmap card.
 
-No block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).leetcode`, so a click opens the LeetCode profile.
+No block has blank lines inside. Each image is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).leetcode`, so a click opens the LeetCode profile. The separate row of badge PNGs is gone: the badges card shows the featured badges itself.
 
-| Card | Files | Width |
+| Image | Files | Width |
 |---|---|---|
 | Contest | `leetcode-contest-light.svg`, `leetcode-contest-dark.svg` | `width="100%"` (`layout.full`, 850 × 244) |
-| Solved | `leetcode-solved-light.svg`, `leetcode-solved-dark.svg` | `width="400"` (`layout.half`, 400 × 196) |
-| Badges | `leetcode-badges-light.svg`, `leetcode-badges-dark.svg` | `width="400"` (`layout.half`, 400 × 196, the solved card's height) |
-| Heatmap | `leetcode-heatmap-light.svg`, `leetcode-heatmap-dark.svg` | `width="100%"` (`layout.full`, 850 × 232) |
+| Summary | `leetcode-summary-light.svg`, `leetcode-summary-dark.svg` | `width="100%"` (`layout.full`, 850 × 196: two 417 wide cards, 16 apart, `summaryRow`) |
+| Heatmap | `leetcode-heatmap-light.svg`, `leetcode-heatmap-dark.svg` | `width="100%"` (`layout.full`, 850 × 196) |
 
-**Badge row.** Up to 8 badges (`badgeRow.max`): the badge chosen on LeetCode (`activeBadgeId`) first, even a monthly one, then badges whose `category` isn't `DCC` (the monthly Daily Coding Challenge), newest `earnedOn` first, ties to the larger numeric `id`, never repeating the chosen badge. Each badge is one line, like the Credly grid:
-
-```html
-<a href="https://leetcode.com/u/nguyenducloc"><picture><source media="(prefers-color-scheme: dark)" srcset="<icon>"><img alt="<name>, LeetCode badge earned <Mon YYYY>" src="<icon>" width="80"></picture></a>
-```
-
-The image is LeetCode's transparent PNG (never the GIF), on `assets.leetcode.com/` or `leetcode.com/static/`, at 80px wide (`badgeRow.width`). `outsideImage` escapes `src` and `alt` once, and the section escapes the `href` once.
+**Featured badges.** `featuredBadges(snapshot, 3)` in `src/sources/leetcode.ts`: the badge chosen on LeetCode (`activeBadgeId`) first, even a monthly one, then badges whose `category` isn't `DCC` (the monthly Daily Coding Challenge), newest `earnedOn` first, ties to the larger numeric `id`, never repeating the chosen badge. **Level badge.** `levelBadge(snapshot)`: the newest earned badge named like `contest.badge` (Guardian). Their art is embedded from the outside image store (see *Outside images*).
 
 The data comes only from `data/snapshots/leetcode.json`, read through `parseLeetcodeSnapshot`. Numbers follow fixed rules, never the locale: the contest card and all alt text group integers with commas (`6,064`), the solved card prints plain digits like LeetCode (`2245/4114`), ratings are rounded with `Math.round`, and years are UTC.
 
 Alt text states the same numbers a sighted visitor sees:
 
 - Contest: `LeetCode contest rating 2,247, level Guardian, global ranking 6,064 of 892,590, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024.` With no badge it drops `, level <badge>`. One contest reads `1 contest attended`. One history point reads `Rating history: 2,247 in 2024.`, and two points in the same year read `Rating history: 1,565 to 2,247 in 2024.`
-- Solved: `LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting.`
-- Badges: `LeetCode badges: 62 earned. Most recent: Oct LeetCoding Challenge, Oct 2026.` One badge reads `1 earned`. No badges reads `LeetCode badges: none earned yet.`
-- Each row badge: `<name>, LeetCode badge earned <Mon YYYY>`, for example `Guardian, LeetCode badge earned May 2026`.
+- Summary: the solved text, a space, then the badges text.
+  - Solved: `LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting.`
+  - Badges: `LeetCode badges: 62 earned, featuring Guardian, Annual Badge 2026, 200 Days Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026.` One badge reads `1 earned`. No badges reads `LeetCode badges: none earned yet.`
 - Heatmap: `LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days.` Singulars read `1 submission`, `1 active day`, and `max streak 1 day`. No submissions in the window reads `LeetCode submissions from <start> to <end>: no submissions.`
 
-Dates use the fixed English month table in `src/dates.ts` (`MONTHS`, shared with the timeline) and are computed in UTC from `YYYY-MM-DD` strings: `<Mon YYYY>` for badges, `<Mon> <D>, <YYYY>` with no zero padding for the heatmap range.
+Dates use the fixed English month table in `src/dates.ts` (`MONTHS`, shared with the timeline) and are computed in UTC from `YYYY-MM-DD` strings: `<Mon YYYY>` for the most recent badge, `<Mon> <D>, <YYYY>` with no zero padding for the heatmap range.
 
-Difficulty colors (Easy `success`, Medium `warning`, Hard `danger`) only paint shapes: the arc, the chip dots, and the check icon. Every word and number is `fill-text` or `fill-muted`, because LeetCode's yellow is too faint to read as text. The rating line and its last dot use the LeetCode brand orange (`stroke-brand-leetcode`, `fill-brand-leetcode`).
+Difficulty colors (Easy `success`, Medium `warning`, Hard `danger`) paint the arc and the check icon. The chip names use the `*Text` tokens, which are checked as text on `track`. The rating line and its last dot use the LeetCode orange (`stroke-brand-leetcode-0`, `fill-brand-leetcode-0`).
 
 **Faint status track (a recorded exception).** The solved card's empty arc uses the segment's own status color at `stroke-opacity` 0.25 (`solvedCard.trackOpacity`) instead of `track`, as on LeetCode. Everywhere else, empty gauges and bars use `track`.
 
@@ -272,88 +275,86 @@ Drawn by `card()` at 850 × 244 (spec 0010: the Top % and the rating histogram a
 | Element | Geometry | Style |
 |---|---|---|
 | Stats columns | x and slot: Rating 24 / 120 (`ratingX`, `ratingSlot`), Level 208 / 150 (`levelX`, `levelSlot`), Global ranking 384 / 230 (`rankX`, `rankSlot`), Attended 640 / 120 (`attendedX`, `attendedSlot`) | |
-| Shield | `iconSvg("shield", 168, 30, 32, "fill-accent2")` (`levelIconX`, `levelIconY`, `levelIcon`) | |
+| Level art | The level badge's stored image as an `<image href="data:…">` at (168, 30), 32 × 32 (`levelIconX`, `levelIconY`, `levelIcon`). When refresh has no image for it: `iconSvg("shield", 168, 30, 32, "fill-accent")` | |
 | Labels | `Rating`, `Level`, `Global ranking`, `Attended`, center y = 32 (`labelY`), `text-anchor="start"` | `lead`, `fill-muted` |
-| Values | Center y = 62 (`valueY`), each through `fitText` in its slot, min 14 | Rating `title` `fill-text`. Level `number` `fill-accent2`. Global ranking `number` `fill-text`, the rank then a `fill-muted` `<tspan>` with `/` and the participants, one `fitText` over the whole string. Attended `number` `fill-text` |
+| Values | Center y = 62 (`valueY`), each through `fitText` in its slot, min 14 | Rating `title` `fill-text`. Level `number` `fill-accent`. Global ranking `number` `fill-text`, the rank then a `fill-muted` `<tspan>` with `/` and the participants, one `fitText` over the whole string. Attended `number` `fill-text` |
 | Chart box | x 32 to 818 (`chartLeft`, `chartRight`), y 104 to 196 (`chartTop`, `chartBottom`) | |
 | Chart x, y | Contests are spaced evenly by order, never by date: `x = 32 + i / (n − 1) × 786` (one point: x = 818), so a year with no contests takes no room. `y = 196 − (r − rMin) / span × 92`, where `span = rMax − rMin`, or 100 (`flatSpan`) with `rMin` lowered by 50 when all ratings are equal. Both are `toFixed(1)` | |
-| Line | `path` `M x y L x y …` through every point; omitted with one point | `fill="none"`, `gauge stroke-brand-leetcode`, `stroke-width` 2 (`lineWidth`), round joins and caps, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |
-| Last point | `circle` r = 4 (`dotRadius`) at the last point | `fill-brand-leetcode` |
+| Line | `path` `M x y L x y …` through every point; omitted with one point | `fill="none"`, `gauge stroke-brand-leetcode-0`, `stroke-width` 2 (`lineWidth`), round joins and caps, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |
+| Last point | `circle` r = 4 (`dotRadius`) at the last point | `fill-brand-leetcode-0` |
 | Last point label | Rect `textWidth(label, 14) + 2 × 8` wide (`tipPadX`), 24 tall (`tipHeight`), right edge at `dotX − 4 − 8` (`tipGap`), centered on `dotY`, `rx` of `radius.small`. Text: the last history rating, rounded and grouped, centered in the rect. It covers the end of the line on purpose | Rect `fill-surface stroke-border`, `stroke-width` of `layout.border`; text `lead` `fill-text` |
 | Year labels | The UTC year under the first contest of each year, center y = 220 (`yearY`): the first at its x with `text-anchor="start"`, the rest centered on theirs. A year closer than 48 (`yearMinGap`) to the previous label is left out. One point: only its year, `end` anchored | `lead`, `fill-muted` |
 | Year lines | A dashed `line` (`stroke-dasharray="4 4"`) from `chartTop` to `chartBottom` at every year label after the first | `stroke-border`, `stroke-width` of `layout.border` |
 
-With a `null` badge, the shield and the Level column are left out, and the other columns keep their x positions.
+With a `null` badge, the level art and the Level column are left out, and the other columns keep their x positions.
 
 ## Solved card anatomy
 
-Drawn by `card()` at 400 × 196 (`2 × pad + 3 × chipHeight + 2 × chipGap`). The values live in `solvedCard`. Arc coordinates are `toFixed(2)`.
+The left card of the summary row: a frame like `card()`'s at (0, 0), 417 × 196. The values live in `solvedCard`. Arc coordinates are `toFixed(2)`.
 
 | Element | Geometry | Style |
 |---|---|---|
-| Ring | Center (136, 107) (`cx`, `cy`), r = 80 (`radius`). θ in degrees clockwise from 12 o'clock: `x = cx + r·sin θ`, `y = cy − r·cos θ`. The arc spans 270° (`span`), from −135° to +135° | |
+| Ring | Center (140, 107) (`cx`, `cy`), r = 80 (`radius`). θ in degrees clockwise from 12 o'clock: `x = cx + r·sin θ`, `y = cy − r·cos θ`. The arc spans 270° (`span`), from −135° to +135° | |
 | Segments | Easy, Medium, Hard, with 6° (`segmentGap`) between them. Segment i spans `(270 − 2 × 6) × total_i / Σ total` | |
 | Track | The full segment, `stroke-width` 6 (`stroke`), round caps | `fill="none"`, `stroke-<status>` at `stroke-opacity` 0.25 (`trackOpacity`) |
 | Solved arc | From the segment start, `span_i × solved_i / total_i`; left out when solved is 0 | Same at full opacity, plus `gauge`, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |
-| Solved number | One `<text>` at x = 136, baseline y = 112 (`numberBaseline`), `text-anchor="middle"`, `dominant-baseline="alphabetic"`: total solved, then a `<tspan>` with `/` and total questions | Number `title` `fill-text` via `fitText` in 88 (`numberSlot`, min 24); tspan `body` `fill-muted` |
-| Solved row | `iconSvg("check", 104, 122, 14, "fill-success")` (`checkX`, `checkY`, `checkSize`), then `Solved` at x = 122 (`solvedX`), center y = 129 (`solvedY`) | `body`, `fill-text` |
-| Attempting | `<n> Attempting` at x = 136, center y = 162 (`attemptingY`), in the arc's gap | `label`, `fill-muted`, `fitText` in 96 (`attemptingSlot`, min 12) |
-| Chips | x = 264 (`chipX`), y = 24, 76, 128 (`pad + i × (chipHeight + chipGap)`), 112 × 44 (`chipWidth`, `chipHeight`), `chipGap` 8. Rect at (x + 0.5, y + 0.5), 111 × 43, `rx` of `radius.small` | `fill-surface stroke-border`, `stroke-width` of `layout.border` |
-| Chip dot | `circle` at (x + 16, y + 14) (`dotX`, `dotY`), r = 4 (`dotRadius`) | `fill-<status>` |
-| Chip label | `Easy`, `Med.`, `Hard` at x + 26 (`chipLabelX`), center y = y + 14 (`chipLabelY`) | `body`, `fill-muted` |
-| Chip value | `<solved>/<total>`, plain digits, at x + 12 (`chipValueX`), center y = y + 31 (`chipValueY`), slot 88 (`chipValueSlot`) | `body` via `fitText` (min 12), `fill-text` |
+| Solved number | One `<text>` at x = 140, baseline y = 112 (`numberBaseline`), `text-anchor="middle"`, `dominant-baseline="alphabetic"`: total solved, then a `<tspan>` with `/` and total questions | Number `title` `fill-text` via `fitText` in 96 (`numberSlot`, min 20); tspan `body` `fill-muted` |
+| Solved row | `iconSvg("check", 108, 122, 14, "fill-success")` (`checkX`, `checkY`, `checkSize`), then `Solved` at x = 126 (`solvedX`), center y = 129 (`solvedY`) | `body`, `fill-text` |
+| Attempting | `<n> Attempting` at x = 140, center y = 162 (`attemptingY`), in the arc's gap | `label`, `fill-muted`, `fitText` in 96 (`attemptingSlot`, min 12) |
+| Chips | Drawn like LeetCode's: x = 281 (`chipX`), 112 × 44 (`chipWidth`, `chipHeight`), 8 apart (`chipGap`), the three centered on the card's height. `rx` of `radius.small`, no border | `fill-track` |
+| Chip name | `Easy`, `Med.`, `Hard`, centered, center y = chip top + 14 (`chipLabelY`) | `label`, `fill-successText`, `fill-warningText`, `fill-dangerText` |
+| Chip value | `<solved>/<total>`, plain digits, centered, center y = chip top + 31 (`chipValueY`), slot 96 (`chipValueSlot`) | `button` via `fitText` (min 12), `fill-text` |
 
 Text uses `dominant-baseline="central"`, except the solved number line.
 
 ## Badges card anatomy
 
-Drawn by `card()` at 400 × 196, the solved card's height. The values live in `badgesCard`. Every text sits at x = 24 (`layout.pad`) with `dominant-baseline="central"` and `text-anchor="start"`. Static: no animation class.
+The right card of the summary row, drawn like LeetCode's: a frame at x = 433, 417 × 196, with its body in a nested `<svg>` so its x values start at 0. The values live in `badgesCard`. Every text sits at x = 24 (`layout.pad`) with `dominant-baseline="central"` and `text-anchor="start"`. Static: no animation class.
 
 | Element | Geometry | Style |
 |---|---|---|
-| Heading | `Badges`, center y = 32 (`headingY`) | `heading`, `fill-accent` |
-| Icon | `iconSvg("leetcode", 356, 22, 20, "fill-accent")`: x = `layout.half − pad − icon`, y = `iconY`, size `icon` | |
-| Count | All badges, grouped (`62`), center y = 66 (`countY`) | `title`, `fill-text` |
-| Most recent label | `Most recent`, center y = 104 (`recentY`) | `body`, `fill-muted` |
-| Badge name | The badge with the newest `earnedOn` (ties: larger numeric `id`), center y = 128 (`nameY`), `fitText` in 352 (`nameSlot`), min 12 (`nameMin`), then squeezed with `textLength` | `heading`, `fill-text` |
-| Month | `<Mon YYYY>` of its `earnedOn`, center y = 152 (`monthY`) | `body`, `fill-muted` |
+| Heading | `Badges`, center y = 30 (`headingY`) | `body`, `fill-muted` |
+| Icon | `iconSvg("leetcode", 373, 20, 20, "")`: the full color LeetCode mark at the top right | |
+| Count | All badges, grouped (`62`), center y = 58 (`countY`) | `title`, `fill-text` |
+| Badge art | The featured badges that have a stored image, as `<image href="data:…">`. With three, the chosen badge sits in the middle at 76 px (`artLarge`) and the others at 60 px (`artSmall`), 20 apart (`artGap`), the row centered on x = 236 (`artCenterX`, pulled left if it would pass `pad`) and y = 88 (`artCenterY`) | |
+| Most recent label | `Most Recent Badge`, center y = 148 (`recentY`) | `label`, `fill-muted` |
+| Badge name | The badge with the newest `earnedOn` (ties: larger numeric `id`), center y = 170 (`nameY`), `fitText` in 369 (the card width less 2 × pad), min 12 (`nameMin`), then squeezed with `textLength` | `heading`, `fill-text` |
 
-With no badges, the count reads `0` and `No badges yet` (`body`, `fill-muted`) sits at `recentY`, with no name or month.
+With no badges, the count reads `0` and `No badges yet` (`body`, `fill-muted`) sits at `recentY`, with no name. A badge whose image refresh couldn't store is left out of the art row.
 
 ## Heatmap card anatomy
 
-Drawn by `card()` at 850 × 232 (`heatmap.height`). The values live in `heatmap`. All text is 12px or larger, with `dominant-baseline="central"`. Static: no animation class. Days are UTC (`Date.UTC`, `getUTCDay`), and the grid ends on the snapshot's `asOf`, so the build never reads the clock.
+Drawn by `card()` at 850 × 196 (`heatmap.height`), laid out like LeetCode's own (spec 0010). The values live in `heatmap`. All text is 12px or larger, with `dominant-baseline="central"`. Static: no animation class. Days are UTC (`Date.UTC`, `getUTCDay`), and the grid ends on the snapshot's `asOf`, so the build never reads the clock.
 
 | Element | Geometry | Style |
 |---|---|---|
 | Window | The 365 days (`windowDays`) from `asOf − 364` to `asOf`. A day's count is its `calendar[]` entry, else 0 | |
-| Stats | Labels at center y = 32 (`labelY`), values at center y = 62 (`valueY`), `text-anchor="start"`. Submissions (past year) at x 24, slot 300 (`submissionsX`, `submissionsSlot`). Active days at x 348, slot 220 (`activeX`, `activeSlot`). Max streak at x 592, slot 234 (`streakX`, `streakSlot`). Each label and value (`groupDigits(n)`, no unit) goes through `fitText` in its slot, min 12 | Labels `lead` `fill-muted`. Submissions value `title` `fill-text`. Active days and Max streak values `number` `fill-text` |
+| Summary, left | `<n> submissions in the past one year` (`1 submission …` for one) at x = 24, center y = 34 (`headY`), `text-anchor="start"`: the count in a `<tspan>` | Text `body` `fill-muted`; count `title` `fill-text` |
+| Summary, right | `Total active days: <n>` then, `headGap` 24 later (`dx`), `Max streak: <n>`, one `<text>` ending at x = 826 (`text-anchor="end"`) | Text `body` `fill-muted`; numbers weight 600 `fill-text` |
 | Stat values | From the `calendar[]` entries inside the window: the sum of counts, the number of entries, and the longest run of back to back dates. They can differ from LeetCode's page by a day, since its window is one day wider | |
 | Blocks | One block per month the window touches (12 or 13), oldest on the left. A day's column is `floor((weekday(first day) + day offset) / 7)`, its row its weekday (Sunday 0). A block has `floor((weekday(first day) + days − 1) / 7) + 1` columns | |
-| Cells | Step 11 (`cell` 9 + `cellGap` 2). Block b starts at `x0 + (columns before it) × 11 + b × 6` (`monthGap`). Cell at (block x + column × 11, 92 + row × 11) (`gridTop`), 9 × 9, `rx` 2 (`cellRadius`). Cells end at y = 167 | Level 0 `fill-track`. Levels 1 to 4 `fill-success` with `fill-opacity` 0.25, 0.5, 0.75, 1 (`opacity1` to `opacity4`), always written |
+| Cells | Step 11 (`cell` 9 + `cellGap` 2). Block b starts at `x0 + (columns before it) × 11 + b × 6` (`monthGap`). Cell at (block x + column × 11, 68 + row × 11) (`gridTop`), 9 × 9, `rx` 2 (`cellRadius`). Cells end at y = 143 | Level 0 `fill-track`. Levels 1 to 4 `fill-heat` with `fill-opacity` 0.3, 0.55, 0.8, 1 (`opacity1` to `opacity4`), always written |
 | Grid x | Width `w = columns × 11 − 2 + (blocks − 1) × 6`, `x0 = 24 + floor((802 − w) / 2)`, so the grid is centered. The widest window (65 columns, 13 blocks) is 785 | |
 | Levels | The highest k with `count ≥ level<k>Min`: 1, 2, 3, 5 (`level1Min` to `level4Min`). Count 0 is level 0 | |
-| Month labels | The short month name at the block's center x, center y = 182 (`monthY`), `text-anchor="middle"`, only on blocks with at least 3 columns (`monthMinColumns`). Both end blocks can be the same month (two different years), and both get a label | `lead`, `fill-muted` |
-| Legend | Center y = 208 (`legendY`). `More` ends at x = 826 (`text-anchor="end"`). Five cells, levels 0 to 4, ending `legendGap` 8 plus `textWidth("More", 14)` left of 826, at y = 203.5. `Less` ends `legendGap` left of the first cell | Text `lead` `fill-muted`; cells as in *Cells* |
+| Month labels | The short month name at the block's center x, center y = 162 (`monthY`), `text-anchor="middle"`, only on blocks with at least 3 columns (`monthMinColumns`). Both end blocks can be the same month (two different years), and both get a label | `lead`, `fill-muted` |
 
-**Levels shown by color (a recorded exception).** The heatmap shows a day's level by its `success` opacity alone, as LeetCode does. The `Less` to `More` legend explains the ramp, and the three stats and the alt text carry the numbers, so no information lives only in color. Everywhere else, color is never the only cue.
+**Levels shown by color (a recorded exception).** The heatmap shows a day's level by its green opacity alone, as LeetCode does, with no legend (LeetCode shows none). The summary line and the alt text carry the numbers, so no information lives only in color. Everywhere else, color is never the only cue.
 
 ## Experience and education (built by feature 9)
 
 Decided in [spec 0007](specs/0007-experience-education-timeline/index.md), reshaped by [spec 0010](specs/0010-profile-redesign.md). Right after About me, separated by blank lines, the README has:
 
 - the `experience` section heading
-- a `<p>` block holding the experience card
+- a `<p>` block holding the experience image
 - the `education` section heading
-- a `<p>` block holding the education card
-- a `<p>` block holding the LinkedIn button
+- a `<p>` block holding the education image
 
-No block has blank lines inside. Each card is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).linkedin`. The button is `<a href>` to the same URL around a `<picture>` of the existing `contact-linkedin-light.svg` and `contact-linkedin-dark.svg`, at `width="148"`, alt text `Full work history on LinkedIn`. `checkReadmeAssets` fails the build if those files ever stop being written.
+No block has blank lines inside. Each image is a `themedImage` `<picture>` wrapped in `<a href>` to `profileUrls(accounts).linkedin`. The images are drawn on the page itself, with no card (spec 0010), so their text is checked against `page`.
 
 | Card | Files | Width |
 |---|---|---|
-| Experience | `timeline-experience-light.svg`, `timeline-experience-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 312 tall with three roles) |
-| Education | `timeline-education-light.svg`, `timeline-education-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 192 tall with two schools) |
+| Experience | `timeline-experience-light.svg`, `timeline-experience-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 272 tall with three roles) |
+| Education | `timeline-education-light.svg`, `timeline-education-dark.svg` | `width="100%"` (`layout.full`, 850 wide; 152 tall with two schools) |
 
 Both lists sort newest `start` first. On a tie, a current entry (`end: null`) comes first, then the later `end`, then file order. Dates use a fixed English month table, never the locale or the clock: `May 2025`, `May 2025 – Present`, `Jan 2025 – May 2025` (space, en dash, space), or one month alone when `start` equals `end`. No duration is shown, so the output never changes with the date.
 
@@ -364,7 +365,7 @@ Both lists sort newest `start` first. On a tie, a current entry (`end: null`) co
 | Noventiq Vietnam | `noventiq.png` | Noventiq's own icon, supplied by the owner |
 | CMC Telecom | `cmc-telecom.png` | The cloud mark of `CMC_logo_2018.png`, Wikimedia Commons, cropped and resized |
 | FPT Software | `fpt-software.png` | `FPT_logo_2010.svg`, Wikimedia Commons, padded square and resized |
-| VNU University of Engineering and Technology | `uet.png` | The school website's site icon |
+| VNU University of Engineering and Technology | `uet.png` | The emblem cut from the header logo on uet.vnu.edu.vn (`Logo1.png`) |
 | Hong Quang High School | `hong-quang.png` | The school website's logo, resized to 144px |
 
 Alt text carries every word the card shows, with ` to ` in place of the en dash:
@@ -374,35 +375,34 @@ Alt text carries every word the card shows, with ` to ` in place of the en dash:
 
 Each highlight and note gets a final `.` unless it already ends in `.`, `!`, or `?`. Logos are not in the alt text: the company or school name already is. `companyUrl` is not shown: a link inside an `<img>` can't be clicked. The content check allows 1 to 6 roles and 1 to 4 schools.
 
-## Timeline card anatomy
+## Timeline anatomy
 
-Drawn by `card()` at 850 wide. All text is 12px or larger. The values live in `timelineCard`; the rest come from `layout` and `typography`. The cards are static.
+Drawn by `svgDocument` at 850 wide, on the page with no card (spec 0010). All text is 12px or larger. The values live in `timelineCard`; the rest come from `layout` and `typography`. The images are static.
 
 | Element | Geometry | Style |
 |---|---|---|
-| Logo tile | A `rect` at (24.5, entryTop + 0.5), 47 × 47 (`logo` 48), `rx` 8 (`logoRadius`) | With a logo: `fill-logoTile stroke-border`. With none: `fill-track stroke-border` |
-| Logo | `<image href="data:…">` at (28, entryTop + 4), 40 × 40 (`logoInset` 4), `preserveAspectRatio="xMidYMid meet"` | |
+| Logo tile | A `rect` at (1.5, entryTop + 0.5), 47 × 47 (`padX` 1, `logo` 48), `rx` 8 (`logoRadius`) | With a logo: `fill-logoTile stroke-border`. With none: `fill-track stroke-border` |
+| Logo | `<image href="data:…">` at (5, entryTop + 4), 40 × 40 (`logoInset` 4), `preserveAspectRatio="xMidYMid meet"` | |
 | Initial | With no logo: the first letter of the company or school, uppercased, centered in the tile, 20px weight 700 | `fill-muted` |
-| Text column | x = 88 (`textX`) to x = 826 (`layout.full − layout.pad`), 738 wide | |
-| Row 0, left | Title or school name at x = 88, `text-anchor="start"`, `fitText` in a 522 slot (738 − `dateSlot` 200 − `titleGap` 16), min 12. Never wraps | `heading`, `fill-accent` |
-| Row 0, right | Dates at x = 826, `text-anchor="end"`, `fitText` in 200 (`dateSlot`), min 12 | `lead`, `fill-muted` |
-| Role row 1 | Company, then `<tspan class="fill-muted"> · <location></tspan>` when set, at x = 88, one `fitText` over the whole string in 738, min 12 | `lead`, `fill-text` |
-| Role highlights | Per highlight: `•` at x = 88 on its first row, lines from `wrapLines` at x = 104 (`textX + bulletIndent` 16) in a 722 slot, min 12 | `•` `lead` `fill-muted`; text `lead` `fill-text` |
-| School degree | `<degree>[, <field>]` lines from `wrapLines` at x = 88 in 738, min 12 | `lead`, `fill-text` |
-| School note | Note lines from `wrapLines` at x = 88 in 738, min 12 | `lead`, `fill-accent` |
+| Text column | x = 65 (`textX`) to x = 849 (`layout.full − padX`), 784 wide | |
+| Row 0, left | Title or school name at x = 65, `text-anchor="start"`, `fitText` in a 568 slot (784 − `dateSlot` 200 − `titleGap` 16), min 12. Never wraps | `heading`, `fill-accent` |
+| Row 0, right | Dates at x = 849, `text-anchor="end"`, `fitText` in 200 (`dateSlot`), min 12 | `lead`, `fill-muted` |
+| Role row 1 | Company, then `<tspan class="fill-muted"> · <location></tspan>` when set, at x = 65, one `fitText` over the whole string in 784, min 12 | `lead`, `fill-text` |
+| Role highlights | Per highlight: `•` at x = 65 on its first row, lines from `wrapLines` at x = 81 (`textX + bulletIndent` 16) in a 768 slot, min 12 | `•` `lead` `fill-muted`; text `lead` `fill-text` |
+| School degree | `<degree>[, <field>]` lines from `wrapLines` at x = 65 in 784, min 12 | `lead`, `fill-text` |
+| School note | Note lines from `wrapLines` at x = 65 in 784, min 12 | `lead`, `fill-accent` |
 | Rows | Row k center y = `entryTop + 12 + k × 24` (`lineHeight` 24), `dominant-baseline="central"` | |
-| Entries | An entry's box is `max(rows × 24, 48)`, so the logo tile always fits. The first `entryTop` is 24 (`layout.pad`). Each next one is the previous top + box + 24 (`entryGap`) | |
-| Height | `48 + (all boxes) + 24 × (entries − 1)` | |
+| Entries | An entry's box is `max(rows × 24, 48)`, so the logo tile always fits. The first `entryTop` is 4 (`padY`). Each next one is the previous top + box + 24 (`entryGap`) | |
+| Height | `8 + (all boxes) + 24 × (entries − 1)` | |
 
-"Present" in the dates marks the current entry. Text `text`, `muted`, and `accent` on `surface` are already in the contrast table, so the cards need no new pair.
+"Present" in the dates marks the current entry. Text `text`, `muted`, and `accent` on `page` are in the contrast table.
 
 ## Certifications (built by feature 10)
 
 Decided in [spec 0008](specs/0008-credly-badge-grid.md), made a table by [spec 0010](specs/0010-profile-redesign.md). After the LinkedIn button block of *Experience and education*, separated by blank lines, the README has:
 
 - the `certifications` section heading
-- one `<table>`, one row per issuer: the issuer's name in `<b>` on the left, its badges on the right, one badge per line
-- a `<p>` block holding the see all button
+- one `<table>`, one row per issuer: the issuer's name in `<b>` in a `<td width="140">` (`credlyGrid.issuerWidth`) on the left, so long names wrap and the badges get the room, and its badges on the right, one badge per line
 
 No block has blank lines inside. Each badge comes from `outsideImage()` and is exactly one line:
 
@@ -423,41 +423,45 @@ Rows and badges follow one order:
 
 Strings compare with JavaScript's `<`, never by locale. The build never reads the clock: refresh drops expired, hidden, and unaccepted badges before the snapshot is written.
 
-The see all button is `<a href>` to `profileUrls(accounts).credly` around a `<picture>` of the existing `contact-credly-light.svg` and `contact-credly-dark.svg`, at `width="148"`, alt text `All badges on Credly`. `checkReadmeAssets` fails the build if those files ever stop being written.
 
 ## Icon registry
 
-Every icon on the profile comes from `src/icons.ts`. Each entry is one `path` on a 24 × 24 grid plus a `source`:
+Every icon on the profile comes from `src/icons.ts`, with a `source`. An entry is one of two kinds:
 
-- `simple-icons@<version>` for a path copied from Simple Icons (CC0). Every copied entry shares one pinned release. Refreshing icons means copying every copied entry from the new release in the same commit.
-- `hand drawn` for a glyph Simple Icons lacks, drawn as one filled path. Holes are cut by drawing them in the opposite direction, so no `fill-rule` is needed.
+- **Plain**: one `path` on a 24 × 24 grid, painted by one class. `simple-icons@<version>` for a path copied from Simple Icons (CC0); every copied entry shares one pinned release, and refreshing icons means copying every copied entry from the new release in the same commit. `hand drawn` for a glyph Simple Icons lacks, drawn as one filled path; holes are cut by drawing them in the opposite direction, so no `fill-rule` is needed.
+- **Layered** (spec 0010): a brand's full color logo, copied from the named Wikimedia Commons file. It keeps the file's own `viewBox` and has one path per color, back to front (`layers`). Layer i is painted by `fill-brand-<icon>-<i>`, with the colors in `brandColors` (see *Brand colors*).
 
-Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One class paints the whole icon: `iconClass(icon, fallback)` picks the brand's own color class for a brand in `brandColors` (see *Brand colors*), and the fallback token class (usually `fill-accent`) for any other icon. Keys are Simple Icons slugs, or a plain name for a glyph Simple Icons doesn't cover. `IconName` is the set of keys, so asking for a missing icon is a type error. Draw an icon with `iconSvg(name, x, y, size, classes)`, which nests a `<svg viewBox="0 0 24 24">`.
+Entries hold path data only: no color, `fill`, `stroke`, or `transform`. `iconClass(icon, fallback)` picks the brand's own color class for a plain brand icon and the fallback token class (usually `fill-accent`) for any other. Keys are Simple Icons slugs, or a plain name. `IconName` is the set of keys, so asking for a missing icon is a type error. Draw an icon with `iconSvg(name, x, y, size, classes)`, which nests a `<svg>` `size` tall and `iconWidth(name, size)` wide (wider only for a wide logo, AWS); `classes` is not used for a layered icon.
 
 | Icon | Source |
 |---|---|
 | `award` | hand drawn: a medal ring with its center cut out, over two ribbon tails |
+| `aws` | layered, Wikimedia Commons `File:Amazon_Web_Services_Logo.svg` (Simple Icons 16.38.0 has no AWS): the letters, then the smile |
 | `briefcase` | hand drawn: a briefcase with its handle on top and a band across the middle cut out |
 | `check` | hand drawn: a check mark as one filled stroke |
 | `code` | hand drawn: angle brackets around a slash, as in `</>` |
 | `cplusplus` | `simple-icons@16.38.0` |
 | `credly` | `simple-icons@16.38.0` |
 | `docker` | `simple-icons@16.38.0` |
-| `email` | hand drawn: an envelope with its flap cut out as a V |
 | `git` | `simple-icons@16.38.0` |
+| `gmail` | layered, Wikimedia Commons `File:Gmail_icon_(2020).svg`: the four color M |
 | `gnubash` | `simple-icons@16.38.0` |
 | `go` | `simple-icons@16.38.0` |
 | `graduationcap` | hand drawn: a mortarboard, its cap, and a tassel |
 | `kubernetes` | `simple-icons@16.38.0` |
-| `leetcode` | `simple-icons@16.38.0` |
+| `leetcode` | layered, Wikimedia Commons `File:LeetCode_Logo_black_with_text.svg`, the mark without the word: orange bowl, gray bar, black stroke |
 | `linkedin` | hand drawn (Simple Icons 16.38.0 has no LinkedIn): a lowercase "in" cut out of a rounded square |
 | `linux` | `simple-icons@16.38.0` |
 | `nextdotjs` | `simple-icons@16.38.0` |
 | `person` | hand drawn: a head and shoulders |
 | `react` | `simple-icons@16.38.0` |
-| `shield` | hand drawn: a shield outline, the inner shield cut out |
+| `shield` | hand drawn: a shield outline, the inner shield cut out (the level fallback) |
 | `terraform` | `simple-icons@16.38.0` |
 | `typescript` | `simple-icons@16.38.0` |
+
+## Outside images
+
+Spec 0010. Badge art from LeetCode is embedded in the SVGs, so it must be on disk at build time. A source may list the image URLs its sections embed (`Source.images(snapshot)`; LeetCode lists the level badge and the featured badges). `pnpm refresh`, after the sources, runs `syncImages` (`src/sources/images.ts`): for each URL it downloads the PNG (https only, at most 8 MB), shrinks it with `src/png.ts` to fit a 144 px square (`IMAGE_SIZE`, alpha weighted box averaging, centered on transparency), and writes `data/snapshots/images/<first 16 hex of SHA-256(url)>.png`. Files no URL names are removed. A failed image is a warning, never a failed refresh. `pnpm build` reads the stored files for the same URLs into `ctx.images` (URL to `data:image/png;base64,` URI) and never fetches. A missing image is simply absent: the badges card leaves it out, and the level falls back to the shield.
 
 ## Motion
 
@@ -487,9 +491,9 @@ Entries hold path data only: no color, `fill`, `stroke`, or `transform`. One cla
 |---|---|---|---|
 | Header banner | 5 | Name and title enter once. The back wave drifts and settles (`motion.wave`). | Name, title, and both waves in place |
 | Typing line | 5 | Types "Welcome to my GitHub profile", deletes it, types "Hi there, I'm Loc 👋", then rests (`motion.typing`). Phrases come from `typingPhrases`. At most three phrases, with holds shortened so the whole run ends within `motion.budget`. | The last phrase, no cursor |
-| Stat cards (LeetCode, GitHub) | 8, 12 | Content enters once, staggered. Gauges and bars fill once. Numbers fade in; they don't count up. LeetCode: the contest stats enter as `enter(0)` to `enter(3)` and the years and year lines as `enter(5)`; the history line draws once (`gauge`) from 0 ms; the last point and its label enter last (`enter(9)`, done at 1500 ms). On the solved card, the center number, the Solved row, Attempting, and the three chips enter as `enter(0)` to `enter(5)`, and the solved arcs fill once (`gauge`). | Full numbers, filled gauges, drawn line, full bars |
+| Stat cards (LeetCode, GitHub) | 8, 12 | Content enters once, staggered. Gauges and bars fill once. Numbers fade in; they don't count up. LeetCode: the contest stats enter as `enter(0)` to `enter(3)` and the years and year lines as `enter(5)`; the history line draws once (`gauge`) from 0 ms; the last point and its label enter last (`enter(9)`, done at 1500 ms). On the solved card (in the summary row), the center number, the Solved row, Attempting, and the three chips enter as `enter(0)` to `enter(5)`, and the solved arcs fill once (`gauge`). | Full numbers, filled gauges, drawn line, full bars |
 | Contribution graph | 13 | Decided in feature 13's spec. Ends within `motion.budget`, or that spec records a reasoned exception. | Decided there |
-| Everything else (section headings, about, buttons, tech stack chips, timeline, Credly table, projects, LeetCode badges and heatmap) | 6, 7, 9, 10, 11, 14 | None | Itself |
+| Everything else (section headings, about, buttons, tech stack chips, timeline, Credly table, projects, LeetCode badges card and heatmap) | 6, 7, 9, 10, 11, 14 | None | Itself |
 
 ### Rules
 
@@ -534,6 +538,7 @@ Before anything is written, `pnpm build` fails if:
 - a generated SVG contains a script, an outside link, an event attribute, `@import`, a doctype or entity, or an endless animation (it may link only to `#<id>`, or embed a `data:image/png` or `data:image/jpeg` base64 image);
 - an `<img>` has no alt text, or a blank one outside a section heading;
 - content names a logo that isn't in `assets/static/logos/`;
+- an SVG uses a `fill-`, `stroke-`, or `stop-` class that `themeCss` doesn't define;
 - a generated SVG's name doesn't end in `-light.svg` or `-dark.svg`, or it has no twin;
 - an SVG's first `<style>` doesn't start with its own theme's color classes, or it writes a color anywhere else;
 - the README names an `assets/generated/` file (in `src` or `srcset`) that no section writes.
