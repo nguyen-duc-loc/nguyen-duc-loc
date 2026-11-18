@@ -189,23 +189,28 @@ const STAR = "\u2605";
  * out from the degree line. One line: a long note is squeezed, never wrapped.
  */
 function honorRow(note: string, stars: number): Row {
-  const { honorHeight, honorPadX, starGap } = timelineCard;
+  const { honorHeight, honorPadX, starGap, starWidth } = timelineCard;
   const style = typography.strong;
-  const starsWidth = stars * style.size;
-  const noteX0 = starsWidth === 0 ? honorPadX : honorPadX + starsWidth + starGap;
-  const slot = { width: columnWidth - noteX0 - honorPadX, style, minSize: MIN_SIZE } as const satisfies TextSlot;
+  const starsWidth = stars === 0 ? 0 : Math.ceil(stars * starWidth * style.size) + starGap;
+  const slot = {
+    width: columnWidth - starsWidth - 2 * honorPadX,
+    style,
+    minSize: MIN_SIZE,
+  } as const satisfies TextSlot;
   const fit = fitText(note, slot);
-  const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const noteWidth = fit.textLength ?? Math.min(slot.width, snugWidth(note, fit.size));
-  const width = noteX0 + noteWidth + honorPadX;
-  const text = (x: number, y: number, anchor: string, size: number, inner: string, extra = ""): string =>
-    `<text class="fill-onHonor" x="${x}" y="${centeredBaseline(y, size)}" text-anchor="${anchor}" font-size="${size}" font-weight="${style.weight}"${extra}>${inner}</text>`;
+  const width = 2 * honorPadX + starsWidth + noteWidth;
+  // One line of text, the stars then the note, centered in the pill: the gap between them is the font's own, and
+  // any error in the width estimate splits evenly into the two ends.
+  const lead =
+    stars === 0 ? "" : `<tspan font-size="${style.size}">${STAR.repeat(stars)}</tspan><tspan dx="${starGap}">`;
+  const tail = stars === 0 ? "" : "</tspan>";
+  const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
+  const noteText = fit.textLength ? `<tspan${squeeze}>${escapeXml(note)}</tspan>` : escapeXml(note);
   return (y) =>
     [
       `<rect x="${textX + 0.5}" y="${y - honorHeight / 2 + 0.5}" width="${width - 1}" height="${honorHeight - 1}" rx="${honorHeight / 2}" class="fill-honor stroke-onHonor" stroke-opacity="0.2" stroke-width="${layout.border}"/>`,
-      ...(stars === 0 ? [] : [text(textX + honorPadX, y, "start", style.size, STAR.repeat(stars))]),
-      // Centered in its own space, so a font wider or narrower than the estimate keeps even padding.
-      text(textX + noteX0 + noteWidth / 2, y, "middle", fit.size, escapeXml(note), squeeze),
+      `<text class="fill-onHonor" x="${textX + width / 2}" y="${centeredBaseline(y, style.size)}" text-anchor="middle" font-size="${fit.size}" font-weight="${style.weight}">${lead}${noteText}${tail}</text>`,
     ].join("\n");
 }
 

@@ -286,7 +286,8 @@ export const timelineCard = {
   entryGap: 24,
   honorHeight: 26,
   honorPadX: 12,
-  starGap: 6,
+  starWidth: 0.8,
+  starGap: 4,
 } as const satisfies { readonly [name: string]: number };
 
 /**
