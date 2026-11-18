@@ -1,0 +1,44 @@
+# 0010 · Profile redesign: GitHub colors, new order, tables, logos
+
+**Status**: Assumed
+**Date**: 2026-11-18
+**Authorized by**: Loc Nguyen, during /develop
+
+## Owed decision
+
+A redesign that replaces parts of earlier decisions: the Catppuccin palette of spec 0003, the card layouts of specs 0005 (tech stack), 0006 (contest card), 0007 (timeline), and 0008 (Credly grid), the section order, and the centered headings. Also how company and school logos reach a self contained SVG.
+
+## Assumption built on
+
+- **Theme switching stays as it is.** GitHub's own `<themed-picture>` script swaps the `<picture>` source to match the GitHub theme when the theme mode is a single theme (Light or Dark). In "Sync with system" mode GitHub leaves the choice to the browser, which follows the OS. No README markup can read GitHub's day or night theme choice, so the fix for a visitor is the GitHub setting, not the README.
+- **Palette.** GitHub's Primer colors replace Catppuccin (`src/theme.ts`), so cards look like GitHub's own UI. `accent` is Primer blue, `accent2` Primer purple, and `success`, `warning`, `danger` are LeetCode's own difficulty colors.
+- **Brand colors.** Brand icons are drawn in the brand's own color (`brandColors`, the `hex` of `simple-icons@16.38.0`, LinkedIn's brand blue for the hand drawn LinkedIn). A brand color under 1.5:1 against `page` or `surface` falls back to `text` (Next.js black on dark). The rating line uses the LeetCode orange.
+- **Greeting.** The typing line types `Welcome to my GitHub profile`, then rests on `Hi there, I'm Loc 👋` (`content/profile.ts`).
+- **Order.** Header, typing line, About me, Experience, Education, Certifications, Tech stack, LeetCode.
+- **Headings.** Every section heading is a left aligned `<h2>` led by a 24px icon: `person`, `briefcase`, `graduationcap`, `award`, `code` (hand drawn) and `leetcode` (brand). The icon is decorative, so its `alt` is empty; the guard allows `alt=""` only inside an `<h2>` that has its own text.
+- **Type sizes.** Card text drops to GitHub's own sizes: `lead` 14, `heading` 16, `title` 24, `number` 20 (was 20, 20, 32, 24). The banner title gets its own `tagline` style (22). On a phone a full width card shrinks to about 42%, so its text is smaller there than before; the owner chose this.
+- **Tech stack.** An HTML table, one row per category: the label, then one chip per item (brand icon plus name), each chip its own small themed SVG.
+- **Certifications.** An HTML table, one row per Credly `issuer` (the issuer name as Credly gives it), its badges at 96px on the right, in the spec 0008 order.
+- **About me buttons.** The icon and label are centered together in the pill, with the brand color icon.
+- **LeetCode contest card.** The Top % and the rating histogram are gone. The rating chart spans the card, and contests are spaced evenly by order, not by date, so years without contests leave no gap. Each year is labeled under its first contest, with a faint dashed line where it starts. The heatmap uses `success`.
+- **Experience and education logos.** `logo` in `content/experience.ts` and `content/education.ts` names a PNG or JPEG in `assets/static/logos/`. `pnpm build` reads only the files content names and passes them to sections as `ctx.logos` (data URIs), so sections stay pure. The timeline draws each logo on a white tile (`logoTile`); an entry with no logo shows its initial. The rail and dots are gone. The SVG guard allows only `data:image/png` or `data:image/jpeg` base64 URIs besides `#id` links.
+- **Logo sources.** Noventiq from the owner's file, CMC Telecom and FPT Software from Wikimedia Commons (cropped and resized), UET and Hong Quang High School from their own websites.
+
+## Code area
+
+`src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/guards.ts`, `src/build.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `content/*`, `assets/static/logos/`, `docs/design.md`
+
+## Requirements
+
+- AC-1: Every section heading is a left aligned `<h2>` with its icon before the title.
+- AC-2: Sections appear in the order above.
+- AC-3: No Catppuccin color remains in `src/theme.ts` or any generated SVG; brand icons use their brand color.
+- AC-4: The tech stack and the certifications are tables, providers on the left.
+- AC-5: The contest card has no Top or histogram, and contests are evenly spaced.
+- AC-6: Each experience and education entry shows its logo, or its initial when it has none.
+- AC-7: The contact pill icon and label are centered in the pill.
+- AC-8: `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `pnpm lint:md` pass.
+
+## Ratify
+
+This decision was recorded by /develop, not deliberated. Run `/architect profile redesign` to deliberate and ratify it. Until then it stays flagged as an owed decision; it does not block marking the feature `done`.
