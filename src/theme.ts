@@ -149,6 +149,7 @@ export const typography = {
   chip: { size: 13, weight: 600, family: "sans" },
   strong: { size: 14, weight: 500, family: "sans" },
   name: { size: 16, weight: 500, family: "sans" },
+  stat: { size: 20, weight: 500, family: "sans" },
 } as const satisfies { readonly [name: string]: TypeStyle };
 
 /** Spacing scale in px. */

@@ -92,7 +92,7 @@ Every SVG uses `sans` by default. Add the class `font-mono` to use `mono`; only 
 |---|---|---|---|---|
 | `display` | 48 | 700 | sans | Banner name |
 | `tagline` | 22 | 600 | sans | Banner title |
-| `title` | 24 | 500 | sans | Big card numbers and values (the four contest stats, solved, badge count, submissions) |
+| `title` | 24 | 500 | sans | Big card numbers (solved, badge count, submissions) |
 | `heading` | 16 | 600 | sans | Card headings, timeline names, badge name |
 | `lead` | 14 | 400 | sans | Labels and body text on full width cards |
 | `body` | 14 | 400 | sans | Body text on half cards |
@@ -102,6 +102,7 @@ Every SVG uses `sans` by default. Add the class `font-mono` to use `mono`; only 
 | `chip` | 13 | 600 | sans | Tech stack chip names |
 | `strong` | 14 | 500 | sans | Emphasis inside LeetCode cards (chip counts, heatmap numbers) and the honors pill |
 | `name` | 16 | 500 | sans | The most recent LeetCode badge's name |
+| `stat` | 20 | 500 | sans | The four contest stat values (rating, level, ranking, attended) |
 
 Write `font-size` and `font-weight` from these styles (through `fitText` for the size).
 
@@ -273,7 +274,7 @@ Drawn by `card()` at 850 × 244 (spec 0010: the Top % and the rating histogram a
 | Stats columns | x and slot: Rating 24 / 120 (`ratingX`, `ratingSlot`), Level 208 / 150 (`levelX`, `levelSlot`), Global ranking 384 / 230 (`rankX`, `rankSlot`), Attended 640 / 120 (`attendedX`, `attendedSlot`) | |
 | Level art | The level badge's stored image as an `<image href="data:…">` at (168, 30), 32 × 32 (`levelIconX`, `levelIconY`, `levelIcon`). When refresh has no image for it: `iconSvg(theme, "shield", 168, 30, 32, "fill-accent")` | |
 | Labels | `Rating`, `Level`, `Global ranking`, `Attended`, center y = 32 (`labelY`), `text-anchor="start"` | `lead`, `fill-muted` |
-| Values | Center y = 62 (`valueY`), each through `fitText` in its slot, min 14, all in `title` (sans, so they match the labels) | Rating `fill-text`. Level `fill-accent`. Global ranking `fill-text`, the rank then a `fill-muted` `<tspan>` with `/` and the participants, one `fitText` over the whole string. Attended `fill-text` |
+| Values | Center y = 62 (`valueY`), each through `fitText` in its slot, min 14, all in `stat` (sans, so they match the labels) | Rating `fill-text`. Level `fill-accent`. Global ranking `fill-text`, the rank then a `fill-muted` `<tspan>` with `/` and the participants, one `fitText` over the whole string. Attended `fill-text` |
 | Chart box | x 32 to 818 (`chartLeft`, `chartRight`), y 104 to 196 (`chartTop`, `chartBottom`) | |
 | Chart x, y | Contests are spaced evenly by order, never by date: `x = 32 + i / (n − 1) × 786` (one point: x = 818), so a year with no contests takes no room. `y = 196 − (r − rMin) / span × 92`, where `span = rMax − rMin`, or 100 (`flatSpan`) with `rMin` lowered by 50 when all ratings are equal. Both are `toFixed(1)` | |
 | Line | `path` `M x y L x y …` through every point; omitted with one point | `fill="none"`, `gauge stroke-leetcode`, `stroke-width` 2 (`lineWidth`), round joins and caps, `pathLength="1"`, `stroke-dasharray="1"`, `--gauge-empty:1` |

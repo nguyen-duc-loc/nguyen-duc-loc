@@ -225,12 +225,12 @@ const cc = contestCard;
 /** Stat values never go below this size. */
 const VALUE_MIN = 14;
 
-const ratingSlot = { width: cc.ratingSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
-const levelSlot = { width: cc.levelSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
-const rankSlot = { width: cc.rankSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
+const ratingSlot = { width: cc.ratingSlot, style: typography.stat, minSize: VALUE_MIN } as const satisfies TextSlot;
+const levelSlot = { width: cc.levelSlot, style: typography.stat, minSize: VALUE_MIN } as const satisfies TextSlot;
+const rankSlot = { width: cc.rankSlot, style: typography.stat, minSize: VALUE_MIN } as const satisfies TextSlot;
 const attendedSlot = {
   width: cc.attendedSlot,
-  style: typography.title,
+  style: typography.stat,
   minSize: VALUE_MIN,
 } as const satisfies TextSlot;
 
