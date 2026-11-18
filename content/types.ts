@@ -52,6 +52,8 @@ export type Role = {
   readonly highlights: readonly string[];
   readonly location?: string;
   readonly companyUrl?: string;
+  /** A PNG or JPEG file name in `assets/static/logos/`, for example `"fpt-software.png"`. Left out: an initial. */
+  readonly logo?: string;
 };
 
 export type School = {
@@ -63,6 +65,8 @@ export type School = {
   readonly end: YearMonth | null;
   /** Honors or GPA. */
   readonly note?: string;
+  /** A PNG or JPEG file name in `assets/static/logos/`, for example `"uet.png"`. Left out: an initial. */
+  readonly logo?: string;
 };
 
 export type Project = {

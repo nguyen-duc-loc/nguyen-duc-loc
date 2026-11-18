@@ -1,12 +1,12 @@
-// Certifications (spec 0008, docs/design.md "Certifications"): every active Credly badge as Credly's own image,
-// each linked to its badge page, in one centered block that wraps on narrow screens. Badges are grouped by
-// issuer through the order alone, and the Credly pill from About me follows as a see all button. Data comes
-// only from the committed snapshot; this section writes no assets.
+// Certifications (spec 0008, reshaped into a table by spec 0010; docs/design.md "Certifications"): one table row
+// per issuer, the issuer's name on the left and its active Credly badges on the right, each Credly's own image
+// linked to its badge page. The Credly pill from About me follows as a see all button. Data comes only from the
+// committed snapshot; this section writes only its heading icon.
 
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import { type CredlyBadge, type CredlySnapshot, parseCredlySnapshot } from "../sources/credly.ts";
-import { outsideImage, pillButton, themedImage } from "../svg.ts";
+import { outsideImage, pillButton, sectionHeading, themedImage } from "../svg.ts";
 import { button, credlyGrid } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
@@ -70,8 +70,16 @@ function readCredly({ content, snapshots }: BuildContext): CredlySnapshot {
 
 // --- Section (AC-5, AC-7, AC-8) ---
 
+/** Issuers in badge order, each with its badges, so the table rows follow `ordered`. */
+function byIssuer(badges: readonly CredlyBadge[]): readonly (readonly [string, readonly CredlyBadge[]])[] {
+  const groups = new Map<string, CredlyBadge[]>();
+  for (const badge of ordered(badges)) groups.set(badge.issuer, [...(groups.get(badge.issuer) ?? []), badge]);
+  return [...groups];
+}
+
 export const credlyBadges: Section = (ctx) => {
   const { badges } = readCredly(ctx);
+  const heading = sectionHeading({ key: "certifications", title: HEADING, icon: "award" });
   // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
   const { markdown: buttonMarkdown } = themedImage({
     base: BUTTON_BASE,
@@ -80,8 +88,10 @@ export const credlyBadges: Section = (ctx) => {
     render: (theme) => pillButton(theme, { icon: "credly", label: "Credly" }),
   });
   const seeAll = `<a href="${escapeXml(profileUrls(ctx.content.profile.accounts).credly)}">${buttonMarkdown}</a>`;
-  const block = (lines: readonly string[]): string => ['<p align="center">', ...lines, "</p>"].join("\n");
-  const grid = block(ordered(badges).map(badgeLine));
-  const markdown = [`<h2 align="center">${HEADING}</h2>`, grid, block([seeAll])].join("\n\n");
-  return { markdown };
+  const rows = byIssuer(badges).map(([issuer, group]) =>
+    ["<tr>", `<td><b>${escapeXml(issuer)}</b></td>`, "<td>", ...group.map(badgeLine), "</td>", "</tr>"].join("\n"),
+  );
+  const table = ["<table>", ...rows, "</table>"].join("\n");
+  const markdown = [heading.markdown, table, ["<p>", seeAll, "</p>"].join("\n")].join("\n\n");
+  return { markdown, assets: heading.assets };
 };

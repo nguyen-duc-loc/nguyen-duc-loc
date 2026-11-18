@@ -4,6 +4,8 @@
 import { escapeXml } from "./escape.ts";
 import { type IconName, icons } from "./icons.ts";
 import {
+  type BrandName,
+  brandColors,
   button,
   fonts,
   layout,
@@ -115,18 +117,21 @@ export type ThemedImageOptions = {
   readonly alt: string;
   readonly width: "100%" | number;
   readonly render: (theme: Theme) => string;
+  /** One line with no spaces between tags, so a row of them wraps like words (table cells, headings). */
+  readonly inline?: boolean;
 };
 
 /** A `<picture>` that follows the visitor's GitHub theme, plus both SVGs. The light file is the fallback. */
-export function themedImage({ base, alt, width, render }: ThemedImageOptions): SectionOutput {
+export function themedImage({ base, alt, width, render, inline = false }: ThemedImageOptions): SectionOutput {
   const light = `${base}-light.svg`;
   const dark = `${base}-dark.svg`;
-  const markdown = [
+  const lines = [
     "<picture>",
-    `  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/${dark}">`,
-    `  <img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}">`,
+    `<source media="(prefers-color-scheme: dark)" srcset="assets/generated/${dark}">`,
+    `<img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}">`,
     "</picture>",
-  ].join("\n");
+  ];
+  const markdown = inline ? lines.join("") : [lines[0], `  ${lines[1]}`, `  ${lines[2]}`, lines[3]].join("\n");
   return {
     markdown,
     assets: [
@@ -148,6 +153,13 @@ export function outsideImage({ src, alt, width }: OutsideImageOptions): string {
   return `<picture><source media="(prefers-color-scheme: dark)" srcset="${url}"><img alt="${escapeXml(alt)}" src="${url}" width="${width}"></picture>`;
 }
 
+const isBrand = (name: IconName): name is BrandName => Object.hasOwn(brandColors, name);
+
+/** The brand's own color class for a brand icon (spec 0010), else `fallback` (a token class like `fill-accent`). */
+export function iconClass(name: IconName, fallback: string): string {
+  return isBrand(name) ? `fill-brand-${name}` : fallback;
+}
+
 /** An icon from `src/icons.ts` as a nested `size` × `size` SVG at (x, y), painted by `classes`. */
 export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
   return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${icons[name].path}"/></svg>`;
@@ -155,21 +167,58 @@ export function iconSvg(name: IconName, x: number, y: number, size: number, clas
 
 export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
 
+/** Estimated width of `text` at `size`, `0.6 × size` per character, in integers (the `fitText` estimate). */
+export function textWidth(text: string, size: number): number {
+  return Math.ceil((3 * size * [...text].length) / 5);
+}
+
 /**
- * A contact pill (spec 0004, docs/design.md "Button anatomy"): icon then label inside a bordered pill, with a
- * transparent `button.margin` around it so buttons sit apart in a row. Static: no animation.
+ * A contact pill (spec 0004, centered by spec 0010; docs/design.md "Button anatomy"): the icon, in its brand color,
+ * and the label, centered together inside a bordered pill, with a transparent `button.margin` around it so buttons
+ * sit apart in a row. Static: no animation.
  */
 export function pillButton(theme: Theme, { icon, label }: PillButtonOptions): string {
   const { width, height, margin, padX, gap } = button;
-  const iconX = margin + padX;
-  const labelX = iconX + button.icon + gap;
   const slot = { width: width - padX - button.icon - gap - padX, style: typography.button, minSize: 12 };
   const fit = fitText(label, slot);
+  const labelWidth = fit.textLength ?? textWidth(label, fit.size);
+  const groupX = margin + Math.round((width - (button.icon + gap + labelWidth)) / 2);
+  const labelX = groupX + button.icon + gap;
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const body = [
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 1}" height="${height - 1}" rx="${radius.pill}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
-    iconSvg(icon, iconX, margin + (height - button.icon) / 2, button.icon, "fill-accent"),
+    iconSvg(icon, groupX, margin + (height - button.icon) / 2, button.icon, iconClass(icon, "fill-accent")),
     `<text class="fill-text" x="${labelX}" y="${margin + height / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${slot.style.weight}"${squeeze}>${escapeXml(label)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width: width + 2 * margin, height: height + 2 * margin, body });
+}
+
+/** Size of a section heading icon, in px: GitHub draws an `<h2>` at 24px. */
+const HEADING_ICON = 24;
+
+export type SectionHeadingOptions = {
+  /** Writes `heading-<key>-light.svg` and `heading-<key>-dark.svg`. */
+  readonly key: string;
+  readonly title: string;
+  readonly icon: IconName;
+};
+
+/**
+ * A left aligned `<h2>` led by its icon (spec 0010, docs/design.md "Section headings"). The icon is decorative, so its
+ * alt text is empty and a screen reader reads only the title. Brand icons use their brand color, others `accent`.
+ */
+export function sectionHeading({ key, title, icon }: SectionHeadingOptions): SectionOutput {
+  const image = themedImage({
+    base: `heading-${key}`,
+    alt: "",
+    width: HEADING_ICON,
+    inline: true,
+    render: (theme) =>
+      svgDocument(theme, {
+        width: HEADING_ICON,
+        height: HEADING_ICON,
+        body: iconSvg(icon, 0, 0, HEADING_ICON, iconClass(icon, "fill-accent")),
+      }),
+  });
+  return { markdown: `<h2>${image.markdown} ${escapeXml(title)}</h2>`, assets: image.assets };
 }

@@ -6,6 +6,8 @@ export type BuildContext = {
   readonly content: Content;
   /** Last good snapshot per registered source, keyed by source name. */
   readonly snapshots: ReadonlyMap<string, unknown>;
+  /** Every logo content names (spec 0010), keyed by file name, as a `data:image/...;base64,` URI. */
+  readonly logos: ReadonlyMap<string, string>;
 };
 
 /** A self contained file written under assets/generated/. */

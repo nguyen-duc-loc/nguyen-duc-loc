@@ -5,7 +5,7 @@
 
 import { dateOfDay, dayNumber, formatDay, MONTHS, weekdayOfDay } from "../dates.ts";
 import type { LeetcodeSnapshot } from "../sources/leetcode.ts";
-import { card, fitText } from "../svg.ts";
+import { card, fitText, textWidth } from "../svg.ts";
 import { heatmap as hm, layout, type TextSlot, type Theme, typography } from "../theme.ts";
 import { groupDigits, textTag } from "./leetcode-text.ts";
 
@@ -13,8 +13,8 @@ const LABELS = { submissions: "Submissions (past year)", active: "Active days", 
 const LESS = "Less";
 const MORE = "More";
 const DAYS_PER_WEEK = 7;
-/** Every heatmap text is at least this size (full width images use 20px and up). */
-const MIN_TEXT = 20;
+/** Every heatmap text is at least this size. */
+const MIN_TEXT = 12;
 
 const step = hm.cell + hm.cellGap;
 const levelMins = [hm.level1Min, hm.level2Min, hm.level3Min, hm.level4Min] as const;
@@ -58,7 +58,7 @@ function levelOf(count: number): number {
 }
 
 function cell(x: number, y: number, level: number): string {
-  const paint = level === 0 ? 'class="fill-track"' : `class="fill-accent" fill-opacity="${opacities[level - 1]}"`;
+  const paint = level === 0 ? 'class="fill-track"' : `class="fill-success" fill-opacity="${opacities[level - 1]}"`;
   return `<rect x="${x}" y="${y}" width="${hm.cell}" height="${hm.cell}" rx="${hm.cellRadius}" ${paint}/>`;
 }
 
@@ -82,9 +82,6 @@ function blocksOf(days: readonly Day[]): readonly Block[] {
     };
   });
 }
-
-/** Character width estimate `0.6 × size`, in integers so the result never depends on float rounding. */
-const textWidth = (text: string, size: number): number => Math.ceil((3 * size * [...text].length) / 5);
 
 function grid(days: readonly Day[]): string {
   const blocks = blocksOf(days);
@@ -145,7 +142,7 @@ function stats(values: HeatmapStats): string {
     ].join("\n");
   };
   return [
-    stat(hm.submissionsX, hm.submissionsSlot, LABELS.submissions, values.submissions, "fill-accent", typography.title),
+    stat(hm.submissionsX, hm.submissionsSlot, LABELS.submissions, values.submissions, "fill-text", typography.title),
     stat(hm.activeX, hm.activeSlot, LABELS.active, values.active, "fill-text", typography.number),
     stat(hm.streakX, hm.streakSlot, LABELS.streak, values.streak, "fill-text", typography.number),
   ].join("\n");

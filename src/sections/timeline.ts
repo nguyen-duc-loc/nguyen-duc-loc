@@ -1,22 +1,23 @@
-// Experience and education (spec 0007, docs/design.md "Experience and education" and "Timeline card anatomy"):
-// two static full width cards, newest entry first, each with a vertical rail and a dot per entry (filled for a
-// current entry, hollow for a past one). Both cards link to LinkedIn, which holds the full history. Everything
-// comes from content/, so adding an entry there updates the cards with no code change.
+// Experience and education (spec 0007, reshaped by spec 0010; docs/design.md "Experience and education" and
+// "Timeline card anatomy"): two static full width cards, newest entry first, each entry led by the company's or
+// school's logo on a white tile (or its initial when content names no logo). Both cards link to LinkedIn, which
+// holds the full history. Everything comes from content/ and the logo files, so adding an entry there updates the
+// cards with no code change.
 
 import type { Role, School, YearMonth } from "../../content/types.ts";
 import { profileUrls } from "../content.ts";
 import { MONTHS } from "../dates.ts";
 import { escapeXml } from "../escape.ts";
-import { card, type FitResult, fitText, pillButton, themedImage, wrapLines } from "../svg.ts";
+import { card, type FitResult, fitText, pillButton, sectionHeading, themedImage, wrapLines } from "../svg.ts";
 import { button, layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
-import type { Section } from "../types.ts";
+import type { BuildContext, Section } from "../types.ts";
 
 const EXPERIENCE_HEADING = "Experience";
 const EDUCATION_HEADING = "Education";
 /** Reuses the About me LinkedIn pill files (spec 0004), so this section writes no button asset. */
 const BUTTON_BASE = "contact-linkedin";
 const BUTTON_ALT = "Full work history on LinkedIn";
-const MIN_SIZE = 20;
+const MIN_SIZE = 12;
 
 // --- Sort (spec 0002): newest start first; on a tie, current first, then the later end, then file order ---
 
@@ -78,6 +79,8 @@ const columnWidth = textRight - textX;
 
 const slot = (width: number, style: TypeStyle): TextSlot => ({ width, style, minSize: MIN_SIZE });
 const nameSlot = slot(columnWidth - dateSlot - titleGap, typography.heading);
+/** The initial drawn on a tile with no logo. */
+const initialStyle = { size: 20, weight: 700, family: "sans" } as const satisfies TypeStyle;
 const datesSlot = slot(dateSlot, typography.lead);
 const columnSlot = slot(columnWidth, typography.lead);
 const highlightSlot = slot(columnWidth - bulletIndent, typography.lead);
@@ -85,7 +88,19 @@ const highlightSlot = slot(columnWidth - bulletIndent, typography.lead);
 /** One row of an entry, drawn at its center y. */
 type Row = (y: number) => string;
 
-type Entry = { readonly current: boolean; readonly rows: readonly Row[] };
+/** The tile's picture: a logo data URI from `ctx.logos`, or the first letter of the name. */
+type Mark = { readonly kind: "logo"; readonly href: string } | { readonly kind: "initial"; readonly letter: string };
+
+type Entry = { readonly mark: Mark; readonly rows: readonly Row[] };
+
+type Logos = BuildContext["logos"];
+
+function markOf(name: string, logo: string | undefined, logos: Logos): Mark {
+  if (logo === undefined) return { kind: "initial", letter: [...name][0]?.toUpperCase() ?? "" };
+  const href = logos.get(logo);
+  if (href === undefined) throw new Error(`timeline: logo ${logo} for ${name} was not loaded`);
+  return { kind: "logo", href };
+}
 
 function nameRow(name: string, dated: Dated): Row {
   const dates = formatRange(dated, CARD_SEPARATOR);
@@ -124,7 +139,7 @@ function wrappedRows(text: string, x: number, textSlot: TextSlot, classes: strin
   );
 }
 
-function roleEntry(role: Role): Entry {
+function roleEntry(role: Role, logos: Logos): Entry {
   const companyText = role.location === undefined ? role.company : `${role.company} · ${role.location}`;
   const location =
     role.location === undefined
@@ -154,50 +169,55 @@ function roleEntry(role: Role): Entry {
               ].join("\n"),
     ),
   );
-  return { current: role.end === null, rows: [nameRow(role.title, role), companyRow, ...highlightRows] };
+  return {
+    mark: markOf(role.company, role.logo, logos),
+    rows: [nameRow(role.title, role), companyRow, ...highlightRows],
+  };
 }
 
-function schoolEntry(school: School): Entry {
+function schoolEntry(school: School, logos: Logos): Entry {
   const degree = school.field === undefined ? school.degree : `${school.degree}, ${school.field}`;
   const noteRows = school.note === undefined ? [] : wrappedRows(school.note, textX, columnSlot, "fill-accent");
   return {
-    current: school.end === null,
+    mark: markOf(school.school, school.logo, logos),
     rows: [nameRow(school.school, school), ...wrappedRows(degree, textX, columnSlot, "fill-text"), ...noteRows],
   };
 }
 
+/** An entry is as tall as its rows, or its logo tile when that is taller. */
+const entryBox = (entry: Entry): number => Math.max(entry.rows.length * lineHeight, timelineCard.logo);
+
 /** The top y of each entry, then the card height (AC-8). */
 function entryTops(entries: readonly Entry[]): { readonly tops: readonly number[]; readonly height: number } {
-  const entryHeight = (entry: Entry): number => entry.rows.length * lineHeight + entryGap;
   const tops = entries.map((_entry, i) =>
-    entries.slice(0, i).reduce<number>((top, previous) => top + entryHeight(previous), layout.pad),
+    entries.slice(0, i).reduce<number>((top, previous) => top + entryBox(previous) + entryGap, layout.pad),
   );
-  const rows = entries.reduce((sum, entry) => sum + entry.rows.length, 0);
-  return { tops, height: 2 * layout.pad + lineHeight * rows + entryGap * (entries.length - 1) };
+  const boxes = entries.reduce((sum, entry) => sum + entryBox(entry), 0);
+  return { tops, height: 2 * layout.pad + boxes + entryGap * (entries.length - 1) };
 }
 
-/** The rail, then each entry's dot and rows (AC-6). Static: no animation class. */
+/** The white logo tile at the entry's top left, with the logo fitted inside, or the initial on a `track` tile. */
+function tile(mark: Mark, top: number): string {
+  const { logo: size, logoInset: inset, logoRadius } = timelineCard;
+  const x = layout.pad;
+  const fill = mark.kind === "logo" ? "fill-logoTile" : "fill-track";
+  const rect = `<rect x="${x + 0.5}" y="${top + 0.5}" width="${size - 1}" height="${size - 1}" rx="${logoRadius}" class="${fill} stroke-border" stroke-width="${layout.border}"/>`;
+  const inner =
+    mark.kind === "logo"
+      ? `<image x="${x + inset}" y="${top + inset}" width="${size - 2 * inset}" height="${size - 2 * inset}" preserveAspectRatio="xMidYMid meet" href="${mark.href}"/>`
+      : `<text class="fill-muted" x="${x + size / 2}" y="${top + size / 2}" dominant-baseline="central" text-anchor="middle" font-size="${initialStyle.size}" font-weight="${initialStyle.weight}">${escapeXml(mark.letter)}</text>`;
+  return `${rect}\n${inner}`;
+}
+
+/** Each entry's tile and rows (AC-6). Static: no animation class. */
 function timelineSvg(theme: Theme, entries: readonly Entry[]): string {
-  const { railX, railWidth, dotRadius, dotStroke } = timelineCard;
   const { tops, height } = entryTops(entries);
   const rowY = (top: number, k: number): number => top + lineHeight / 2 + k * lineHeight;
-  const firstDot = rowY(tops[0], 0);
-  const lastDot = rowY(tops[tops.length - 1], 0);
-  const rail =
-    entries.length > 1
-      ? [
-          `<line x1="${railX}" y1="${firstDot}" x2="${railX}" y2="${lastDot}" class="stroke-border" stroke-width="${railWidth}"/>`,
-        ]
-      : [];
-  const drawn = entries.flatMap((entry, i) => {
-    const top = tops[i];
-    const fill = entry.current ? "fill-accent" : "fill-surface";
-    return [
-      `<circle cx="${railX}" cy="${rowY(top, 0)}" r="${dotRadius}" class="${fill} stroke-accent" stroke-width="${dotStroke}"/>`,
-      ...entry.rows.map((row, k) => row(rowY(top, k))),
-    ];
-  });
-  return card(theme, { width: layout.full, height, body: [...rail, ...drawn].join("\n") });
+  const drawn = entries.flatMap((entry, i) => [
+    tile(entry.mark, tops[i]),
+    ...entry.rows.map((row, k) => row(rowY(tops[i], k))),
+  ]);
+  return card(theme, { width: layout.full, height, body: drawn.join("\n") });
 }
 
 // --- Alt text (AC-9): every word the card shows, built from the same content ---
@@ -219,7 +239,7 @@ function schoolAlt(school: School): string {
 
 // --- Section (AC-1, AC-10) ---
 
-export const timeline: Section = ({ content }) => {
+export const timeline: Section = ({ content, logos }) => {
   const href = escapeXml(profileUrls(content.profile.accounts).linkedin);
   const roles = newestFirst(content.experience);
   const schools = newestFirst(content.education);
@@ -228,13 +248,21 @@ export const timeline: Section = ({ content }) => {
     base: "timeline-experience",
     alt: `${EXPERIENCE_HEADING}: ${roles.map(roleAlt).join(" ")}`,
     width: "100%",
-    render: (theme) => timelineSvg(theme, roles.map(roleEntry)),
+    render: (theme) =>
+      timelineSvg(
+        theme,
+        roles.map((role) => roleEntry(role, logos)),
+      ),
   });
   const education = themedImage({
     base: "timeline-education",
     alt: `${EDUCATION_HEADING}: ${schools.map(schoolAlt).join(" ")}`,
     width: "100%",
-    render: (theme) => timelineSvg(theme, schools.map(schoolEntry)),
+    render: (theme) =>
+      timelineSvg(
+        theme,
+        schools.map((school) => schoolEntry(school, logos)),
+      ),
   });
   // Only the markup: the files come from `about`, and `checkReadmeAssets` fails the build if they ever go missing.
   const { markdown: buttonMarkdown } = themedImage({
@@ -244,14 +272,17 @@ export const timeline: Section = ({ content }) => {
     render: (theme) => pillButton(theme, { icon: "linkedin", label: "LinkedIn" }),
   });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
-  const block = (markdown: string): string => ['<p align="center">', markdown, "</p>"].join("\n");
+  const block = (markdown: string): string => ["<p>", markdown, "</p>"].join("\n");
+  const experienceHeading = sectionHeading({ key: "experience", title: EXPERIENCE_HEADING, icon: "briefcase" });
+  const educationHeading = sectionHeading({ key: "education", title: EDUCATION_HEADING, icon: "graduationcap" });
 
   const markdown = [
-    `<h2 align="center">${EXPERIENCE_HEADING}</h2>`,
+    experienceHeading.markdown,
     block(linked(experience.markdown)),
-    `<h2 align="center">${EDUCATION_HEADING}</h2>`,
+    educationHeading.markdown,
     block(linked(education.markdown)),
     block(linked(buttonMarkdown)),
   ].join("\n\n");
-  return { markdown, assets: [...(experience.assets ?? []), ...(education.assets ?? [])] };
+  const assets = [experienceHeading, experience, educationHeading, education].flatMap((image) => image.assets ?? []);
+  return { markdown, assets };
 };

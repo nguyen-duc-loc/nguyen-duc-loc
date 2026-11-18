@@ -1,11 +1,11 @@
 // pnpm build: content + snapshots -> README.md and assets/generated/. Never touches the network.
 
-import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { content } from "../content/index.ts";
-import { assertContent } from "./content.ts";
+import { assertContent, logoFiles } from "./content.ts";
 import { checkContrast, checkReadme, checkReadmeAssets, checkSvgAssets } from "./guards.ts";
-import { GENERATED_DIR, README_FILE } from "./paths.ts";
+import { GENERATED_DIR, LOGO_DIR, README_FILE } from "./paths.ts";
 import { renderReadme } from "./readme.ts";
 import { readSnapshot } from "./snapshots.ts";
 import { sources } from "./sources/index.ts";
@@ -16,6 +16,26 @@ const SAFE_ASSET_NAME = /^[a-z0-9][a-z0-9._-]*$/i;
 
 function toFileText(text: string): string {
   return `${text.replace(/\r\n?/g, "\n").replace(/\n*$/, "")}\n`;
+}
+
+const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg" } as const;
+
+/** Each logo content names, read from `assets/static/logos/` as a data URI (spec 0010). */
+async function readLogos(files: readonly string[]): Promise<ReadonlyMap<string, string>> {
+  const logos = new Map<string, string>();
+  for (const file of files) {
+    const extension = file.slice(file.lastIndexOf(".") + 1);
+    const mime = extension === "png" || extension === "jpg" || extension === "jpeg" ? MIME[extension] : undefined;
+    if (mime === undefined) throw new Error(`logo ${file}: must be a .png, .jpg, or .jpeg file`);
+    let bytes: Buffer;
+    try {
+      bytes = await readFile(join(LOGO_DIR, file));
+    } catch (error) {
+      throw new Error(`logo ${file}: not found in assets/static/logos/`, { cause: error });
+    }
+    logos.set(file, `data:${mime};base64,${bytes.toString("base64")}`);
+  }
+  return logos;
 }
 
 function checkAssets(assets: readonly GeneratedAsset[]): string[] {
@@ -33,7 +53,7 @@ function checkAssets(assets: readonly GeneratedAsset[]): string[] {
 }
 
 export async function build(): Promise<void> {
-  // 1. Check content (a failed check writes nothing), then load snapshots.
+  // 1. Check content (a failed check writes nothing), then load snapshots and logos.
   assertContent(content);
   const snapshots = new Map<string, unknown>();
   for (const source of sources) {
@@ -41,7 +61,8 @@ export async function build(): Promise<void> {
   }
 
   // 2. Render in memory, then 3. run the guards. A failed guard writes nothing.
-  const { readme, assets } = renderReadme({ content, snapshots });
+  const logos = await readLogos(logoFiles(content));
+  const { readme, assets } = renderReadme({ content, snapshots, logos });
   const problems = [
     ...checkReadme(readme),
     ...checkReadmeAssets(readme, assets),

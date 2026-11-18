@@ -1,4 +1,4 @@
-// The header banner (spec 0003, docs/design.md "Header banner"): name and title on a Mauve to Blue
+// The header banner (spec 0003, docs/design.md "Header banner"): name and title on an accent to accent2
 // gradient, with two layered waves along the bottom edge. The back wave drifts one period, then settles.
 
 import { escapeXml } from "../escape.ts";
@@ -24,7 +24,7 @@ const BACK_TOP = FRONT.baseline - FRONT.amplitude - 20;
 type Line = { readonly slot: TextSlot; readonly y: number };
 
 const nameLine = { slot: { width: SLOT_WIDTH, style: typography.display, minSize: MIN_SIZE }, y: 84 } as const;
-const titleLine = { slot: { width: SLOT_WIDTH, style: typography.heading, minSize: MIN_SIZE }, y: 122 } as const;
+const titleLine = { slot: { width: SLOT_WIDTH, style: typography.tagline, minSize: MIN_SIZE }, y: 122 } as const;
 
 /**
  * A sine like curve from x = 0 to at least x = `to`, left to right, in half period steps.

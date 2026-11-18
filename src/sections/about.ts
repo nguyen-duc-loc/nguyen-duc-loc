@@ -1,4 +1,4 @@
-// About me (spec 0004, docs/design.md "About me"): a centered heading, the bio, and the location as real
+// About me (spec 0004, docs/design.md "About me"): the section heading, then the bio and the location as real
 // Markdown text, so GitHub colors it for every theme and people can select and translate it. Below them, a row
 // of contact pills. Links inside an <img> SVG are dead, so each pill is its own themed image wrapped in <a href>.
 
@@ -6,7 +6,7 @@ import type { Profile } from "../../content/types.ts";
 import { mailtoUrl, profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import type { IconName } from "../icons.ts";
-import { pillButton, themedImage } from "../svg.ts";
+import { pillButton, sectionHeading, themedImage } from "../svg.ts";
 import { button } from "../theme.ts";
 import type { Section } from "../types.ts";
 
@@ -40,11 +40,12 @@ export const about: Section = ({ content: { profile } }) => {
     return { ...image, markdown: `<a href="${escapeXml(url(profile))}">${image.markdown}</a>` };
   });
 
+  const heading = sectionHeading({ key: "about", title: HEADING, icon: "person" });
   const markdown = [
-    `<h2 align="center">${HEADING}</h2>`,
+    heading.markdown,
     `<p align="center">${escapeXml(profile.bio)}</p>`,
     `<p align="center">${LOCATION_PREFIX}${escapeXml(profile.location)}</p>`,
     ['<p align="center">', ...buttons.map((b) => b.markdown), "</p>"].join("\n"),
   ].join("\n\n");
-  return { markdown, assets: buttons.flatMap((b) => b.assets ?? []) };
+  return { markdown, assets: [...(heading.assets ?? []), ...buttons.flatMap((b) => b.assets ?? [])] };
 };

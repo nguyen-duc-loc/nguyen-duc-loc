@@ -1,5 +1,5 @@
-// LeetCode (specs 0006 and 0009, docs/design.md "LeetCode" and its card anatomy sections): the LeetCode profile
-// page redrawn in the theme. A full width contest card (stats row, rating history line, Top % histogram) sits above
+// LeetCode (specs 0006, 0009, and 0010, docs/design.md "LeetCode" and its card anatomy sections): the LeetCode
+// profile page redrawn in the theme. A full width contest card (stats row, rating history line) sits above
 // a half card with the problems solved arc and Easy, Med., and Hard chips, and the badges half card beside it. A
 // row of badge PNGs and a full width submission heatmap follow. Each card and badge links to the LeetCode profile.
 // Data comes only from the committed snapshot; the badges and heatmap drawing live in `leetcode-badges.ts` and
@@ -8,7 +8,7 @@
 import { profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import { type Difficulty, type LeetcodeSnapshot, parseLeetcodeSnapshot } from "../sources/leetcode.ts";
-import { card, enter, fitText, iconSvg, themedImage } from "../svg.ts";
+import { card, enter, fitText, iconSvg, sectionHeading, textWidth, themedImage } from "../svg.ts";
 import { contestCard, layout, radius, solvedCard, type TextSlot, type Theme, typography } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 import { badgeRowLines, badgesAlt, badgesCardSvg } from "./leetcode-badges.ts";
@@ -43,7 +43,7 @@ const f2 = (n: number): string => n.toFixed(2);
 
 const solvedHeight = 2 * layout.pad + 3 * solvedCard.chipHeight + 2 * solvedCard.chipGap;
 
-const numberSlot = { width: solvedCard.numberSlot, style: typography.title, minSize: 24 } as const satisfies TextSlot;
+const numberSlot = { width: solvedCard.numberSlot, style: typography.title, minSize: 20 } as const satisfies TextSlot;
 const attemptingSlot = {
   width: solvedCard.attemptingSlot,
   style: typography.label,
@@ -193,16 +193,19 @@ function solvedAlt(snapshot: LeetcodeSnapshot): string {
 // --- Contest card ---
 
 const cc = contestCard;
+/** Stat values never go below this size. */
+const VALUE_MIN = 14;
 
-const ratingSlot = { width: cc.ratingSlot, style: typography.title, minSize: 20 } as const satisfies TextSlot;
-/** `accent2` text must stay 24px or larger, so a long badge name is squeezed instead. */
-const levelSlot = { width: cc.levelSlot, style: typography.number, minSize: 24 } as const satisfies TextSlot;
-const rankSlot = { width: cc.rankSlot, style: typography.number, minSize: 20 } as const satisfies TextSlot;
-const attendedSlot = { width: cc.attendedSlot, style: typography.number, minSize: 20 } as const satisfies TextSlot;
-const topSlot = { width: cc.rightWidth, style: typography.title, minSize: 20 } as const satisfies TextSlot;
+const ratingSlot = { width: cc.ratingSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
+const levelSlot = { width: cc.levelSlot, style: typography.number, minSize: VALUE_MIN } as const satisfies TextSlot;
+const rankSlot = { width: cc.rankSlot, style: typography.number, minSize: VALUE_MIN } as const satisfies TextSlot;
+const attendedSlot = {
+  width: cc.attendedSlot,
+  style: typography.number,
+  minSize: VALUE_MIN,
+} as const satisfies TextSlot;
 
 const formatRating = (rating: number): string => groupDigits(Math.round(rating));
-const formatTop = (percentage: number): string => `${percentage.toFixed(2)}%`;
 const utcYear = (startTime: number): number => new Date(startTime * 1000).getUTCFullYear();
 
 function statLabel(x: number, label: string): string {
@@ -230,7 +233,7 @@ function contestStats({ contest }: LeetcodeSnapshot): string {
   return [
     `<g ${enter(0)}>`,
     statLabel(cc.ratingX, "Rating"),
-    statValue(cc.ratingX, ratingSlot, "fill-accent", formatRating(contest.rating)),
+    statValue(cc.ratingX, ratingSlot, "fill-text", formatRating(contest.rating)),
     "</g>",
     ...level,
     `<g ${enter(2)}>`,
@@ -247,33 +250,43 @@ function contestStats({ contest }: LeetcodeSnapshot): string {
     statLabel(cc.attendedX, "Attended"),
     statValue(cc.attendedX, attendedSlot, "fill-text", String(contest.attended)),
     "</g>",
-    `<g ${enter(4)}>`,
-    statLabel(cc.rightX, "Top"),
-    statValue(cc.rightX, topSlot, "fill-accent", formatTop(contest.topPercentage)),
-    "</g>",
   ].join("\n");
 }
 
-type Point = { readonly x: string; readonly y: string };
+type Point = { readonly x: number; readonly y: number };
 
-/** History points scaled into the chart box, as `toFixed(1)` strings. One point sits at the right edge. */
+/**
+ * History points scaled into the chart box. Contests are spaced evenly by their order, never by date, so a long
+ * break between two contests takes the same room as any other step (spec 0010). One point sits at the right edge.
+ */
 function chartPoints(history: LeetcodeSnapshot["history"]): readonly Point[] {
-  const t0 = history[0].startTime;
-  const t1 = history[history.length - 1].startTime;
   const ratings = history.map((h) => h.rating);
   const max = Math.max(...ratings);
   const min = Math.min(...ratings);
   const flat = max === min;
   const span = flat ? cc.flatSpan : max - min;
   const floor = flat ? min - cc.flatSpan / 2 : min;
-  return history.map(({ startTime, rating }) => {
-    const x =
-      history.length === 1
-        ? cc.chartRight
-        : cc.chartLeft + ((startTime - t0) / (t1 - t0)) * (cc.chartRight - cc.chartLeft);
+  const last = history.length - 1;
+  return history.map(({ rating }, i) => {
+    const x = last === 0 ? cc.chartRight : cc.chartLeft + (i / last) * (cc.chartRight - cc.chartLeft);
     const y = cc.chartBottom - ((rating - floor) / span) * (cc.chartBottom - cc.chartTop);
-    return { x: x.toFixed(1), y: y.toFixed(1) };
+    return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)) };
   });
+}
+
+type YearMark = { readonly x: number; readonly year: number };
+
+/** The first contest of each year, left to right, dropping a year that would sit closer than `yearMinGap`. */
+function yearMarks(history: LeetcodeSnapshot["history"], points: readonly Point[]): readonly YearMark[] {
+  const marks: YearMark[] = [];
+  history.forEach(({ startTime }, i) => {
+    const year = utcYear(startTime);
+    if (i > 0 && year === utcYear(history[i - 1].startTime)) return;
+    const previous = marks.at(-1);
+    if (previous !== undefined && points[i].x - previous.x < cc.yearMinGap) return;
+    marks.push({ x: points[i].x, year });
+  });
+  return marks;
 }
 
 function ratingChart(history: LeetcodeSnapshot["history"]): string {
@@ -282,65 +295,43 @@ function ratingChart(history: LeetcodeSnapshot["history"]): string {
     points.length === 1
       ? []
       : [
-          `<path d="${points.map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ")}" fill="none" class="gauge stroke-accent" stroke-width="${cc.lineWidth}" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>`,
+          `<path d="${points.map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ")}" fill="none" class="gauge stroke-brand-leetcode" stroke-width="${cc.lineWidth}" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>`,
         ];
 
   // The last point and its label: the label sits left of the dot and covers the end of the line on purpose.
   const last = points[points.length - 1];
-  const dotX = Number(last.x);
-  const dotY = Number(last.y);
   const label = formatRating(history[history.length - 1].rating);
   const { lead } = typography;
-  // 0.6 × size per character, in integers so the result never depends on float rounding.
-  const width = Math.ceil((3 * lead.size * [...label].length) / 5) + 2 * cc.tipPadX;
-  const tipX = dotX - cc.dotRadius - cc.tipGap - width;
+  const width = textWidth(label, lead.size) + 2 * cc.tipPadX;
+  const tipX = last.x - cc.dotRadius - cc.tipGap - width;
   const tip = [
     `<g ${enter(9)}>`,
-    `<circle cx="${last.x}" cy="${last.y}" r="${cc.dotRadius}" class="fill-accent"/>`,
-    `<rect x="${tipX.toFixed(1)}" y="${(dotY - cc.tipHeight / 2).toFixed(1)}" width="${width}" height="${cc.tipHeight}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
+    `<circle cx="${last.x}" cy="${last.y}" r="${cc.dotRadius}" class="fill-brand-leetcode"/>`,
+    `<rect x="${tipX.toFixed(1)}" y="${(last.y - cc.tipHeight / 2).toFixed(1)}" width="${width}" height="${cc.tipHeight}" rx="${radius.small}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
     textTag(
-      { x: Number((tipX + width / 2).toFixed(1)), y: dotY, anchor: "middle", classes: "fill-text", style: lead },
+      { x: Number((tipX + width / 2).toFixed(1)), y: last.y, anchor: "middle", classes: "fill-text", style: lead },
       label,
     ),
     "</g>",
   ];
 
-  const first = utcYear(history[0].startTime);
-  const end = utcYear(history[history.length - 1].startTime);
-  const year = (x: number, anchor: Anchor, value: number): string =>
-    textTag({ x, y: cc.yearY, anchor, classes: "fill-muted", style: lead }, String(value));
-  const years =
-    history.length === 1
-      ? [year(cc.paneRight, "end", end)]
-      : first === end
-        ? [year(layout.pad, "start", first)]
-        : [year(layout.pad, "start", first), year(cc.paneRight, "end", end)];
+  // A year label under the first contest of each year, with a faint line up through the chart where a year starts.
+  const marks = yearMarks(history, points);
+  const years = marks.map(({ x, year }, i) => {
+    const anchor: Anchor = points.length === 1 ? "end" : i === 0 ? "start" : "middle";
+    const rule =
+      i === 0
+        ? ""
+        : `<line x1="${x}" y1="${cc.chartTop}" x2="${x}" y2="${cc.chartBottom}" class="stroke-border" stroke-width="${layout.border}" stroke-dasharray="4 4"/>`;
+    const text = textTag({ x, y: cc.yearY, anchor, classes: "fill-muted", style: lead }, String(year));
+    return `${rule}${text}`;
+  });
 
-  return [...line, `<g ${enter(5)}>${years.join("")}</g>`, ...tip].join("\n");
-}
-
-/** The bucket holding the rating; else the last bucket starting at or below it; else none (-1). */
-function currentBucket(histogram: LeetcodeSnapshot["histogram"], rating: number): number {
-  const inside = histogram.findIndex((b) => b.ratingStart <= rating && rating < b.ratingEnd);
-  return inside >= 0 ? inside : histogram.findLastIndex((b) => b.ratingStart <= rating);
-}
-
-function histogramBars({ histogram, contest }: LeetcodeSnapshot): string {
-  const step = Math.floor((cc.rightWidth + cc.barGap) / histogram.length);
-  const max = Math.max(...histogram.map((b) => b.userCount));
-  const current = currentBucket(histogram, contest.rating);
-  return histogram
-    .map(({ userCount }, i) => {
-      const height = Math.max(cc.barMinHeight, Math.round((userCount / max) * cc.barsMaxHeight));
-      const color = i === current ? "fill-accent" : "fill-track";
-      return `<rect x="${cc.rightX + i * step}" y="${cc.barsBottom - height}" width="${step - cc.barGap}" height="${height}" rx="${cc.barRadius}" class="rise ${color}"/>`;
-    })
-    .join("\n");
+  return [`<g ${enter(5)}>${years.join("")}</g>`, ...line, ...tip].join("\n");
 }
 
 function contestCardSvg(theme: Theme, snapshot: LeetcodeSnapshot): string {
-  const divider = `<line x1="${cc.dividerX + 0.5}" y1="${layout.pad}" x2="${cc.dividerX + 0.5}" y2="${cc.height - layout.pad}" class="stroke-border" stroke-width="${layout.border}"/>`;
-  const body = [contestStats(snapshot), ratingChart(snapshot.history), divider, histogramBars(snapshot)].join("\n");
+  const body = [contestStats(snapshot), ratingChart(snapshot.history)].join("\n");
   return card(theme, { width: layout.full, height: cc.height, body });
 }
 
@@ -359,7 +350,7 @@ function contestAlt({ contest, history }: LeetcodeSnapshot): string {
   return [
     `LeetCode contest rating ${formatRating(contest.rating)}${level},`,
     `global ranking ${groupDigits(contest.globalRanking)} of ${groupDigits(contest.totalParticipants)},`,
-    `top ${formatTop(contest.topPercentage)}, ${attended}.`,
+    `${attended}.`,
     `Rating history: ${trend}.`,
   ].join(" ");
 }
@@ -408,16 +399,17 @@ export const leetcodeStats: Section = (ctx) => {
     render: (theme) => heatmapCardSvg(theme, snapshot),
   });
   const linked = (markdown: string): string => `<a href="${href}">${markdown}</a>`;
-  const block = (lines: readonly string[]): string => ['<p align="center">', ...lines, "</p>"].join("\n");
+  const block = (lines: readonly string[]): string => ["<p>", ...lines, "</p>"].join("\n");
   const row = badgeRowLines(snapshot, href);
+  const heading = sectionHeading({ key: "leetcode", title: HEADING, icon: "leetcode" });
 
   const markdown = [
-    `<h2 align="center">${HEADING}</h2>`,
+    heading.markdown,
     block([linked(contest.markdown)]),
     block([linked(solved.markdown), linked(badges.markdown)]),
     ...(row.length === 0 ? [] : [block(row)]),
     block([linked(heatmap.markdown)]),
   ].join("\n\n");
-  const assets = [contest, solved, badges, heatmap].flatMap((image) => image.assets ?? []);
+  const assets = [heading, contest, solved, badges, heatmap].flatMap((image) => image.assets ?? []);
   return { markdown, assets };
 };

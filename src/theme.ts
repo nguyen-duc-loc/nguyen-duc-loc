@@ -1,6 +1,8 @@
 // The one source of colors, fonts, sizes, spacing, and motion timings (spec 0003).
 // docs/design.md repeats these values for people; change both in the same commit.
-// Pure: constants and two pure functions, no I/O.
+// Pure: constants and pure functions, no I/O.
+
+import type { IconName } from "./icons.ts";
 
 export type ThemeName = "light" | "dark";
 /** Lowercase `#rrggbb`. The format is checked at build time by `checkContrast`. */
@@ -17,7 +19,8 @@ export type TokenName =
   | "onAccent"
   | "success"
   | "warning"
-  | "danger";
+  | "danger"
+  | "logoTile";
 export type Theme = { readonly name: ThemeName } & { readonly [K in TokenName]: Hex };
 export type ContrastPair = { readonly fg: TokenName; readonly bg: TokenName; readonly min: 3 | 4.5 };
 export type TypeStyle = { readonly size: number; readonly weight: 400 | 600 | 700; readonly family: "sans" | "mono" };
@@ -37,41 +40,77 @@ export const tokenNames = [
   "success",
   "warning",
   "danger",
+  "logoTile",
 ] as const satisfies readonly TokenName[];
 
-/** Catppuccin Latte (light) and Mocha (dark). `page` is GitHub's page background, used only by checks. */
+/**
+ * GitHub's own Primer colors (spec 0010), so cards sit on the page like GitHub's own UI. `page` is GitHub's page
+ * background, used only by checks. `success`, `warning`, and `danger` are LeetCode's own difficulty colors.
+ */
 export const themes = {
   light: {
     name: "light",
     page: "#ffffff",
-    surface: "#eff1f5",
-    border: "#ccd0da",
-    track: "#dce0e8",
-    text: "#4c4f69",
-    muted: "#5c5f77",
-    accent: "#8839ef",
-    accent2: "#1e66f5",
+    surface: "#f6f8fa",
+    border: "#d1d9e0",
+    track: "#e6eaef",
+    text: "#1f2328",
+    muted: "#59636e",
+    accent: "#0969da",
+    accent2: "#8250df",
     onAccent: "#ffffff",
-    success: "#40a02b",
-    warning: "#df8e1d",
-    danger: "#d20f39",
+    success: "#00af9b",
+    warning: "#ffb800",
+    danger: "#ff2d55",
+    logoTile: "#ffffff",
   },
   dark: {
     name: "dark",
     page: "#0d1117",
-    surface: "#1e1e2e",
-    border: "#313244",
-    track: "#45475a",
-    text: "#cdd6f4",
-    muted: "#a6adc8",
-    accent: "#cba6f7",
-    accent2: "#89b4fa",
-    onAccent: "#11111b",
-    success: "#a6e3a1",
-    warning: "#f9e2af",
-    danger: "#f38ba8",
+    surface: "#151b23",
+    border: "#3d444d",
+    track: "#262c36",
+    text: "#f0f6fc",
+    muted: "#9198a1",
+    accent: "#4493f8",
+    accent2: "#ab7df8",
+    onAccent: "#0d1117",
+    success: "#1cbaba",
+    warning: "#ffb700",
+    danger: "#f63737",
+    logoTile: "#ffffff",
   },
 } as const satisfies { readonly [K in ThemeName]: Theme };
+
+/**
+ * Each brand's own color (spec 0010), drawn through `fill-brand-<icon>`. Values are the `hex` of the pinned Simple
+ * Icons release (`simple-icons@16.38.0`), except the hand drawn LinkedIn (LinkedIn's brand blue). Icons without an
+ * entry here (`check`, `email`, and the heading glyphs) are drawn in a theme token instead.
+ */
+export const brandColors = {
+  cplusplus: "#00599c",
+  credly: "#ff6b00",
+  docker: "#2496ed",
+  git: "#f03c2e",
+  gnubash: "#4eaa25",
+  go: "#00add8",
+  kubernetes: "#326ce5",
+  leetcode: "#ffa116",
+  linkedin: "#0a66c2",
+  linux: "#fcc624",
+  nextdotjs: "#000000",
+  react: "#61dafb",
+  terraform: "#844fba",
+  typescript: "#3178c6",
+} as const satisfies { readonly [K in IconName]?: Hex };
+
+export type BrandName = keyof typeof brandColors;
+
+/**
+ * A brand color this close to the theme's `page` or `surface` would vanish (Next.js black on dark), so it is drawn
+ * in the theme's `text` instead. Brand icons always sit next to their name, so they are decorative.
+ */
+export const brandMinContrast = 1.5;
 
 /** Checked for both themes on every build. Decorative and always labeled tokens are left out on purpose. */
 export const contrastPairs = [
@@ -79,7 +118,7 @@ export const contrastPairs = [
   { fg: "muted", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "page", min: 4.5 },
-  { fg: "accent2", bg: "surface", min: 3 },
+  { fg: "accent2", bg: "surface", min: 4.5 },
   { fg: "onAccent", bg: "accent", min: 4.5 },
   { fg: "onAccent", bg: "accent2", min: 4.5 },
 ] as const satisfies readonly ContrastPair[];
@@ -90,17 +129,19 @@ export const fonts = {
   mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
 } as const satisfies { readonly [K in TypeStyle["family"]]: string };
 
-/** Full width images use only 20px and up (they render at about 42% on a phone). */
+/** Card text is kept near GitHub's own 14 to 16px body size (spec 0010); only the banner uses larger sizes. */
 export const typography = {
   display: { size: 48, weight: 700, family: "sans" },
-  title: { size: 32, weight: 700, family: "sans" },
-  heading: { size: 20, weight: 600, family: "sans" },
-  lead: { size: 20, weight: 400, family: "sans" },
+  tagline: { size: 22, weight: 600, family: "sans" },
+  title: { size: 24, weight: 700, family: "sans" },
+  heading: { size: 16, weight: 600, family: "sans" },
+  lead: { size: 14, weight: 400, family: "sans" },
   body: { size: 14, weight: 400, family: "sans" },
   label: { size: 12, weight: 400, family: "sans" },
-  number: { size: 24, weight: 600, family: "mono" },
+  number: { size: 20, weight: 600, family: "mono" },
   typing: { size: 22, weight: 400, family: "mono" },
   button: { size: 14, weight: 600, family: "sans" },
+  chip: { size: 13, weight: 600, family: "sans" },
 } as const satisfies { readonly [name: string]: TypeStyle };
 
 /** Spacing scale in px. */
@@ -122,20 +163,12 @@ export const button = { width: 140, height: 40, margin: 4, padX: 16, icon: 16, g
 };
 
 /**
- * Tech stack cards (spec 0005, docs/design.md "Stack card anatomy"): chips in `columns` columns under the card
- * heading. `headingGap` runs from the heading box to the first chip row, `chipPadX` from the chip edge to the
- * icon (and from the text end to the chip edge), `iconGap` from the icon to the name.
+ * Tech stack chips (spec 0010, docs/design.md "Tech stack"): one pill per item, `height` tall and as wide as its
+ * name needs (`padX`, icon, `iconGap`, the `chip` style estimate, `padX`), so the table cell wraps them like words.
  */
-export const stackCard = {
-  columns: 2,
-  headingGap: 16,
-  chipHeight: 32,
-  gapX: 16,
-  gapY: 8,
-  chipPadX: 12,
-  icon: 16,
-  iconGap: 8,
-} as const satisfies { readonly [name: string]: number };
+export const stackChip = { height: 32, padX: 10, icon: 18, iconGap: 8, margin: 2 } as const satisfies {
+  readonly [name: string]: number;
+};
 
 /**
  * LeetCode solved card (spec 0006, docs/design.md "Solved card anatomy"): a 270 degree arc of Easy, Medium, and
@@ -175,83 +208,75 @@ export const solvedCard = {
 } as const satisfies { readonly [name: string]: number };
 
 /**
- * LeetCode contest card (spec 0006, docs/design.md "Contest card anatomy"): `layout.full` wide. A left pane with the
- * stats row and the rating history chart, a divider at `dividerX + 0.5`, and a right pane with the Top value and the
- * rating histogram. `*X` and `*Slot` place each stat column; every text on this card is 20px or larger.
+ * LeetCode contest card (spec 0006, reshaped by spec 0010; docs/design.md "Contest card anatomy"): `layout.full`
+ * wide. The stats row over the rating history chart, which spans the whole card. Contests are spaced evenly, one
+ * step per attended contest, so a long break between contests leaves no empty stretch. `*X` and `*Slot` place each
+ * stat column.
  */
 export const contestCard = {
-  height: 300,
-  paneRight: 616,
-  dividerX: 640,
-  rightX: 664,
-  rightWidth: 162,
-  labelY: 34,
-  valueY: 68,
+  height: 244,
+  labelY: 32,
+  valueY: 62,
   ratingX: 24,
-  ratingSlot: 104,
-  levelIconX: 144,
-  levelIconY: 31,
-  levelIcon: 40,
-  levelX: 192,
-  levelSlot: 120,
-  rankX: 328,
-  rankSlot: 176,
-  attendedX: 520,
-  attendedSlot: 96,
-  chartLeft: 28,
-  chartRight: 612,
-  chartTop: 120,
-  chartBottom: 240,
+  ratingSlot: 120,
+  levelIconX: 168,
+  levelIconY: 30,
+  levelIcon: 32,
+  levelX: 208,
+  levelSlot: 150,
+  rankX: 384,
+  rankSlot: 230,
+  attendedX: 640,
+  attendedSlot: 120,
+  chartLeft: 32,
+  chartRight: 818,
+  chartTop: 104,
+  chartBottom: 196,
   flatSpan: 100,
   lineWidth: 2,
-  dotRadius: 5,
-  tipGap: 10,
-  tipHeight: 28,
+  dotRadius: 4,
+  tipGap: 8,
+  tipHeight: 24,
   tipPadX: 8,
-  yearY: 266,
-  barsBottom: 276,
-  barsMaxHeight: 168,
-  barGap: 2,
-  barMinHeight: 2,
-  barRadius: 1,
+  yearY: 220,
+  yearMinGap: 48,
 } as const satisfies { readonly [name: string]: number };
 
 /**
- * Experience and education cards (spec 0007, docs/design.md "Timeline card anatomy"): `layout.full` wide, a
- * vertical rail at `railX` with a dot per entry, and text from `textX` to `layout.full − layout.pad`. Row 0 holds
- * the name and the dates, right aligned in `dateSlot`, `titleGap` apart. Rows are `lineHeight` apart, entries
- * `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
+ * Experience and education cards (spec 0007, reshaped by spec 0010; docs/design.md "Timeline card anatomy"):
+ * `layout.full` wide, each entry with its `logo` px logo tile at `layout.pad` and text from `textX` to
+ * `layout.full − layout.pad`. Row 0 holds the name and the dates, right aligned in `dateSlot`, `titleGap` apart.
+ * Rows are `lineHeight` apart, entries `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
  */
 export const timelineCard = {
-  railX: 40,
-  railWidth: 2,
-  dotRadius: 7,
-  dotStroke: 2,
-  textX: 72,
-  bulletIndent: 20,
-  dateSlot: 228,
+  logo: 48,
+  logoInset: 4,
+  logoRadius: 8,
+  textX: 88,
+  bulletIndent: 16,
+  dateSlot: 200,
   titleGap: 16,
-  lineHeight: 28,
+  lineHeight: 24,
   entryGap: 24,
 } as const satisfies { readonly [name: string]: number };
 
-/** Certifications (spec 0008, docs/design.md "Certifications"): each Credly badge PNG shows `badgeWidth` px wide. */
-export const credlyGrid = { badgeWidth: 110 } as const satisfies { readonly [name: string]: number };
+/** Certifications (specs 0008 and 0010, docs/design.md "Certifications"): each Credly badge PNG is `badgeWidth` px. */
+export const credlyGrid = { badgeWidth: 96 } as const satisfies { readonly [name: string]: number };
 
 /**
  * LeetCode badges half card (spec 0009, docs/design.md "Badges card anatomy"): `layout.half` wide and as tall as
  * the solved card. Every y is a text center (`dominant-baseline="central"`), every x is `layout.pad`.
  */
 export const badgesCard = {
-  headingY: 34,
-  icon: 24,
+  headingY: 32,
+  icon: 20,
   iconY: 22,
-  countY: 74,
-  recentY: 112,
-  nameY: 138,
+  countY: 66,
+  recentY: 104,
+  nameY: 128,
   nameSlot: 352,
-  nameMin: 14,
-  monthY: 164,
+  nameMin: 12,
+  monthY: 152,
 } as const satisfies { readonly [name: string]: number };
 
 /** The LeetCode badge image row (spec 0009): at most `max` PNGs, each `width` px wide. */
@@ -263,24 +288,24 @@ export const badgeRow = { max: 8, width: 80 } as const satisfies { readonly [nam
  * with `fill-opacity` `opacity<k>`; level 0 is `fill-track`.
  */
 export const heatmap = {
-  height: 264,
+  height: 232,
   windowDays: 365,
-  labelY: 34,
-  valueY: 68,
+  labelY: 32,
+  valueY: 62,
   submissionsX: 24,
   submissionsSlot: 300,
   activeX: 348,
   activeSlot: 220,
   streakX: 592,
   streakSlot: 234,
-  gridTop: 100,
+  gridTop: 92,
   cell: 9,
   cellGap: 2,
   cellRadius: 2,
   monthGap: 6,
-  monthY: 198,
+  monthY: 182,
   monthMinColumns: 3,
-  legendY: 230,
+  legendY: 208,
   legendGap: 8,
   level1Min: 1,
   level2Min: 2,
@@ -317,13 +342,29 @@ export function contrastRatio(a: Hex, b: Hex): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-/** The color class block every SVG's `<style>` starts with: fill, stroke, and stop classes per drawn token. */
+/** The brand's own color, or the theme's `text` when it would vanish on `page` or `surface` (`brandMinContrast`). */
+export function brandColor(theme: Theme, brand: BrandName): Hex {
+  const hex: Hex = brandColors[brand];
+  const lowest = Math.min(contrastRatio(hex, theme.page), contrastRatio(hex, theme.surface));
+  return lowest < brandMinContrast ? theme.text : hex;
+}
+
+const brandNames = Object.keys(brandColors).toSorted() as readonly BrandName[];
+
+/**
+ * The color class block every SVG's `<style>` starts with: fill, stroke, and stop classes per drawn token, then a
+ * `fill-brand-<icon>` class per brand, in key order.
+ */
 export function themeCss(theme: Theme): string {
-  return tokenNames
+  const tokens = tokenNames
     .filter((token) => token !== "page")
     .map((token) => {
       const hex = theme[token];
       return `.fill-${token}{fill:${hex}}.stroke-${token}{stroke:${hex}}.stop-${token}{stop-color:${hex}}`;
-    })
-    .join("");
+    });
+  const brands = brandNames.map((brand) => {
+    const hex = brandColor(theme, brand);
+    return `.fill-brand-${brand}{fill:${hex}}.stroke-brand-${brand}{stroke:${hex}}`;
+  });
+  return [...tokens, ...brands].join("");
 }

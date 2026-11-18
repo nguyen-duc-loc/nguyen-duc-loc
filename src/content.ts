@@ -8,7 +8,7 @@ const SHORT_TEXT_MAX = 80;
 const BIO_MAX = 300;
 const TYPING_PHRASE_MAX = 40;
 const LONG_TEXT_MAX = 120;
-/** Keeps all four tech stack cards at 1 to 4 chip rows, since they share the tallest height (spec 0005). */
+/** Keeps each tech stack table row short enough to read at a glance (spec 0005). */
 const STACK_CATEGORY_MAX = 8;
 /** Keeps the timeline cards a readable height: about 1,200px at 6 roles (spec 0007). */
 const EXPERIENCE_MAX = 6;
@@ -17,6 +17,7 @@ const EDUCATION_MAX = 4;
 const LINE_BREAK = /[\r\n\u2028\u2029]/;
 const HTTPS_URL = /^https:\/\/\S+$/;
 const YEAR_MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+const LOGO_FILE = /^[a-z0-9][a-z0-9-]*\.(png|jpe?g)$/;
 const EMAIL = /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 
 /** In the order problems are reported. */
@@ -123,6 +124,18 @@ function checkOptionalUrl(path: string, url: string | undefined): string[] {
   return [problem(path, "must be an https URL")];
 }
 
+function checkLogo(path: string, logo: string | undefined): string[] {
+  return logo === undefined ? [] : checkPattern(path, logo, LOGO_FILE);
+}
+
+/** Every logo file name content names, sorted and unique, so build reads each one once (spec 0010). */
+export function logoFiles(content: Content): readonly string[] {
+  const names = [...content.experience, ...content.education].flatMap((entry) =>
+    entry.logo === undefined ? [] : [entry.logo],
+  );
+  return [...new Set(names)].toSorted();
+}
+
 function checkDates(base: string, entry: Role | School): string[] {
   const problems = checkPattern(`${base}.start`, entry.start, YEAR_MONTH);
   if (entry.end === null) return problems;
@@ -182,6 +195,7 @@ function checkRole(role: Role, i: number): string[] {
     ...role.highlights.flatMap((text, j) => checkText(`${base}.highlights[${j}]`, text, LONG_TEXT_MAX)),
     ...checkOptionalText(`${base}.location`, role.location, SHORT_TEXT_MAX),
     ...checkOptionalUrl(`${base}.companyUrl`, role.companyUrl),
+    ...checkLogo(`${base}.logo`, role.logo),
   ];
 }
 
@@ -193,6 +207,7 @@ function checkSchool(school: School, i: number): string[] {
     ...checkOptionalText(`${base}.field`, school.field, SHORT_TEXT_MAX),
     ...checkDates(base, school),
     ...checkOptionalText(`${base}.note`, school.note, LONG_TEXT_MAX),
+    ...checkLogo(`${base}.logo`, school.logo),
   ];
 }
 

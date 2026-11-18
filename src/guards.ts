@@ -8,16 +8,28 @@ const IMG_TAG = /<img\b[^>]*>/gi;
 const ALT_ATTR = /\salt\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>/]+))/i;
 // Inline `![alt](url)` and reference style `![alt][ref]` images.
 const MARKDOWN_IMAGE = /!\[[^\]]*\]\s*[([]/g;
+const HEADING = /<h2\b[^>]*>([\s\S]*?)<\/h2>/gi;
+const TAGS = /<[^>]*>/g;
+
+/** Index ranges of `<h2>` elements that carry their own text, where a decorative icon may have `alt=""` (spec 0010). */
+function headingRanges(readme: string): readonly (readonly [number, number])[] {
+  return [...readme.matchAll(HEADING)]
+    .filter((m) => m[1].replace(TAGS, "").trim() !== "")
+    .map((m) => [m.index, m.index + m[0].length] as const);
+}
 
 export function checkReadme(readme: string): string[] {
   const problems: string[] = [];
+  const headings = headingRanges(readme);
+  const inHeading = (index: number): boolean => headings.some(([start, end]) => index > start && index < end);
 
   for (const match of readme.matchAll(IMG_TAG)) {
     const alt = ALT_ATTR.exec(match[0]);
     const value = alt ? (alt[1] ?? alt[2] ?? alt[3] ?? "") : undefined;
     if (value === undefined) {
       problems.push(`<img> without alt text: ${match[0]}`);
-    } else if (value.trim() === "") {
+    } else if (value.trim() === "" && !(value === "" && inHeading(match.index))) {
+      // `alt=""` is allowed only on a decorative heading icon: the heading text already says it.
       problems.push(`<img> with blank alt text: ${match[0]}`);
     }
   }
@@ -103,6 +115,8 @@ const EVENT_ATTR = /\s(on[a-z]+)\s*=/gi;
 const LINK_ATTR = /\s(href|xlink:href|src)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
 const CSS_URL = /url\(([^)]*)\)/gi;
 const LOCAL_REF = /^#[A-Za-z_][\w.-]*$/;
+/** An embedded raster image (spec 0010, the timeline logos): self contained, and base64 has no markup characters. */
+const DATA_IMAGE = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/;
 const INFINITE = /infinite/i;
 
 const COLOR_PROPS = "fill|stroke|stop-color|color|flood-color|lighting-color|background-color|background";
@@ -147,7 +161,8 @@ function checkSelfContained(svg: string): string[] {
   const markup = markupOf(svg);
   for (const m of markup.matchAll(LINK_ATTR)) {
     const value = (m[2] ?? m[3] ?? m[4]).trim();
-    if (!LOCAL_REF.test(value)) problems.push(`${m[1]} must point to #<id>, not ${value}`);
+    if (DATA_IMAGE.test(value)) continue;
+    if (!LOCAL_REF.test(value)) problems.push(`${m[1]} must point to #<id>, not ${value.slice(0, 80)}`);
   }
   for (const m of markup.matchAll(CSS_URL)) {
     if (!LOCAL_REF.test(trimRef(m[1]))) problems.push(`url() must point to #<id>, not ${m[1].trim()}`);

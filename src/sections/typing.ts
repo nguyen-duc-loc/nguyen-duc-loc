@@ -1,4 +1,4 @@
-// The typing line under the banner (spec 0003, docs/design.md "Typing line"). Each typing state is a whole
+// The typing line under the banner (spec 0003, docs/design.md "Typing line"): the greeting (spec 0010). Each typing state is a whole
 // prefix frame, shown one at a time by an opacity keyframe. The base style shows only the last phrase, so with
 // animation off (or after it ends) the line rests on the last phrase with no cursor.
 
@@ -93,7 +93,7 @@ export const typingIntro: Section = ({ content: { profile } }) => {
 
   return themedImage({
     base: "typing",
-    alt: `Typing intro: ${phrases.join(", ")}`,
+    alt: phrases.join(". "),
     width: "100%",
     render: (theme) => svgDocument(theme, { width: WIDTH, height: HEIGHT, css: CSS, body }),
   });
