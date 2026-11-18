@@ -31,7 +31,7 @@ export function badgeImage(href: string, x: number, y: number, size: number): st
   return `<image x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet" href="${href}"/>`;
 }
 
-/** The featured badges that have stored art, with the chosen badge in the middle, as on LeetCode. */
+/** The featured badges that have stored art, with the most valuable one in the middle, as on LeetCode. */
 function artOf(snapshot: LeetcodeSnapshot, images: Images): readonly Art[] {
   const art = featuredBadges(snapshot, FEATURED_BADGES).flatMap((badge) => {
     const href = images.get(imageKey({ url: badge.icon, size: BADGE_IMAGE.featured }));

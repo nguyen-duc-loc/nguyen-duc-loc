@@ -91,33 +91,33 @@
 <tr>
 <td width="10%"><b>Languages</b></td>
 <td width="90%">
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-typescript-dark.svg"><img alt="TypeScript" src="assets/generated/stack-typescript-light.svg" width="128" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-go-dark.svg"><img alt="Go" src="assets/generated/stack-go-light.svg" width="96" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-cplusplus-dark.svg"><img alt="C++" src="assets/generated/stack-cplusplus-light.svg" width="72" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-bash-dark.svg"><img alt="Bash" src="assets/generated/stack-bash-light.svg" width="82" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-typescript-dark.svg"><img alt="TypeScript" src="assets/generated/stack-typescript-light.svg" width="118" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-go-dark.svg"><img alt="Go" src="assets/generated/stack-go-light.svg" width="94" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-cplusplus-dark.svg"><img alt="C++" src="assets/generated/stack-cplusplus-light.svg" width="69" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-bash-dark.svg"><img alt="Bash" src="assets/generated/stack-bash-light.svg" width="78" align="middle"></picture>
 </td>
 </tr>
 <tr>
 <td width="10%"><b>Frameworks</b></td>
 <td width="90%">
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-react-dark.svg"><img alt="React" src="assets/generated/stack-react-light.svg" width="91" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-nextdotjs-dark.svg"><img alt="Next.js" src="assets/generated/stack-nextdotjs-light.svg" width="105" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-react-dark.svg"><img alt="React" src="assets/generated/stack-react-light.svg" width="86" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-nextdotjs-dark.svg"><img alt="Next.js" src="assets/generated/stack-nextdotjs-light.svg" width="98" align="middle"></picture>
 </td>
 </tr>
 <tr>
 <td width="10%"><b>Tools</b></td>
 <td width="90%">
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-git-dark.svg"><img alt="Git" src="assets/generated/stack-git-light.svg" width="74" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-docker-dark.svg"><img alt="Docker" src="assets/generated/stack-docker-light.svg" width="97" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-terraform-dark.svg"><img alt="Terraform" src="assets/generated/stack-terraform-light.svg" width="116" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-linux-dark.svg"><img alt="Linux" src="assets/generated/stack-linux-light.svg" width="87" align="middle"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-kubernetes-dark.svg"><img alt="Kubernetes" src="assets/generated/stack-kubernetes-light.svg" width="129" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-git-dark.svg"><img alt="Git" src="assets/generated/stack-git-light.svg" width="71" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-docker-dark.svg"><img alt="Docker" src="assets/generated/stack-docker-light.svg" width="91" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-terraform-dark.svg"><img alt="Terraform" src="assets/generated/stack-terraform-light.svg" width="106" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-linux-dark.svg"><img alt="Linux" src="assets/generated/stack-linux-light.svg" width="82" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-kubernetes-dark.svg"><img alt="Kubernetes" src="assets/generated/stack-kubernetes-light.svg" width="119" align="middle"></picture>
 </td>
 </tr>
 <tr>
 <td width="10%"><b>Cloud</b></td>
 <td width="90%">
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="Amazon Web Services" src="assets/generated/stack-aws-light.svg" width="211" align="middle"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/generated/stack-aws-dark.svg"><img alt="Amazon Web Services" src="assets/generated/stack-aws-light.svg" width="191" align="middle"></picture>
 </td>
 </tr>
 </table>
@@ -134,7 +134,7 @@
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-summary-dark.svg">
-  <img alt="LeetCode problems solved: 2,246 of 4,115. Easy 661 of 976, Medium 1,170 of 2,148, Hard 415 of 991. 3 attempting. LeetCode badges: 62 earned, featuring Guardian, Annual Badge 2026, 200 Days Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-summary-light.svg" width="100%">
+  <img alt="LeetCode problems solved: 2,246 of 4,115. Easy 661 of 976, Medium 1,170 of 2,148, Hard 415 of 991. 3 attempting. LeetCode badges: 62 earned, featuring Guardian, 1000 Days Badge, Annual Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-summary-light.svg" width="100%">
 </picture></a>
 </p>
 

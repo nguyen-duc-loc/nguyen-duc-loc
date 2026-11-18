@@ -12,6 +12,7 @@ import {
   radius,
   type TextSlot,
   type Theme,
+  textMetrics,
   themeCss,
   themes,
   typography,
@@ -198,6 +199,16 @@ export function iconSvg(theme: Theme, name: IconName, x: number, y: number, size
 }
 
 export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
+
+/** The baseline y that centers a line of `size` px text on `centerY` (`textMetrics.capCenter`), to one decimal. */
+export function centeredBaseline(centerY: number, size: number): number {
+  return Math.round((centerY + textMetrics.capCenter * size) * 10) / 10;
+}
+
+/** A snug width estimate for a short label (`textMetrics.snugAdvance`); center the label in it. */
+export function snugWidth(text: string, size: number): number {
+  return Math.ceil(textMetrics.snugAdvance * size * [...text].length);
+}
 
 /** Estimated width of `text` at `size`, `0.6 × size` per character, in integers (the `fitText` estimate). */
 export function textWidth(text: string, size: number): number {

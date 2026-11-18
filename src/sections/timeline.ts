@@ -8,7 +8,16 @@ import type { Role, School, YearMonth } from "../../content/types.ts";
 import { profileUrls } from "../content.ts";
 import { MONTHS } from "../dates.ts";
 import { escapeXml } from "../escape.ts";
-import { type FitResult, fitText, sectionHeading, svgDocument, themedImage, wrapLines } from "../svg.ts";
+import {
+  centeredBaseline,
+  type FitResult,
+  fitText,
+  sectionHeading,
+  snugWidth,
+  svgDocument,
+  themedImage,
+  wrapLines,
+} from "../svg.ts";
 import { layout, type TextSlot, type Theme, type TypeStyle, timelineCard, typography } from "../theme.ts";
 import type { BuildContext, Section } from "../types.ts";
 
@@ -176,37 +185,27 @@ function roleEntry(role: Role, logos: Logos): Entry {
 const STAR = "\u2605";
 
 /**
- * The honors note as a gold pill (spec 0010): `stars` ★ then the note, in `honor` on a faint `honor` tint, so it
- * stands out from the degree line. One line: a long note is squeezed, never wrapped.
+ * The honors note as a bright gold pill (spec 0010): `stars` ★ then the note, in `onHonor` on `honor`, so it stands
+ * out from the degree line. One line: a long note is squeezed, never wrapped.
  */
 function honorRow(note: string, stars: number): Row {
   const { honorHeight, honorPadX, starGap } = timelineCard;
   const style = typography.strong;
   const starsWidth = stars * style.size;
-  const textX0 = starsWidth === 0 ? honorPadX : honorPadX + starsWidth + starGap;
-  const slot = { width: columnWidth - textX0 - honorPadX, style, minSize: MIN_SIZE } as const satisfies TextSlot;
+  const noteX0 = starsWidth === 0 ? honorPadX : honorPadX + starsWidth + starGap;
+  const slot = { width: columnWidth - noteX0 - honorPadX, style, minSize: MIN_SIZE } as const satisfies TextSlot;
   const fit = fitText(note, slot);
-  // A tighter estimate than `fitText`'s, then pinned with `textLength`, so the pill hugs the text on every font.
-  const noteWidth =
-    fit.textLength ?? Math.min(slot.width, Math.ceil(timelineCard.honorCharWidth * fit.size * [...note].length));
-  const width = textX0 + noteWidth + honorPadX;
+  const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
+  const noteWidth = fit.textLength ?? Math.min(slot.width, snugWidth(note, fit.size));
+  const width = noteX0 + noteWidth + honorPadX;
+  const text = (x: number, y: number, anchor: string, size: number, inner: string, extra = ""): string =>
+    `<text class="fill-onHonor" x="${x}" y="${centeredBaseline(y, size)}" text-anchor="${anchor}" font-size="${size}" font-weight="${style.weight}"${extra}>${inner}</text>`;
   return (y) =>
     [
-      `<rect x="${textX + 0.5}" y="${y - honorHeight / 2 + 0.5}" width="${width - 1}" height="${honorHeight - 1}" rx="${honorHeight / 2}" class="fill-honor stroke-honor" fill-opacity="0.12" stroke-width="${layout.border}"/>`,
-      ...(stars === 0
-        ? []
-        : [textTag({ x: textX + honorPadX, y, anchor: "start", classes: "fill-honor", style }, STAR.repeat(stars))]),
-      textTag(
-        {
-          x: textX + textX0,
-          y,
-          anchor: "start",
-          classes: "fill-honor",
-          style,
-          fit: { size: fit.size, textLength: noteWidth },
-        },
-        escapeXml(note),
-      ),
+      `<rect x="${textX + 0.5}" y="${y - honorHeight / 2 + 0.5}" width="${width - 1}" height="${honorHeight - 1}" rx="${honorHeight / 2}" class="fill-honor stroke-onHonor" stroke-opacity="0.2" stroke-width="${layout.border}"/>`,
+      ...(stars === 0 ? [] : [text(textX + honorPadX, y, "start", style.size, STAR.repeat(stars))]),
+      // Centered in its own space, so a font wider or narrower than the estimate keeps even padding.
+      text(textX + noteX0 + noteWidth / 2, y, "middle", fit.size, escapeXml(note), squeeze),
     ].join("\n");
 }
 

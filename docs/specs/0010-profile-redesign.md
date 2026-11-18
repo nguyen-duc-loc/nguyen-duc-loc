@@ -45,6 +45,13 @@ A redesign that replaces parts of earlier decisions: the Catppuccin palette of s
 - **Tables.** Both tables use percent column widths (certifications 25/75, tech stack 10/90), which makes GitHub draw them as wide as the README; the certifications issuer column is wider.
 - **Tech stack.** AWS is spelled out as Amazon Web Services.
 
+### Fourth round
+
+- **Chips and the honors pill are centered on any font.** Their text uses an alphabetic baseline at `center + 0.35 × size` instead of `dominant-baseline="central"`, and sits centered in a snug width estimate (`0.52 × size` per character), so a wider or narrower font keeps even padding. The pill text is never stretched with `textLength`. Chips use `<img align="middle">` so they sit centered in their table row.
+- **Honors pill.** 26 px tall, bright gold (`honor` `#f5c518`) with dark brown text and stars (`onHonor`).
+- **Contest stats** use the sans font at 20 px, like the labels.
+- **Featured LeetCode badges are the most valuable**, not the one chosen on LeetCode: the contest level, the longest all time streak, the newest full year badge, then the rest by tier (`featuredBadges`).
+
 ## Code area
 
 `src/theme.ts`, `src/svg.ts`, `src/icons.ts`, `src/brands.ts`, `src/images.ts`, `src/guards.ts`, `src/build.ts`, `src/refresh.ts`, `src/png.ts`, `src/content.ts`, `src/paths.ts`, `src/types.ts`, `src/readme.ts`, `src/sections/*`, `src/sources/leetcode.ts`, `src/sources/images.ts`, `content/*`, `assets/static/logos/`, `data/snapshots/images/`, `docs/design.md`

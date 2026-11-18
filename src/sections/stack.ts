@@ -5,7 +5,16 @@
 
 import type { Stack, StackItem } from "../../content/types.ts";
 import { escapeXml } from "../escape.ts";
-import { fitText, iconSvg, iconWidth, sectionHeading, svgDocument, textWidth, themedImage } from "../svg.ts";
+import {
+  centeredBaseline,
+  fitText,
+  iconSvg,
+  iconWidth,
+  sectionHeading,
+  snugWidth,
+  svgDocument,
+  themedImage,
+} from "../svg.ts";
 import { layout, radius, stackChip, type TextSlot, type Theme, tableColumns, typography } from "../theme.ts";
 import type { Section } from "../types.ts";
 
@@ -35,13 +44,15 @@ function chipKey(item: StackItem): string {
 type ChipSize = { readonly width: number; readonly nameWidth: number };
 
 function chipSize(item: StackItem): ChipSize {
-  const nameWidth = Math.min(NAME_MAX, textWidth(item.name, style.size));
+  const nameWidth = Math.min(NAME_MAX, snugWidth(item.name, style.size));
   const iconPart = item.icon === undefined ? 0 : iconWidth(item.icon, iconSize) + iconGap;
   return { width: 2 * margin + 2 * padX + iconPart + nameWidth, nameWidth };
 }
 
+/** The icon at the left padding, then the name centered in the space after it, both centered on the chip's height. */
 function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize): string {
-  const slot = { width: nameWidth, style, minSize: typography.label.size } as const satisfies TextSlot;
+  // Sized against the cap, not the snug width: `fitText`'s wider estimate would shrink every name.
+  const slot = { width: NAME_MAX, style, minSize: typography.label.size } as const satisfies TextSlot;
   const fit = fitText(item.name, slot);
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const fullHeight = height + 2 * margin;
@@ -52,7 +63,7 @@ function chipSvg(theme: Theme, item: StackItem, { width, nameWidth }: ChipSize):
     ...(item.icon === undefined
       ? []
       : [iconSvg(theme, item.icon, left, margin + (height - iconSize) / 2, iconSize, "fill-text")]),
-    `<text class="fill-text" x="${nameX}" y="${fullHeight / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${style.weight}"${squeeze}>${escapeXml(item.name)}</text>`,
+    `<text class="fill-text" x="${nameX + nameWidth / 2}" y="${centeredBaseline(fullHeight / 2, fit.size)}" text-anchor="middle" font-size="${fit.size}" font-weight="${style.weight}"${squeeze}>${escapeXml(item.name)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width, height: fullHeight, body });
 }

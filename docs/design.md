@@ -33,7 +33,8 @@ Both themes use GitHub's Primer colors, with the same token names. `success`, `w
 | `dangerText` | The `Hard` chip name, the same for LeetCode's red | `#c0262d` | `#ff6b6b` |
 | `heat` | Heatmap cells: LeetCode's green, at four opacities | `#2cbb5d` | `#2cbb5d` |
 | `leetcode` | The contest rating line and its last dot: LeetCode's orange | `#ffa116` | `#ffa116` |
-| `honor` | The honors pill on the education image: its stars, text, border, and a 12% tint behind them | `#8a5c00` | `#e3b341` |
+| `honor` | The honors pill on the education image: a bright gold fill | `#f5c518` | `#f5c518` |
+| `onHonor` | The stars and the note on the honors pill, and its faint edge | `#3d2b00` | `#3d2b00` |
 | `logoTile` | The white tile behind a company or school logo, in both themes, since logos are made for white | `#ffffff` | `#ffffff` |
 
 ### Brand logos
@@ -59,9 +60,9 @@ Brand logos are not drawn from tokens. Each is the brand's whole full color SVG 
 | `successText` | `track` | 4.5 | 4.99 | 5.87 |
 | `warningText` | `track` | 4.5 | 5.34 | 8.03 |
 | `dangerText` | `track` | 4.5 | 4.88 | 5.05 |
-| `honor` | `page` | 4.5 | 5.81 | 9.72 |
+| `onHonor` | `honor` | 4.5 | 8.34 | 8.34 |
 
-`border`, `track`, `success`, `warning`, `danger`, `heat`, `leetcode`, and `logoTile` aren't checked on purpose. They are decorative or always labeled. The honors pill draws `honor` text on a 12% `honor` tint, which still gives 4.90:1 (light) and 7.96:1 (dark).
+`border`, `track`, `success`, `warning`, `danger`, `heat`, `leetcode`, and `logoTile` aren't checked on purpose. They are decorative or always labeled.
 
 ### Color classes
 
@@ -153,6 +154,8 @@ This never overflows and always gives the same result. On narrow fonts it may sh
 
 **Wrapping body text.** `wrapLines(text, slot)` splits text that may run longer than one line, with the same estimate. A line holds at most `floor(slot.width / (0.6 × slot.style.size))` characters (counted as `[...line].length`). Words, split on runs of spaces, fill each line greedily. A word longer than a whole line goes on its own line. Each line comes back with its own `fitText(line, slot)` result, so an overlong word is squeezed with `textLength` and `lengthAdjust="spacingAndGlyphs"`. Text is never cut off and never ends in `…`. Lines end ragged, and a little short of the slot on most fonts.
 
+
+**Centering a short label.** Fonts place `dominant-baseline="central"` differently, so the stack chips and the honors pill set an alphabetic baseline instead: `centeredBaseline(centerY, size)` is `centerY + 0.35 × size` (`textMetrics.capCenter`, the middle of a capital letter). Their layout width is `snugWidth(text, size)`, `ceil(0.52 × size × chars)` (`textMetrics.snugAdvance`, a typical width for short labels), and the label is drawn with `text-anchor="middle"` in that space, so a font that runs wider or narrower than the estimate keeps even padding on both sides. `fitText` still decides the size, against the label's full cap.
 ## Section headings
 
 Every section starts with `sectionHeading({ key, title, icon })` (spec 0010): a left aligned `<h2>` holding one inline `<picture>` of the icon, a space, then the title as real text.
@@ -224,10 +227,10 @@ Each chip is a `themedImage` with `inline: true` and `align: "middle"` (`<img al
 
 Drawn by `svgDocument` (no card), `stackChip.height + 2 × margin` (36) tall. All values are in px.
 
-- Name width is `min(160, textWidth(name, 13))`. The file is `2 × margin + 2 × padX + (iconWidth(icon, 18) + iconGap, when the item has an icon) + name width` wide, rendered at that `width`. The AWS logo is 30 wide, Go 48. Amazon Web Services is spelled out in content.
+- Name width is `min(160, snugWidth(name, 13))` (see *Centering a short label*). The file is `2 × margin + 2 × padX + (iconWidth(icon, 18) + iconGap, when the item has an icon) + name width` wide, rendered at that `width`. The AWS logo is 30 wide, Go 48. Amazon Web Services is spelled out in content.
 - The chip is a `rect` at (2.5, 2.5), `width − 5` × 31, `rx` of `radius.small`, classes `fill-surface stroke-border`, `stroke-width` of `layout.border`.
-- With an icon: `iconSvg(theme, icon, 12, 9, 18, "fill-text")`, then the name at x = `12 + iconWidth + 8`. Without one: the name at x = 12.
-- The name is in the `chip` style, `fill-text`, center y = 18, sized by `fitText` in its width with a 12px minimum.
+- With an icon: `iconSvg(theme, icon, 12, 9, 18, "fill-text")`, centered on the chip's height, then the name's space from x = `12 + iconWidth + 8`. Without one: the name's space from x = 12.
+- The name is in the `chip` style, `fill-text`, centered in its space (`text-anchor="middle"`) on baseline `centeredBaseline(18, size)`, sized by `fitText` against 160 with a 12px minimum.
 
 ## LeetCode (built by features 8 and 11)
 
@@ -247,7 +250,7 @@ No block has blank lines inside. Each image is a `themedImage` `<picture>` wrapp
 
 **Embedded badge art.** Every LeetCode badge picture comes from the outside image store (see *Outside images*), requested by `leetcodeImages` in `src/sources/leetcode.ts` at a stored size about twice the drawn size (`BADGE_IMAGE`): the featured badges (144), the level badge (64), the most recent badge (96), and each month's Daily Coding Challenge badge inside the heatmap window (64, `monthlyBadges`, keyed by the `YYYY-MM` of `earnedOn`).
 
-**Featured badges.** `featuredBadges(snapshot, 3)` in `src/sources/leetcode.ts`: the badge chosen on LeetCode (`activeBadgeId`) first, even a monthly one, then badges whose `category` isn't `DCC` (the monthly Daily Coding Challenge), newest `earnedOn` first, ties to the larger numeric `id`, never repeating the chosen badge. **Level badge.** `levelBadge(snapshot)`: the newest earned badge named like `contest.badge` (Guardian). **Most recent badge.** `mostRecentBadge(snapshot)`: the newest `earnedOn`, ties to the larger numeric `id`.
+**Featured badges.** `featuredBadges(snapshot, 3)` in `src/sources/leetcode.ts`: the most valuable badges (spec 0010), not the one chosen on LeetCode. Each badge gets a tier, best first: the contest level (Guardian, Knight); all time submission streaks, more days first (1000 Days Badge); full year badges, newest year first (Annual Badge 2026); other contest badges; a year's day badges, more days first; study plans; monthly challenges; anything else. Ties go to the newest `earnedOn`, then the larger numeric `id`. The best badge of each tier comes first, so a smaller badge of a kind already shown (500 Days next to 1000 Days) only fills a spare place. Today: Guardian, 1000 Days Badge, Annual Badge 2026, with the best (Guardian) drawn in the middle.
 
 The data comes only from `data/snapshots/leetcode.json`, read through `parseLeetcodeSnapshot`. Numbers follow fixed rules, never the locale: the contest card and all alt text group integers with commas (`6,064`), the solved card prints plain digits like LeetCode (`2245/4114`), ratings are rounded with `Math.round`, and years are UTC.
 
@@ -256,7 +259,7 @@ Alt text states the same numbers a sighted visitor sees:
 - Contest: `LeetCode contest rating 2,247, level Guardian, global ranking 6,064 of 892,590, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024.` With no badge it drops `, level <badge>`. One contest reads `1 contest attended`. One history point reads `Rating history: 2,247 in 2024.`, and two points in the same year read `Rating history: 1,565 to 2,247 in 2024.`
 - Summary: the solved text, a space, then the badges text.
   - Solved: `LeetCode problems solved: 2,245 of 4,114. Easy 661 of 976, Medium 1,170 of 2,148, Hard 414 of 990. 3 attempting.`
-  - Badges: `LeetCode badges: 62 earned, featuring Guardian, Annual Badge 2026, 200 Days Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026.` One badge reads `1 earned`. No badges reads `LeetCode badges: none earned yet.`
+  - Badges: `LeetCode badges: 62 earned, featuring Guardian, 1000 Days Badge, Annual Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026.` One badge reads `1 earned`. No badges reads `LeetCode badges: none earned yet.`
 - Heatmap: `LeetCode submissions from Nov 18, 2025 to Nov 17, 2026: 640 submissions on 362 active days, max streak 292 days.` Singulars read `1 submission`, `1 active day`, and `max streak 1 day`. No submissions in the window reads `LeetCode submissions from <start> to <end>: no submissions.`
 
 Dates use the fixed English month table in `src/dates.ts` (`MONTHS`, shared with the timeline) and are computed in UTC from `YYYY-MM-DD` strings: `<Mon YYYY>` for the most recent badge, `<Mon> <D>, <YYYY>` with no zero padding for the heatmap range.
@@ -312,7 +315,7 @@ The right card of the summary row, drawn like LeetCode's: a frame at x = 433, 41
 |---|---|---|
 | Heading | `Badges` at x = 24, center y = 30 (`headingY`) | `body`, `fill-muted` |
 | Count | All badges, grouped (`62`), at x = 24, center y = 58 (`countY`) | `title`, `fill-text` |
-| Badge art | The featured badges that have stored art, as `<image href="data:…">`. With three, the chosen badge sits in the middle at 76 px (`artLarge`) and the others at 60 px (`artSmall`), 20 apart (`artGap`), the row centered on x = 236 (`artCenterX`, pulled left if it would pass `pad`) and y = 88 (`artCenterY`) | |
+| Badge art | The featured badges that have stored art, as `<image href="data:…">`. With three, the most valuable one sits in the middle at 76 px (`artLarge`) and the others at 60 px (`artSmall`), 20 apart (`artGap`), the row centered on x = 236 (`artCenterX`, pulled left if it would pass `pad`) and y = 88 (`artCenterY`) | |
 | Most recent art | The most recent badge's stored art, 40 × 40 (`recentArt`) at x = 24, centered between the label and the name | |
 | Most recent label | `Most Recent Badge` at x = 24 + 40 + 12 (`recentArtGap`), or 24 with no art, center y = 150 (`recentY`) | `label`, `fill-muted` |
 | Badge name | The most recent badge's name at the label's x, center y = 170 (`nameY`), `fitText` in the rest of the card width, min 12 (`nameMin`), then squeezed with `textLength` | `name`, `fill-text` |
@@ -388,7 +391,7 @@ Drawn by `svgDocument` at 850 wide, on the page with no card (spec 0010). All te
 | Role row 1 | Company, then `<tspan class="fill-muted"> · <location></tspan>` when set, at x = 65, one `fitText` over the whole string in 784, min 12 | `lead`, `fill-text` |
 | Role highlights | Per highlight: `•` at x = 65 on its first row, lines from `wrapLines` at x = 81 (`textX + bulletIndent` 16) in a 768 slot, min 12 | `•` `lead` `fill-muted`; text `lead` `fill-text` |
 | School degree | `<degree>[, <field>]` lines from `wrapLines` at x = 65 in 784, min 12 | `lead`, `fill-text` |
-| Honors pill | The note, one line, after `stars` ★ (14 px each, `starGap` 6). A pill at x = 65, 22 tall (`honorHeight`), fully rounded, `honorPadX` 10 inside, as wide as the stars plus the note at `0.56 × 14` per character (`honorCharWidth`); the note is pinned to that width with `textLength`, so the pill hugs it on every font | Pill `fill-honor stroke-honor`, `fill-opacity` 0.12; stars and note `strong` `fill-honor` |
+| Honors pill | The note, one line, after `stars` ★ (14 px each, `starGap` 6). A pill at x = 65, 26 tall (`honorHeight`), fully rounded, `honorPadX` 12 inside, as wide as the stars plus `snugWidth(note, 14)`. The note is centered in its space and both are on `centeredBaseline`, never stretched with `textLength` (a long note is only squeezed down to the column) | Pill `fill-honor stroke-onHonor`, `stroke-opacity` 0.2; stars and note `strong` `fill-onHonor` |
 | Rows | Row k center y = `entryTop + 12 + k × 24` (`lineHeight` 24), `dominant-baseline="central"` | |
 | Entries | An entry's box is `max(rows × 24, 48)`, so the logo tile always fits. The first `entryTop` is 4 (`padY`). Each next one is the previous top + box + 24 (`entryGap`) | |
 | Height | `8 + (all boxes) + 24 × (entries − 1)` | |

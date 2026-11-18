@@ -24,6 +24,7 @@ export type TokenName =
   | "heat"
   | "leetcode"
   | "honor"
+  | "onHonor"
   | "logoTile";
 export type Theme = { readonly name: ThemeName } & { readonly [K in TokenName]: Hex };
 export type ContrastPair = { readonly fg: TokenName; readonly bg: TokenName; readonly min: 3 | 4.5 };
@@ -54,6 +55,7 @@ export const tokenNames = [
   "heat",
   "leetcode",
   "honor",
+  "onHonor",
   "logoTile",
 ] as const satisfies readonly TokenName[];
 
@@ -61,8 +63,8 @@ export const tokenNames = [
  * GitHub's own Primer colors (spec 0010), so cards sit on the page like GitHub's own UI. `page` is GitHub's page
  * background, used only by checks. `success`, `warning`, and `danger` are LeetCode's own difficulty colors, and the
  * `*Text` tokens are the same hues dark enough (light) or bright enough (dark) to read as text on `track`. `heat` is
- * LeetCode's green, for the submission heatmap, `leetcode` its orange, for the rating line. `honor` is a gold for the
- * honors note and its stars (Primer attention), checked as text on `page`.
+ * LeetCode's green, for the submission heatmap, `leetcode` its orange, for the rating line. `honor` is a bright gold
+ * pill for the honors note, with its stars and text in `onHonor`.
  */
 export const themes = {
   light: {
@@ -84,7 +86,8 @@ export const themes = {
     dangerText: "#c0262d",
     heat: "#2cbb5d",
     leetcode: "#ffa116",
-    honor: "#8a5c00",
+    honor: "#f5c518",
+    onHonor: "#3d2b00",
     logoTile: "#ffffff",
   },
   dark: {
@@ -106,7 +109,8 @@ export const themes = {
     dangerText: "#ff6b6b",
     heat: "#2cbb5d",
     leetcode: "#ffa116",
-    honor: "#e3b341",
+    honor: "#f5c518",
+    onHonor: "#3d2b00",
     logoTile: "#ffffff",
   },
 } as const satisfies { readonly [K in ThemeName]: Theme };
@@ -126,7 +130,7 @@ export const contrastPairs = [
   { fg: "successText", bg: "track", min: 4.5 },
   { fg: "warningText", bg: "track", min: 4.5 },
   { fg: "dangerText", bg: "track", min: 4.5 },
-  { fg: "honor", bg: "page", min: 4.5 },
+  { fg: "onHonor", bg: "honor", min: 4.5 },
 ] as const satisfies readonly ContrastPair[];
 
 /** GitHub's own font stacks. System fonts only: an SVG in `<img>` can't load web fonts. */
@@ -151,6 +155,17 @@ export const typography = {
   name: { size: 16, weight: 500, family: "sans" },
   stat: { size: 20, weight: 500, family: "sans" },
 } as const satisfies { readonly [name: string]: TypeStyle };
+
+/**
+ * Text metrics for centering without measuring (spec 0010). `capCenter`: a capital letter's middle sits this many ems
+ * above the baseline, so a baseline at `center + capCenter × size` centers the text on every system font (more
+ * steadily than `dominant-baseline="central"`, which fonts place differently). `snugAdvance`: a typical character
+ * width in ems for a short label, tighter than `fitText`'s safe 0.6; text drawn with it is centered in its space, so
+ * any error splits evenly on both sides.
+ */
+export const textMetrics = { capCenter: 0.35, snugAdvance: 0.52 } as const satisfies {
+  readonly [name: string]: number;
+};
 
 /** Spacing scale in px. */
 export const space = [4, 8, 12, 16, 24, 32] as const satisfies readonly number[];
@@ -269,9 +284,8 @@ export const timelineCard = {
   titleGap: 16,
   lineHeight: 24,
   entryGap: 24,
-  honorHeight: 22,
-  honorPadX: 10,
-  honorCharWidth: 0.56,
+  honorHeight: 26,
+  honorPadX: 12,
   starGap: 6,
 } as const satisfies { readonly [name: string]: number };
 

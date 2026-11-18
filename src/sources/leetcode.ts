@@ -408,11 +408,43 @@ const DAILY_CHALLENGE = "DCC";
 /** How many badges the badges card shows (spec 0010), like LeetCode's own profile. */
 export const FEATURED_BADGES = 3;
 
-/** The chosen badge first, then the newest badges that aren't monthly, up to `max` (spec 0009 AC-4). */
-export function featuredBadges({ badges, activeBadgeId }: LeetcodeSnapshot, max: number): readonly LeetcodeBadge[] {
-  const active = badges.find((badge) => badge.id === activeBadgeId);
-  const rest = badges.filter((badge) => badge.category !== DAILY_CHALLENGE && badge !== active).toReversed();
-  return (active === undefined ? rest : [active, ...rest]).slice(0, max);
+const DAYS_BADGE = /^(\d+) Days Badge$/;
+const ANNUAL_BADGE = /^Annual Badge (\d{4})$/;
+const YEAR_DAYS_BADGE = /^(\d+) Days Badge (\d{4})$/;
+
+/**
+ * How valuable a badge is (spec 0010), as `[tier, weight]`: a lower tier is worth more, and within a tier a larger
+ * weight is. The contest level (Guardian, Knight) first; then all time submission streaks by days (1000 Days Badge);
+ * then full year badges by year (Annual Badge 2026); then other contest badges; then a year's day badges by days;
+ * then study plans; then monthly challenges; then anything else.
+ */
+function badgeValue(badge: LeetcodeBadge, level: string | null): readonly [number, number] {
+  const days = DAYS_BADGE.exec(badge.name);
+  const annual = ANNUAL_BADGE.exec(badge.name);
+  const yearDays = YEAR_DAYS_BADGE.exec(badge.name);
+  if (badge.category === "COMPETITION" && badge.name === level) return [0, 0];
+  if (badge.category === "SUBMISSION" && days) return [1, Number(days[1])];
+  if (badge.category === "ANNUAL" && annual) return [2, Number(annual[1])];
+  if (badge.category === "COMPETITION") return [3, 0];
+  if (badge.category === "ANNUAL" && yearDays) return [4, Number(yearDays[1])];
+  if (badge.category === "STUDY_PLAN") return [5, 0];
+  if (badge.category === DAILY_CHALLENGE) return [6, 0];
+  return [7, 0];
+}
+
+/**
+ * The `max` most valuable badges (spec 0010), best first. Ranked by `badgeValue`, then the newest `earnedOn`, then the
+ * larger numeric `id` (badges are already sorted by those, so the later one wins a tie). The best badge of each tier
+ * comes first, so a smaller badge of a kind already shown (500 Days next to 1000 Days) only fills a spare place.
+ */
+export function featuredBadges(snapshot: LeetcodeSnapshot, max: number): readonly LeetcodeBadge[] {
+  const level = snapshot.contest.badge;
+  const ranked = snapshot.badges
+    .map((badge, index) => ({ badge, index, value: badgeValue(badge, level) }))
+    .toSorted((a, b) => a.value[0] - b.value[0] || b.value[1] - a.value[1] || b.index - a.index);
+  const best = ranked.filter((entry, i) => i === 0 || entry.value[0] !== ranked[i - 1].value[0]);
+  const rest = ranked.filter((entry) => !best.includes(entry));
+  return [...best, ...rest].slice(0, max).map(({ badge }) => badge);
 }
 
 /** The contest level's own badge (Knight, Guardian), the newest one named like `contest.badge`, if earned. */
