@@ -226,11 +226,11 @@ const cc = contestCard;
 const VALUE_MIN = 14;
 
 const ratingSlot = { width: cc.ratingSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
-const levelSlot = { width: cc.levelSlot, style: typography.number, minSize: VALUE_MIN } as const satisfies TextSlot;
-const rankSlot = { width: cc.rankSlot, style: typography.number, minSize: VALUE_MIN } as const satisfies TextSlot;
+const levelSlot = { width: cc.levelSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
+const rankSlot = { width: cc.rankSlot, style: typography.title, minSize: VALUE_MIN } as const satisfies TextSlot;
 const attendedSlot = {
   width: cc.attendedSlot,
-  style: typography.number,
+  style: typography.title,
   minSize: VALUE_MIN,
 } as const satisfies TextSlot;
 

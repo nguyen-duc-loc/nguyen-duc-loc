@@ -144,7 +144,6 @@ export const typography = {
   lead: { size: 14, weight: 400, family: "sans" },
   body: { size: 14, weight: 400, family: "sans" },
   label: { size: 12, weight: 400, family: "sans" },
-  number: { size: 20, weight: 500, family: "mono" },
   typing: { size: 22, weight: 400, family: "mono" },
   button: { size: 14, weight: 600, family: "sans" },
   chip: { size: 13, weight: 600, family: "sans" },
