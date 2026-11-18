@@ -30,8 +30,8 @@ export type Profile = {
 export type StackItem = {
   readonly name: string;
   /**
-   * A key of the icon registry in `src/icons.ts`, for example `"typescript"`. Leave it out when the brand has
-   * none. A new brand needs its path copied into the registry first (spec 0005).
+   * A brand logo key in `src/brands.ts` (or a glyph in `src/icons.ts`), for example `"typescript"`. Leave it out
+   * when the brand has none. A new brand needs its files added there first (specs 0005 and 0010).
    */
   readonly icon?: IconName;
 };
@@ -52,6 +52,8 @@ export type Role = {
   readonly highlights: readonly string[];
   readonly location?: string;
   readonly companyUrl?: string;
+  /** A PNG or JPEG file name in `assets/static/logos/`, for example `"fpt-software.png"`. Left out: an initial. */
+  readonly logo?: string;
 };
 
 export type School = {
@@ -63,6 +65,10 @@ export type School = {
   readonly end: YearMonth | null;
   /** Honors or GPA. */
   readonly note?: string;
+  /** 1 to 5 stars drawn before `note` (spec 0010), for example 4 for High Distinction. Needs a `note`. */
+  readonly stars?: number;
+  /** A PNG or JPEG file name in `assets/static/logos/`, for example `"uet.png"`. Left out: an initial. */
+  readonly logo?: string;
 };
 
 export type Project = {

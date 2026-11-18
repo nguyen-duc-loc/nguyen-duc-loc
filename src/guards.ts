@@ -1,6 +1,7 @@
 // Output checks run on the rendered output before anything is written: the README (spec 0001, AC-8),
 // theme contrast, and the inside of every generated SVG (spec 0003). Pure: each returns a list of problems.
 
+import { brands } from "./brands.ts";
 import { type ContrastPair, contrastRatio, type Theme, type ThemeName, themeCss, themes, tokenNames } from "./theme.ts";
 import type { GeneratedAsset } from "./types.ts";
 
@@ -8,16 +9,28 @@ const IMG_TAG = /<img\b[^>]*>/gi;
 const ALT_ATTR = /\salt\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>/]+))/i;
 // Inline `![alt](url)` and reference style `![alt][ref]` images.
 const MARKDOWN_IMAGE = /!\[[^\]]*\]\s*[([]/g;
+const HEADING = /<h2\b[^>]*>([\s\S]*?)<\/h2>/gi;
+const TAGS = /<[^>]*>/g;
+
+/** Index ranges of `<h2>` elements that carry their own text, where a decorative icon may have `alt=""` (spec 0010). */
+function headingRanges(readme: string): readonly (readonly [number, number])[] {
+  return [...readme.matchAll(HEADING)]
+    .filter((m) => m[1].replace(TAGS, "").trim() !== "")
+    .map((m) => [m.index, m.index + m[0].length] as const);
+}
 
 export function checkReadme(readme: string): string[] {
   const problems: string[] = [];
+  const headings = headingRanges(readme);
+  const inHeading = (index: number): boolean => headings.some(([start, end]) => index > start && index < end);
 
   for (const match of readme.matchAll(IMG_TAG)) {
     const alt = ALT_ATTR.exec(match[0]);
     const value = alt ? (alt[1] ?? alt[2] ?? alt[3] ?? "") : undefined;
     if (value === undefined) {
       problems.push(`<img> without alt text: ${match[0]}`);
-    } else if (value.trim() === "") {
+    } else if (value.trim() === "" && !(value === "" && inHeading(match.index))) {
+      // `alt=""` is allowed only on a decorative heading icon: the heading text already says it.
       problems.push(`<img> with blank alt text: ${match[0]}`);
     }
   }
@@ -103,6 +116,21 @@ const EVENT_ATTR = /\s(on[a-z]+)\s*=/gi;
 const LINK_ATTR = /\s(href|xlink:href|src)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
 const CSS_URL = /url\(([^)]*)\)/gi;
 const LOCAL_REF = /^#[A-Za-z_][\w.-]*$/;
+/** An embedded raster image (spec 0010, the timeline logos): self contained, and base64 has no markup characters. */
+const DATA_IMAGE = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/;
+const DATA_SVG = /^data:image\/svg\+xml;base64,([A-Za-z0-9+/]+={0,2})$/;
+/** Every vendored brand file (spec 0010): the only SVGs another SVG may embed. */
+const BRAND_FILES: ReadonlySet<string> = new Set(
+  Object.values(brands).flatMap((brand: { readonly light: string; readonly dark?: string }) =>
+    brand.dark === undefined ? [brand.light] : [brand.light, brand.dark],
+  ),
+);
+
+/** A `data:image/svg+xml` URI whose content is exactly one of the vendored brand files. */
+function isBrandImage(value: string): boolean {
+  const m = DATA_SVG.exec(value);
+  return m !== null && BRAND_FILES.has(Buffer.from(m[1], "base64").toString("utf8"));
+}
 const INFINITE = /infinite/i;
 
 const COLOR_PROPS = "fill|stroke|stop-color|color|flood-color|lighting-color|background-color|background";
@@ -114,6 +142,8 @@ const HEX_COLOR = /#[0-9a-f]{3,8}(?![\w-])/gi;
 const LOCAL_URL = /url\(\s*["']?\s*#[A-Za-z_][\w.-]*\s*["']?\s*\)/gi;
 const ALLOWED_COLOR = /^(none|currentcolor|transparent|inherit|url\(\s*["']?\s*#[A-Za-z_][\w.-]*\s*["']?\s*\))$/i;
 
+const CLASS_ATTR = /\sclass\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+const COLOR_CLASS = /^(?:fill|stroke|stop)-/;
 const SVG_FILE = /\.svg$/i;
 const THEMED_FILE = /^(.+)-(light|dark)\.svg$/;
 
@@ -147,7 +177,8 @@ function checkSelfContained(svg: string): string[] {
   const markup = markupOf(svg);
   for (const m of markup.matchAll(LINK_ATTR)) {
     const value = (m[2] ?? m[3] ?? m[4]).trim();
-    if (!LOCAL_REF.test(value)) problems.push(`${m[1]} must point to #<id>, not ${value}`);
+    if (DATA_IMAGE.test(value) || isBrandImage(value)) continue;
+    if (!LOCAL_REF.test(value)) problems.push(`${m[1]} must point to #<id>, not ${value.slice(0, 80)}`);
   }
   for (const m of markup.matchAll(CSS_URL)) {
     if (!LOCAL_REF.test(trimRef(m[1]))) problems.push(`url() must point to #<id>, not ${m[1].trim()}`);
@@ -178,7 +209,25 @@ function checkColors(svg: string, theme: Theme): string[] {
   for (const m of rest.matchAll(COLOR_FUNCTION))
     problems.push(`color function ${m[1]}() must use a color class instead`);
   for (const m of rest.matchAll(HEX_COLOR)) problems.push(`hex color ${m[0]} must use a color class instead`);
+  // A color class the block doesn't define would draw in the default black (spec 0010).
+  const defined = new Set([...block.matchAll(/\.([a-zA-Z0-9-]+)\{/g)].map((m) => m[1]));
+  const used = [...markup.matchAll(CLASS_ATTR)].flatMap((m) => (m[1] ?? m[2]).split(/\s+/));
+  for (const name of new Set(used.filter((c) => COLOR_CLASS.test(c) && !defined.has(c)))) {
+    problems.push(`color class ${name} is not defined by themeCss`);
+  }
   return problems;
+}
+
+/**
+ * Every vendored brand file (spec 0010) is self contained: no script, event attribute, doctype, `@import`, or link
+ * other than `#<id>`. Colors are not checked: a brand file keeps its own.
+ */
+export function checkBrands(): string[] {
+  return Object.entries(brands).flatMap(([name, brand]: [string, { readonly light: string; readonly dark?: string }]) =>
+    [brand.light, ...(brand.dark === undefined ? [] : [brand.dark])].flatMap((file, i) =>
+      checkSelfContained(file).map((p) => `brand: ${name} ${i === 0 ? "light" : "dark"}: ${p}`),
+    ),
+  );
 }
 
 /** Self containment, light and dark twins, and the color rule, for every generated SVG sorted by name. */

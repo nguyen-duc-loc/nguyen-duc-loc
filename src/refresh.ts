@@ -4,10 +4,11 @@
 import { appendFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 import { content } from "../content/index.ts";
-import { build } from "./build.ts";
+import { build, imageRequests } from "./build.ts";
 import { assertContent } from "./content.ts";
-import { writeSnapshot } from "./snapshots.ts";
+import { readSnapshot, writeSnapshot } from "./snapshots.ts";
 import { HttpError } from "./sources/http.ts";
+import { syncImages } from "./sources/images.ts";
 import { sources } from "./sources/index.ts";
 import type { Source } from "./types.ts";
 
@@ -103,6 +104,13 @@ export async function refresh(): Promise<void> {
 
   await report(failures);
   console.log(`refresh: ${sources.length - failures.length} of ${sources.length} sources updated`);
+
+  // Outside images for the snapshots now on disk (spec 0010). A failed image is a warning: the card falls back.
+  const snapshots = new Map<string, unknown>();
+  for (const source of sources) snapshots.set(source.name, await readSnapshot(source.name));
+  const images = await syncImages(imageRequests(snapshots));
+  for (const failure of images.failed) console.warn(`refresh: image failed: ${failure}`);
+  console.log(`refresh: images ${images.added} added, ${images.removed} removed, ${images.failed.length} failed`);
   await build();
 }
 

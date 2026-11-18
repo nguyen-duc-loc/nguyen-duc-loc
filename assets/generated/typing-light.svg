@@ -1,53 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="850" height="48" viewBox="0 0 850 48">
-<style>.fill-surface{fill:#eff1f5}.stroke-surface{stroke:#eff1f5}.stop-surface{stop-color:#eff1f5}.fill-border{fill:#ccd0da}.stroke-border{stroke:#ccd0da}.stop-border{stop-color:#ccd0da}.fill-track{fill:#dce0e8}.stroke-track{stroke:#dce0e8}.stop-track{stop-color:#dce0e8}.fill-text{fill:#4c4f69}.stroke-text{stroke:#4c4f69}.stop-text{stop-color:#4c4f69}.fill-muted{fill:#5c5f77}.stroke-muted{stroke:#5c5f77}.stop-muted{stop-color:#5c5f77}.fill-accent{fill:#8839ef}.stroke-accent{stroke:#8839ef}.stop-accent{stop-color:#8839ef}.fill-accent2{fill:#1e66f5}.stroke-accent2{stroke:#1e66f5}.stop-accent2{stop-color:#1e66f5}.fill-onAccent{fill:#ffffff}.stroke-onAccent{stroke:#ffffff}.stop-onAccent{stop-color:#ffffff}.fill-success{fill:#40a02b}.stroke-success{stroke:#40a02b}.stop-success{stop-color:#40a02b}.fill-warning{fill:#df8e1d}.stroke-warning{stroke:#df8e1d}.stop-warning{stop-color:#df8e1d}.fill-danger{fill:#d20f39}.stroke-danger{stroke:#d20f39}.stop-danger{stop-color:#d20f39}svg{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"}.font-mono{font-family:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace}.enter{animation:enter 600ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes enter{from{opacity:0;transform:translateY(8px)}}.grow{animation:grow 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:left center}@keyframes grow{from{transform:scaleX(0)}}.gauge{animation:gauge 1000ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes gauge{from{stroke-dashoffset:var(--gauge-empty)}}.rise{animation:rise 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:center bottom}@keyframes rise{from{transform:scaleY(0)}}.frame{opacity:0;animation:show 1ms linear}@keyframes show{from,to{opacity:1}}@keyframes hide{from,to{opacity:0}}@media (prefers-reduced-motion: reduce){*{animation:none !important}}</style>
+<style>.fill-surface{fill:#f6f8fa}.stroke-surface{stroke:#f6f8fa}.stop-surface{stop-color:#f6f8fa}.fill-border{fill:#d1d9e0}.stroke-border{stroke:#d1d9e0}.stop-border{stop-color:#d1d9e0}.fill-track{fill:#e6eaef}.stroke-track{stroke:#e6eaef}.stop-track{stop-color:#e6eaef}.fill-text{fill:#1f2328}.stroke-text{stroke:#1f2328}.stop-text{stop-color:#1f2328}.fill-muted{fill:#59636e}.stroke-muted{stroke:#59636e}.stop-muted{stop-color:#59636e}.fill-accent{fill:#0969da}.stroke-accent{stroke:#0969da}.stop-accent{stop-color:#0969da}.fill-accent2{fill:#8250df}.stroke-accent2{stroke:#8250df}.stop-accent2{stop-color:#8250df}.fill-onAccent{fill:#ffffff}.stroke-onAccent{stroke:#ffffff}.stop-onAccent{stop-color:#ffffff}.fill-success{fill:#00af9b}.stroke-success{stroke:#00af9b}.stop-success{stop-color:#00af9b}.fill-warning{fill:#ffb800}.stroke-warning{stroke:#ffb800}.stop-warning{stop-color:#ffb800}.fill-danger{fill:#ff2d55}.stroke-danger{stroke:#ff2d55}.stop-danger{stop-color:#ff2d55}.fill-successText{fill:#00705f}.stroke-successText{stroke:#00705f}.stop-successText{stop-color:#00705f}.fill-warningText{fill:#805600}.stroke-warningText{stroke:#805600}.stop-warningText{stop-color:#805600}.fill-dangerText{fill:#c0262d}.stroke-dangerText{stroke:#c0262d}.stop-dangerText{stop-color:#c0262d}.fill-heat{fill:#2cbb5d}.stroke-heat{stroke:#2cbb5d}.stop-heat{stop-color:#2cbb5d}.fill-leetcode{fill:#ffa116}.stroke-leetcode{stroke:#ffa116}.stop-leetcode{stop-color:#ffa116}.fill-honor{fill:#f5c518}.stroke-honor{stroke:#f5c518}.stop-honor{stop-color:#f5c518}.fill-onHonor{fill:#3d2b00}.stroke-onHonor{stroke:#3d2b00}.stop-onHonor{stop-color:#3d2b00}.fill-logoTile{fill:#ffffff}.stroke-logoTile{stroke:#ffffff}.stop-logoTile{stop-color:#ffffff}svg{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"}.font-mono{font-family:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace}.enter{animation:enter 600ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes enter{from{opacity:0;transform:translateY(8px)}}.grow{animation:grow 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:left center}@keyframes grow{from{transform:scaleX(0)}}.gauge{animation:gauge 1000ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes gauge{from{stroke-dashoffset:var(--gauge-empty)}}.rise{animation:rise 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:center bottom}@keyframes rise{from{transform:scaleY(0)}}.frame{opacity:0;animation:show 1ms linear}@keyframes show{from,to{opacity:1}}@keyframes hide{from,to{opacity:0}}@media (prefers-reduced-motion: reduce){*{animation:none !important}}</style>
 <g class="font-mono fill-accent" font-size="22" font-weight="400" text-anchor="middle">
 <text class="frame" style="animation-duration:300ms;animation-delay:0ms" x="425" y="32">▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:300ms" x="425" y="32">C▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:370ms" x="425" y="32">Cl▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:440ms" x="425" y="32">Clo▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:510ms" x="425" y="32">Clou▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:580ms" x="425" y="32">Cloud▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:650ms" x="425" y="32">Cloud ▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:720ms" x="425" y="32">Cloud D▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:790ms" x="425" y="32">Cloud De▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:860ms" x="425" y="32">Cloud Dev▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:930ms" x="425" y="32">Cloud Deve▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:1000ms" x="425" y="32">Cloud Devel▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:1070ms" x="425" y="32">Cloud Develo▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:1140ms" x="425" y="32">Cloud Develop▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:1210ms" x="425" y="32">Cloud Develope▌</text>
-<text class="frame" style="animation-duration:1000ms;animation-delay:1280ms" x="425" y="32">Cloud Developer▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2280ms" x="425" y="32">Cloud Develope▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2320ms" x="425" y="32">Cloud Develop▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2360ms" x="425" y="32">Cloud Develo▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2400ms" x="425" y="32">Cloud Devel▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2440ms" x="425" y="32">Cloud Deve▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2480ms" x="425" y="32">Cloud Dev▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2520ms" x="425" y="32">Cloud De▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2560ms" x="425" y="32">Cloud D▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2600ms" x="425" y="32">Cloud ▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2640ms" x="425" y="32">Cloud▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2680ms" x="425" y="32">Clou▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2720ms" x="425" y="32">Clo▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2760ms" x="425" y="32">Cl▌</text>
-<text class="frame" style="animation-duration:40ms;animation-delay:2800ms" x="425" y="32">C▌</text>
-<text class="frame" style="animation-duration:300ms;animation-delay:2840ms" x="425" y="32">▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3140ms" x="425" y="32">L▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3210ms" x="425" y="32">Le▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3280ms" x="425" y="32">Lee▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3350ms" x="425" y="32">Leet▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3420ms" x="425" y="32">LeetC▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3490ms" x="425" y="32">LeetCo▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3560ms" x="425" y="32">LeetCod▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3630ms" x="425" y="32">LeetCode▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3700ms" x="425" y="32">LeetCode ▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3770ms" x="425" y="32">LeetCode G▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3840ms" x="425" y="32">LeetCode Gu▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3910ms" x="425" y="32">LeetCode Gua▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:3980ms" x="425" y="32">LeetCode Guar▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:4050ms" x="425" y="32">LeetCode Guard▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:4120ms" x="425" y="32">LeetCode Guardi▌</text>
-<text class="frame" style="animation-duration:70ms;animation-delay:4190ms" x="425" y="32">LeetCode Guardia▌</text>
-<text style="animation:hide 4260ms linear" x="425" y="32">LeetCode Guardian</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:300ms" x="425" y="32">H▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:370ms" x="425" y="32">Hi▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:440ms" x="425" y="32">Hi ▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:510ms" x="425" y="32">Hi t▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:580ms" x="425" y="32">Hi th▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:650ms" x="425" y="32">Hi the▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:720ms" x="425" y="32">Hi ther▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:790ms" x="425" y="32">Hi there▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:860ms" x="425" y="32">Hi there ▌</text>
+<text class="frame" style="animation-duration:1000ms;animation-delay:930ms" x="425" y="32">Hi there 👋▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:1930ms" x="425" y="32">Hi there ▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:1970ms" x="425" y="32">Hi there▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2010ms" x="425" y="32">Hi ther▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2050ms" x="425" y="32">Hi the▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2090ms" x="425" y="32">Hi th▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2130ms" x="425" y="32">Hi t▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2170ms" x="425" y="32">Hi ▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2210ms" x="425" y="32">Hi▌</text>
+<text class="frame" style="animation-duration:40ms;animation-delay:2250ms" x="425" y="32">H▌</text>
+<text class="frame" style="animation-duration:300ms;animation-delay:2290ms" x="425" y="32">▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2590ms" x="425" y="32">W▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2660ms" x="425" y="32">We▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2730ms" x="425" y="32">Wel▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2800ms" x="425" y="32">Welc▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2870ms" x="425" y="32">Welco▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:2940ms" x="425" y="32">Welcom▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3010ms" x="425" y="32">Welcome▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3080ms" x="425" y="32">Welcome ▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3150ms" x="425" y="32">Welcome t▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3220ms" x="425" y="32">Welcome to▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3290ms" x="425" y="32">Welcome to ▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3360ms" x="425" y="32">Welcome to m▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3430ms" x="425" y="32">Welcome to my▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3500ms" x="425" y="32">Welcome to my ▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3570ms" x="425" y="32">Welcome to my G▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3640ms" x="425" y="32">Welcome to my Gi▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3710ms" x="425" y="32">Welcome to my Git▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3780ms" x="425" y="32">Welcome to my GitH▌</text>
+<text class="frame" style="animation-duration:70ms;animation-delay:3850ms" x="425" y="32">Welcome to my GitHu▌</text>
+<text style="animation:hide 3920ms linear" x="425" y="32">Welcome to my GitHub</text>
 </g>
 </svg>

@@ -3,7 +3,9 @@
 // snapshot that passes one passes the other. Module load does no I/O.
 
 import { content } from "../../content/index.ts";
-import { isRealDate } from "../dates.ts";
+import { dayNumber, isRealDate } from "../dates.ts";
+import type { ImageRequest } from "../images.ts";
+import { heatmap } from "../theme.ts";
 import type { Source } from "../types.ts";
 import { HttpError, USER_AGENT, ValidationError } from "./http.ts";
 
@@ -401,6 +403,89 @@ async function errorDetail(response: Response): Promise<string | undefined> {
 /** What `fetch` hands to `validate`: the parsed body and the UTC date it was read. */
 export type LeetcodeResponse = { readonly asOf: string; readonly body: unknown };
 
+/** Monthly Daily Coding Challenge badges: counted, never featured unless chosen on LeetCode. */
+const DAILY_CHALLENGE = "DCC";
+/** How many badges the badges card shows (spec 0010), like LeetCode's own profile. */
+export const FEATURED_BADGES = 3;
+
+const DAYS_BADGE = /^(\d+) Days Badge$/;
+const ANNUAL_BADGE = /^Annual Badge (\d{4})$/;
+const YEAR_DAYS_BADGE = /^(\d+) Days Badge (\d{4})$/;
+
+/**
+ * How valuable a badge is (spec 0010), as `[tier, weight]`: a lower tier is worth more, and within a tier a larger
+ * weight is. The contest level (Guardian, Knight) first; then all time submission streaks by days (1000 Days Badge);
+ * then full year badges by year (Annual Badge 2026); then other contest badges; then a year's day badges by days;
+ * then study plans; then monthly challenges; then anything else.
+ */
+function badgeValue(badge: LeetcodeBadge, level: string | null): readonly [number, number] {
+  const days = DAYS_BADGE.exec(badge.name);
+  const annual = ANNUAL_BADGE.exec(badge.name);
+  const yearDays = YEAR_DAYS_BADGE.exec(badge.name);
+  if (badge.category === "COMPETITION" && badge.name === level) return [0, 0];
+  if (badge.category === "SUBMISSION" && days) return [1, Number(days[1])];
+  if (badge.category === "ANNUAL" && annual) return [2, Number(annual[1])];
+  if (badge.category === "COMPETITION") return [3, 0];
+  if (badge.category === "ANNUAL" && yearDays) return [4, Number(yearDays[1])];
+  if (badge.category === "STUDY_PLAN") return [5, 0];
+  if (badge.category === DAILY_CHALLENGE) return [6, 0];
+  return [7, 0];
+}
+
+/**
+ * The `max` most valuable badges (spec 0010), best first. Ranked by `badgeValue`, then the newest `earnedOn`, then the
+ * larger numeric `id` (badges are already sorted by those, so the later one wins a tie). The best badge of each tier
+ * comes first, so a smaller badge of a kind already shown (500 Days next to 1000 Days) only fills a spare place.
+ */
+export function featuredBadges(snapshot: LeetcodeSnapshot, max: number): readonly LeetcodeBadge[] {
+  const level = snapshot.contest.badge;
+  const ranked = snapshot.badges
+    .map((badge, index) => ({ badge, index, value: badgeValue(badge, level) }))
+    .toSorted((a, b) => a.value[0] - b.value[0] || b.value[1] - a.value[1] || b.index - a.index);
+  const best = ranked.filter((entry, i) => i === 0 || entry.value[0] !== ranked[i - 1].value[0]);
+  const rest = ranked.filter((entry) => !best.includes(entry));
+  return [...best, ...rest].slice(0, max).map(({ badge }) => badge);
+}
+
+/** The contest level's own badge (Knight, Guardian), the newest one named like `contest.badge`, if earned. */
+export function levelBadge({ contest, badges }: LeetcodeSnapshot): LeetcodeBadge | undefined {
+  return badges.findLast((badge) => badge.name === contest.badge);
+}
+
+/** The badge with the newest `earnedOn`, ties to the larger numeric `id`: the last one, since badges are sorted. */
+export function mostRecentBadge({ badges }: LeetcodeSnapshot): LeetcodeBadge | undefined {
+  return badges.at(-1);
+}
+
+/**
+ * The monthly Daily Coding Challenge badge for each `YYYY-MM` inside the heatmap window (spec 0010), proof that every
+ * daily problem of that month was solved. LeetCode dates it on the month's last day.
+ */
+export function monthlyBadges(snapshot: LeetcodeSnapshot): ReadonlyMap<string, LeetcodeBadge> {
+  const first = dayNumber(snapshot.asOf) - (heatmap.windowDays - 1);
+  const monthly = snapshot.badges.filter(
+    (badge) => badge.category === DAILY_CHALLENGE && dayNumber(badge.earnedOn) >= first,
+  );
+  return new Map(monthly.map((badge) => [badge.earnedOn.slice(0, 7), badge]));
+}
+
+/** Stored sizes (px) of each kind of embedded badge, about twice the drawn size for sharp 2× screens. */
+export const BADGE_IMAGE = { featured: 144, level: 64, recent: 96, monthly: 64 } as const satisfies {
+  readonly [kind: string]: number;
+};
+
+/** Every outside image the LeetCode cards embed (spec 0010). */
+export function leetcodeImages(snapshot: LeetcodeSnapshot): readonly ImageRequest[] {
+  const level = levelBadge(snapshot);
+  const recent = mostRecentBadge(snapshot);
+  return [
+    ...(level === undefined ? [] : [{ url: level.icon, size: BADGE_IMAGE.level }]),
+    ...featuredBadges(snapshot, FEATURED_BADGES).map((badge) => ({ url: badge.icon, size: BADGE_IMAGE.featured })),
+    ...(recent === undefined ? [] : [{ url: recent.icon, size: BADGE_IMAGE.recent }]),
+    ...[...monthlyBadges(snapshot).values()].map((badge) => ({ url: badge.icon, size: BADGE_IMAGE.monthly })),
+  ];
+}
+
 export const leetcode = {
   name: "leetcode",
   sortKey: "startTime",
@@ -420,5 +505,8 @@ export const leetcode = {
     const response = record(raw, "(fetch)");
     if (typeof response.asOf !== "string") fail("asOf", "must be a string");
     return parseLeetcodeSnapshot({ ...mapResponse(response.body), asOf: response.asOf });
+  },
+  images(snapshot: unknown): readonly ImageRequest[] {
+    return leetcodeImages(parseLeetcodeSnapshot(snapshot));
   },
 } as const satisfies Source<LeetcodeSnapshot>;

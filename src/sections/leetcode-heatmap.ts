@@ -1,20 +1,23 @@
-// LeetCode submission heatmap (spec 0009, docs/design.md "Heatmap card anatomy"): a static full width card with
-// three stats over a past year grid drawn like LeetCode's, one block per month, a week per column, Sunday on top.
+// LeetCode submission heatmap (spec 0009, redrawn like LeetCode's by spec 0010; docs/design.md "Heatmap card
+// anatomy"): a static full width card with a one line summary (the submission count on the left, active days and
+// max streak on the right) over a past year grid, one block per month, a week per column, Sunday on top.
 // Days are UTC and the window ends on the snapshot's `asOf`, so the build never reads the clock. Not a section:
-// `src/sections/leetcode.ts` places it. Pure.
+// `src/sections/leetcode.ts` places it. Pure: the monthly badge art comes from `ctx.images`.
 
 import { dateOfDay, dayNumber, formatDay, MONTHS, weekdayOfDay } from "../dates.ts";
-import type { LeetcodeSnapshot } from "../sources/leetcode.ts";
-import { card, fitText } from "../svg.ts";
-import { heatmap as hm, layout, type TextSlot, type Theme, typography } from "../theme.ts";
+import { imageKey } from "../images.ts";
+import { BADGE_IMAGE, type LeetcodeSnapshot, monthlyBadges } from "../sources/leetcode.ts";
+import { card } from "../svg.ts";
+import { heatmap as hm, layout, type Theme, typography } from "../theme.ts";
+import type { BuildContext } from "../types.ts";
+import { badgeImage } from "./leetcode-badges.ts";
 import { groupDigits, textTag } from "./leetcode-text.ts";
 
-const LABELS = { submissions: "Submissions (past year)", active: "Active days", streak: "Max streak" } as const;
-const LESS = "Less";
-const MORE = "More";
+const SUBMISSIONS = " submissions in the past one year";
+const ONE_SUBMISSION = " submission in the past one year";
+const ACTIVE = "Total active days: ";
+const STREAK = "Max streak: ";
 const DAYS_PER_WEEK = 7;
-/** Every heatmap text is at least this size (full width images use 20px and up). */
-const MIN_TEXT = 20;
 
 const step = hm.cell + hm.cellGap;
 const levelMins = [hm.level1Min, hm.level2Min, hm.level3Min, hm.level4Min] as const;
@@ -58,11 +61,18 @@ function levelOf(count: number): number {
 }
 
 function cell(x: number, y: number, level: number): string {
-  const paint = level === 0 ? 'class="fill-track"' : `class="fill-accent" fill-opacity="${opacities[level - 1]}"`;
+  const paint = level === 0 ? 'class="fill-track"' : `class="fill-heat" fill-opacity="${opacities[level - 1]}"`;
   return `<rect x="${x}" y="${y}" width="${hm.cell}" height="${hm.cell}" rx="${hm.cellRadius}" ${paint}/>`;
 }
 
-type Block = { readonly month: number; readonly offset: number; readonly days: readonly Day[]; readonly cols: number };
+type Block = {
+  /** `YYYY-MM`. */
+  readonly key: string;
+  readonly month: number;
+  readonly offset: number;
+  readonly days: readonly Day[];
+  readonly cols: number;
+};
 
 /** The window split into calendar months, oldest first, each with its weekday offset and column count. */
 function blocksOf(days: readonly Day[]): readonly Block[] {
@@ -75,6 +85,7 @@ function blocksOf(days: readonly Day[]): readonly Block[] {
   return months.map((monthDays) => {
     const offset = weekdayOfDay(monthDays[0].day);
     return {
+      key: dateOfDay(monthDays[0].day).slice(0, 7),
       month: Number(dateOfDay(monthDays[0].day).slice(5, 7)) - 1,
       offset,
       days: monthDays,
@@ -83,10 +94,17 @@ function blocksOf(days: readonly Day[]): readonly Block[] {
   });
 }
 
-/** Character width estimate `0.6 × size`, in integers so the result never depends on float rounding. */
-const textWidth = (text: string, size: number): number => Math.ceil((3 * size * [...text].length) / 5);
+/** Each month's stored badge art, keyed by `YYYY-MM`. */
+function monthArtOf(snapshot: LeetcodeSnapshot, images: BuildContext["images"]): ReadonlyMap<string, string> {
+  const art = new Map<string, string>();
+  for (const [month, badge] of monthlyBadges(snapshot)) {
+    const href = images.get(imageKey({ url: badge.icon, size: BADGE_IMAGE.monthly }));
+    if (href !== undefined) art.set(month, href);
+  }
+  return art;
+}
 
-function grid(days: readonly Day[]): string {
+function grid(days: readonly Day[], monthArt: ReadonlyMap<string, string>): string {
   const blocks = blocksOf(days);
   const columns = blocks.reduce((sum, { cols }) => sum + cols, 0);
   const width = columns * step - hm.cellGap + (blocks.length - 1) * hm.monthGap;
@@ -101,8 +119,12 @@ function grid(days: readonly Day[]): string {
         const row = (block.offset + k) % DAYS_PER_WEEK;
         return cell(blockX + col * step, hm.gridTop + row * step, levelOf(count));
       });
-      if (block.cols < hm.monthMinColumns) return cells;
       const center = blockX + (block.cols * step - hm.cellGap) / 2;
+      // The month's Daily Coding Challenge badge stands in for its name, as on LeetCode (spec 0010).
+      const art = monthArt.get(block.key);
+      if (art !== undefined)
+        return [...cells, badgeImage(art, center - hm.monthArt / 2, hm.monthY - hm.monthArt / 2, hm.monthArt)];
+      if (block.cols < hm.monthMinColumns) return cells;
       const label = textTag(
         { x: center, y: hm.monthY, anchor: "middle", classes: "fill-muted", style: typography.lead },
         MONTHS[block.month],
@@ -112,47 +134,27 @@ function grid(days: readonly Day[]): string {
     .join("\n");
 }
 
-function legend(): string {
-  const { lead } = typography;
-  const right = layout.full - layout.pad;
-  const lastEnd = right - hm.legendGap - textWidth(MORE, lead.size);
-  const firstX = lastEnd - hm.cell - opacities.length * step;
-  const y = hm.legendY - hm.cell / 2;
-  const cells = Array.from({ length: opacities.length + 1 }, (_, level) => cell(firstX + level * step, y, level));
-  const text = (x: number, inner: string): string =>
-    textTag({ x, y: hm.legendY, anchor: "end", classes: "fill-muted", style: lead }, inner);
-  return [text(firstX - hm.legendGap, LESS), ...cells, text(right, MORE)].join("\n");
+/** `641 submissions in the past one year` on the left; `Total active days: 364   Max streak: 292` on the right. */
+function summary(values: HeatmapStats): string {
+  const { title, body, strong } = typography;
+  const count = `<tspan class="fill-text" font-size="${title.size}" font-weight="${title.weight}">${groupDigits(values.submissions)}</tspan>`;
+  const left = textTag(
+    { x: layout.pad, y: hm.headY, anchor: "start", classes: "fill-muted", style: body },
+    `${count}${values.submissions === 1 ? ONE_SUBMISSION : SUBMISSIONS}`,
+  );
+  const number = (n: number): string =>
+    `<tspan class="fill-text" font-weight="${strong.weight}">${groupDigits(n)}</tspan>`;
+  const gap = `<tspan dx="${hm.headGap}">${STREAK}</tspan>`;
+  const right = textTag(
+    { x: layout.full - layout.pad, y: hm.headY, anchor: "end", classes: "fill-muted", style: body },
+    `${ACTIVE}${number(values.active)}${gap}${number(values.streak)}`,
+  );
+  return `${left}\n${right}`;
 }
 
-function stats(values: HeatmapStats): string {
-  const stat = (x: number, width: number, label: string, value: number, classes: string, style: TextSlot["style"]) => {
-    const labelSlot = { width, style: typography.lead, minSize: MIN_TEXT } as const satisfies TextSlot;
-    const valueSlot = { width, style, minSize: MIN_TEXT } as const satisfies TextSlot;
-    const shown = groupDigits(value);
-    return [
-      textTag(
-        {
-          x,
-          y: hm.labelY,
-          anchor: "start",
-          classes: "fill-muted",
-          style: labelSlot.style,
-          fit: fitText(label, labelSlot),
-        },
-        label,
-      ),
-      textTag({ x, y: hm.valueY, anchor: "start", classes, style, fit: fitText(shown, valueSlot) }, shown),
-    ].join("\n");
-  };
-  return [
-    stat(hm.submissionsX, hm.submissionsSlot, LABELS.submissions, values.submissions, "fill-accent", typography.title),
-    stat(hm.activeX, hm.activeSlot, LABELS.active, values.active, "fill-text", typography.number),
-    stat(hm.streakX, hm.streakSlot, LABELS.streak, values.streak, "fill-text", typography.number),
-  ].join("\n");
-}
-
-export function heatmapCardSvg(theme: Theme, snapshot: LeetcodeSnapshot): string {
-  const body = [stats(heatmapStats(snapshot)), grid(windowOf(snapshot).days), legend()].join("\n");
+export function heatmapCardSvg(theme: Theme, snapshot: LeetcodeSnapshot, images: BuildContext["images"]): string {
+  const days = windowOf(snapshot).days;
+  const body = [summary(heatmapStats(snapshot)), grid(days, monthArtOf(snapshot, images))].join("\n");
   return card(theme, { width: layout.full, height: hm.height, body });
 }
 

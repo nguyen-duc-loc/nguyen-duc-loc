@@ -1,17 +1,17 @@
-// About me (spec 0004, docs/design.md "About me"): a centered heading, the bio, and the location as real
-// Markdown text, so GitHub colors it for every theme and people can select and translate it. Below them, a row
-// of contact pills. Links inside an <img> SVG are dead, so each pill is its own themed image wrapped in <a href>.
+// About me (spec 0004, docs/design.md "About me"): the section heading, then the bio as a quote in real text (in
+// quotation marks and italic, spec 0010), so GitHub colors it for every theme and people can select and translate
+// it. Below it, a row of contact pills. Links inside an <img> SVG are dead, so each pill is its own themed image
+// wrapped in <a href>.
 
 import type { Profile } from "../../content/types.ts";
 import { mailtoUrl, profileUrls } from "../content.ts";
 import { escapeXml } from "../escape.ts";
 import type { IconName } from "../icons.ts";
-import { pillButton, themedImage } from "../svg.ts";
+import { pillButton, sectionHeading, themedImage } from "../svg.ts";
 import { button } from "../theme.ts";
 import type { Section } from "../types.ts";
 
 const HEADING = "About me";
-const LOCATION_PREFIX = "📍 ";
 
 type ContactButton = {
   readonly icon: IconName;
@@ -26,7 +26,7 @@ const contactButtons = [
   { icon: "linkedin", label: "LinkedIn", alt: () => "LinkedIn profile", url: (p) => profileUrls(p.accounts).linkedin },
   { icon: "credly", label: "Credly", alt: () => "Credly badges", url: (p) => profileUrls(p.accounts).credly },
   { icon: "leetcode", label: "LeetCode", alt: () => "LeetCode profile", url: (p) => profileUrls(p.accounts).leetcode },
-  { icon: "email", label: "Email", alt: (p) => `Email ${p.email}`, url: (p) => mailtoUrl(p.email) },
+  { icon: "gmail", label: "Email", alt: (p) => `Email ${p.email}`, url: (p) => mailtoUrl(p.email) },
 ] as const satisfies readonly ContactButton[];
 
 export const about: Section = ({ content: { profile } }) => {
@@ -40,11 +40,11 @@ export const about: Section = ({ content: { profile } }) => {
     return { ...image, markdown: `<a href="${escapeXml(url(profile))}">${image.markdown}</a>` };
   });
 
+  const heading = sectionHeading({ key: "about", title: HEADING, icon: "person" });
   const markdown = [
-    `<h2 align="center">${HEADING}</h2>`,
-    `<p align="center">${escapeXml(profile.bio)}</p>`,
-    `<p align="center">${LOCATION_PREFIX}${escapeXml(profile.location)}</p>`,
-    ['<p align="center">', ...buttons.map((b) => b.markdown), "</p>"].join("\n"),
+    heading.markdown,
+    `<p><i>\u201c${escapeXml(profile.bio)}\u201d</i></p>`,
+    ["<p>", ...buttons.map((b) => b.markdown), "</p>"].join("\n"),
   ].join("\n\n");
-  return { markdown, assets: buttons.flatMap((b) => b.assets ?? []) };
+  return { markdown, assets: [...(heading.assets ?? []), ...buttons.flatMap((b) => b.assets ?? [])] };
 };

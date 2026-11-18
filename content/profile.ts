@@ -8,7 +8,7 @@ export const profile = {
   title: "Cloud Developer",
   location: "Hanoi, Vietnam",
   bio: "You can't beat someone who is having fun.",
-  typingPhrases: ["Cloud Developer", "LeetCode Guardian"],
+  typingPhrases: ["Hi there 👋", "Welcome to my GitHub"],
   accounts: {
     github: "nguyen-duc-loc",
     linkedin: "nguyenducloc404",

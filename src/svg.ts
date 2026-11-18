@@ -1,16 +1,19 @@
 // Shared SVG helpers every section draws through (spec 0003). Pure: strings in, strings out.
 // Colors are class names only (`fill-accent`, `stroke-border`, `stop-accent2`); the values come from themeCss.
 
+import { brands } from "./brands.ts";
 import { escapeXml } from "./escape.ts";
-import { type IconName, icons } from "./icons.ts";
+import { type IconName, icons, isBrand } from "./icons.ts";
 import {
   button,
+  charWidths,
   fonts,
   layout,
   motion,
   radius,
   type TextSlot,
   type Theme,
+  textMetrics,
   themeCss,
   themes,
   typography,
@@ -115,18 +118,26 @@ export type ThemedImageOptions = {
   readonly alt: string;
   readonly width: "100%" | number;
   readonly render: (theme: Theme) => string;
+  /** One line with no spaces between tags, so a row of them wraps like words (table cells, headings). */
+  readonly inline?: boolean;
+  /**
+   * `middle` centers the image on the line of text instead of resting it on the baseline (`<img align="middle">`,
+   * which GitHub keeps), so a row of chips sits centered in its table cell (spec 0010).
+   */
+  readonly align?: "middle";
 };
 
 /** A `<picture>` that follows the visitor's GitHub theme, plus both SVGs. The light file is the fallback. */
-export function themedImage({ base, alt, width, render }: ThemedImageOptions): SectionOutput {
+export function themedImage({ base, alt, width, render, inline = false, align }: ThemedImageOptions): SectionOutput {
   const light = `${base}-light.svg`;
   const dark = `${base}-dark.svg`;
-  const markdown = [
+  const lines = [
     "<picture>",
-    `  <source media="(prefers-color-scheme: dark)" srcset="assets/generated/${dark}">`,
-    `  <img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}">`,
+    `<source media="(prefers-color-scheme: dark)" srcset="assets/generated/${dark}">`,
+    `<img alt="${escapeXml(alt)}" src="assets/generated/${light}" width="${width}"${align === undefined ? "" : ` align="${align}"`}>`,
     "</picture>",
-  ].join("\n");
+  ];
+  const markdown = inline ? lines.join("") : [lines[0], `  ${lines[1]}`, `  ${lines[2]}`, lines[3]].join("\n");
   return {
     markdown,
     assets: [
@@ -148,28 +159,120 @@ export function outsideImage({ src, alt, width }: OutsideImageOptions): string {
   return `<picture><source media="(prefers-color-scheme: dark)" srcset="${url}"><img alt="${escapeXml(alt)}" src="${url}" width="${width}"></picture>`;
 }
 
-/** An icon from `src/icons.ts` as a nested `size` × `size` SVG at (x, y), painted by `classes`. */
-export function iconSvg(name: IconName, x: number, y: number, size: number, classes: string): string {
-  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${icons[name].path}"/></svg>`;
+const VIEW_BOX = /viewBox="([^"]*)"/;
+
+/** A brand's file for `theme`: its `dark` file on the dark theme when it has one, else its `light` file. */
+function brandFile(theme: Theme, name: IconName): string | undefined {
+  if (!isBrand(name)) return undefined;
+  const brand: { readonly light: string; readonly dark?: string } = brands[name];
+  return theme.name === "dark" ? (brand.dark ?? brand.light) : brand.light;
+}
+
+/** Width over height of an icon: 1 for a glyph, from the light file's `viewBox` for a brand logo. */
+function aspect(name: IconName): number {
+  if (!isBrand(name)) return 1;
+  const box = VIEW_BOX.exec(brands[name].light)?.[1]
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  return box === undefined || box.length !== 4 || !(box[2] > 0 && box[3] > 0) ? 1 : box[2] / box[3];
+}
+
+/** The drawn width of an icon `size` px tall: wider than `size` for a wide logo (AWS, Go). */
+export function iconWidth(name: IconName, size: number): number {
+  return Math.round(size * aspect(name));
+}
+
+/**
+ * An icon at (x, y), `size` tall and `iconWidth` wide. A glyph from `src/icons.ts` is a nested SVG painted by
+ * `classes`. A brand logo from `src/brands.ts` is its whole full color file for the theme, embedded as a
+ * `data:image/svg+xml` image, so `classes` is not used for it (spec 0010).
+ */
+export function iconSvg(theme: Theme, name: IconName, x: number, y: number, size: number, classes: string): string {
+  const width = iconWidth(name, size);
+  const file = brandFile(theme, name);
+  if (file !== undefined) {
+    const href = `data:image/svg+xml;base64,${Buffer.from(file).toString("base64")}`;
+    return `<image x="${x}" y="${y}" width="${width}" height="${size}" preserveAspectRatio="xMidYMid meet" href="${href}"/>`;
+  }
+  const glyph = isBrand(name) ? undefined : icons[name];
+  return `<svg x="${x}" y="${y}" width="${width}" height="${size}" viewBox="0 0 24 24"><path class="${classes}" d="${glyph?.path ?? ""}"/></svg>`;
 }
 
 export type PillButtonOptions = { readonly icon: IconName; readonly label: string };
 
+/** The baseline y that centers a line of `size` px text on `centerY` (`textMetrics.capCenter`), to one decimal. */
+export function centeredBaseline(centerY: number, size: number): number {
+  return Math.round((centerY + textMetrics.capCenter * size) * 10) / 10;
+}
+
+/** One character's width in ems (`charWidths`). */
+function charWidth(char: string): number {
+  const group = charWidths.groups.find(({ chars }) => chars.includes(char));
+  if (group !== undefined) return group.width;
+  if (char >= "A" && char <= "Z") return charWidths.upper;
+  if (char >= "0" && char <= "9") return charWidths.digit;
+  return charWidths.other;
+}
+
+/** A snug width estimate for a short label, character by character (`charWidths`); center the label in it. */
+export function snugWidth(text: string, size: number): number {
+  return Math.ceil([...text].reduce((sum, char) => sum + charWidth(char), 0) * size);
+}
+
+/** Estimated width of `text` at `size`, `0.6 × size` per character, in integers (the `fitText` estimate). */
+export function textWidth(text: string, size: number): number {
+  return Math.ceil((3 * size * [...text].length) / 5);
+}
+
 /**
- * A contact pill (spec 0004, docs/design.md "Button anatomy"): icon then label inside a bordered pill, with a
- * transparent `button.margin` around it so buttons sit apart in a row. Static: no animation.
+ * A contact pill (spec 0004, centered by spec 0010; docs/design.md "Button anatomy"): the icon, in its brand color,
+ * and the label, centered together inside a bordered pill, with a transparent `button.margin` around it so buttons
+ * sit apart in a row. Static: no animation.
  */
 export function pillButton(theme: Theme, { icon, label }: PillButtonOptions): string {
   const { width, height, margin, padX, gap } = button;
-  const iconX = margin + padX;
-  const labelX = iconX + button.icon + gap;
-  const slot = { width: width - padX - button.icon - gap - padX, style: typography.button, minSize: 12 };
+  const drawn = iconWidth(icon, button.icon);
+  const slot = { width: width - padX - drawn - gap - padX, style: typography.button, minSize: 12 };
   const fit = fitText(label, slot);
+  const labelWidth = fit.textLength ?? textWidth(label, fit.size);
+  const groupX = margin + Math.round((width - (drawn + gap + labelWidth)) / 2);
+  const labelX = groupX + drawn + gap;
   const squeeze = fit.textLength ? ` textLength="${fit.textLength}" lengthAdjust="spacingAndGlyphs"` : "";
   const body = [
     `<rect x="${margin + 0.5}" y="${margin + 0.5}" width="${width - 1}" height="${height - 1}" rx="${radius.pill}" class="fill-surface stroke-border" stroke-width="${layout.border}"/>`,
-    iconSvg(icon, iconX, margin + (height - button.icon) / 2, button.icon, "fill-accent"),
+    iconSvg(theme, icon, groupX, margin + (height - button.icon) / 2, button.icon, "fill-accent"),
     `<text class="fill-text" x="${labelX}" y="${margin + height / 2}" dominant-baseline="central" text-anchor="start" font-size="${fit.size}" font-weight="${slot.style.weight}"${squeeze}>${escapeXml(label)}</text>`,
   ].join("\n");
   return svgDocument(theme, { width: width + 2 * margin, height: height + 2 * margin, body });
+}
+
+/** Size of a section heading icon, in px: GitHub draws an `<h2>` at 24px. */
+const HEADING_ICON = 24;
+
+export type SectionHeadingOptions = {
+  /** Writes `heading-<key>-light.svg` and `heading-<key>-dark.svg`. */
+  readonly key: string;
+  readonly title: string;
+  readonly icon: IconName;
+};
+
+/**
+ * A left aligned `<h2>` led by its icon (spec 0010, docs/design.md "Section headings"). The icon is decorative, so its
+ * alt text is empty and a screen reader reads only the title. Brand icons use their brand color, others `accent`.
+ */
+export function sectionHeading({ key, title, icon }: SectionHeadingOptions): SectionOutput {
+  const image = themedImage({
+    base: `heading-${key}`,
+    alt: "",
+    width: HEADING_ICON,
+    inline: true,
+    render: (theme) =>
+      svgDocument(theme, {
+        width: HEADING_ICON,
+        height: HEADING_ICON,
+        body: iconSvg(theme, icon, 0, 0, HEADING_ICON, "fill-accent"),
+      }),
+  });
+  return { markdown: `<h2>${image.markdown} ${escapeXml(title)}</h2>`, assets: image.assets };
 }

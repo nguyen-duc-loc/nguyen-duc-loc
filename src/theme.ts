@@ -1,6 +1,6 @@
 // The one source of colors, fonts, sizes, spacing, and motion timings (spec 0003).
 // docs/design.md repeats these values for people; change both in the same commit.
-// Pure: constants and two pure functions, no I/O.
+// Pure: constants and pure functions, no I/O.
 
 export type ThemeName = "light" | "dark";
 /** Lowercase `#rrggbb`. The format is checked at build time by `checkContrast`. */
@@ -17,10 +17,22 @@ export type TokenName =
   | "onAccent"
   | "success"
   | "warning"
-  | "danger";
+  | "danger"
+  | "successText"
+  | "warningText"
+  | "dangerText"
+  | "heat"
+  | "leetcode"
+  | "honor"
+  | "onHonor"
+  | "logoTile";
 export type Theme = { readonly name: ThemeName } & { readonly [K in TokenName]: Hex };
 export type ContrastPair = { readonly fg: TokenName; readonly bg: TokenName; readonly min: 3 | 4.5 };
-export type TypeStyle = { readonly size: number; readonly weight: 400 | 600 | 700; readonly family: "sans" | "mono" };
+export type TypeStyle = {
+  readonly size: number;
+  readonly weight: 400 | 500 | 600 | 700;
+  readonly family: "sans" | "mono";
+};
 export type TextSlot = { readonly width: number; readonly style: TypeStyle; readonly minSize: number };
 
 /** Every token, in the order of the spec's token table. Color classes follow this order. */
@@ -37,39 +49,69 @@ export const tokenNames = [
   "success",
   "warning",
   "danger",
+  "successText",
+  "warningText",
+  "dangerText",
+  "heat",
+  "leetcode",
+  "honor",
+  "onHonor",
+  "logoTile",
 ] as const satisfies readonly TokenName[];
 
-/** Catppuccin Latte (light) and Mocha (dark). `page` is GitHub's page background, used only by checks. */
+/**
+ * GitHub's own Primer colors (spec 0010), so cards sit on the page like GitHub's own UI. `page` is GitHub's page
+ * background, used only by checks. `success`, `warning`, and `danger` are LeetCode's own difficulty colors, and the
+ * `*Text` tokens are the same hues dark enough (light) or bright enough (dark) to read as text on `track`. `heat` is
+ * LeetCode's green, for the submission heatmap, `leetcode` its orange, for the rating line. `honor` is a bright gold
+ * pill for the honors note, with its stars and text in `onHonor`.
+ */
 export const themes = {
   light: {
     name: "light",
     page: "#ffffff",
-    surface: "#eff1f5",
-    border: "#ccd0da",
-    track: "#dce0e8",
-    text: "#4c4f69",
-    muted: "#5c5f77",
-    accent: "#8839ef",
-    accent2: "#1e66f5",
+    surface: "#f6f8fa",
+    border: "#d1d9e0",
+    track: "#e6eaef",
+    text: "#1f2328",
+    muted: "#59636e",
+    accent: "#0969da",
+    accent2: "#8250df",
     onAccent: "#ffffff",
-    success: "#40a02b",
-    warning: "#df8e1d",
-    danger: "#d20f39",
+    success: "#00af9b",
+    warning: "#ffb800",
+    danger: "#ff2d55",
+    successText: "#00705f",
+    warningText: "#805600",
+    dangerText: "#c0262d",
+    heat: "#2cbb5d",
+    leetcode: "#ffa116",
+    honor: "#f5c518",
+    onHonor: "#3d2b00",
+    logoTile: "#ffffff",
   },
   dark: {
     name: "dark",
     page: "#0d1117",
-    surface: "#1e1e2e",
-    border: "#313244",
-    track: "#45475a",
-    text: "#cdd6f4",
-    muted: "#a6adc8",
-    accent: "#cba6f7",
-    accent2: "#89b4fa",
-    onAccent: "#11111b",
-    success: "#a6e3a1",
-    warning: "#f9e2af",
-    danger: "#f38ba8",
+    surface: "#151b23",
+    border: "#3d444d",
+    track: "#262c36",
+    text: "#f0f6fc",
+    muted: "#9198a1",
+    accent: "#4493f8",
+    accent2: "#ab7df8",
+    onAccent: "#0d1117",
+    success: "#1cbaba",
+    warning: "#ffb700",
+    danger: "#f63737",
+    successText: "#1cbaba",
+    warningText: "#ffb700",
+    dangerText: "#ff6b6b",
+    heat: "#2cbb5d",
+    leetcode: "#ffa116",
+    honor: "#f5c518",
+    onHonor: "#3d2b00",
+    logoTile: "#ffffff",
   },
 } as const satisfies { readonly [K in ThemeName]: Theme };
 
@@ -79,9 +121,16 @@ export const contrastPairs = [
   { fg: "muted", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "surface", min: 4.5 },
   { fg: "accent", bg: "page", min: 4.5 },
-  { fg: "accent2", bg: "surface", min: 3 },
+  { fg: "text", bg: "page", min: 4.5 },
+  { fg: "muted", bg: "page", min: 4.5 },
+  { fg: "accent2", bg: "surface", min: 4.5 },
   { fg: "onAccent", bg: "accent", min: 4.5 },
   { fg: "onAccent", bg: "accent2", min: 4.5 },
+  { fg: "text", bg: "track", min: 4.5 },
+  { fg: "successText", bg: "track", min: 4.5 },
+  { fg: "warningText", bg: "track", min: 4.5 },
+  { fg: "dangerText", bg: "track", min: 4.5 },
+  { fg: "onHonor", bg: "honor", min: 4.5 },
 ] as const satisfies readonly ContrastPair[];
 
 /** GitHub's own font stacks. System fonts only: an SVG in `<img>` can't load web fonts. */
@@ -90,18 +139,45 @@ export const fonts = {
   mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
 } as const satisfies { readonly [K in TypeStyle["family"]]: string };
 
-/** Full width images use only 20px and up (they render at about 42% on a phone). */
+/** Card text is kept near GitHub's own 14 to 16px body size (spec 0010); only the banner uses larger sizes. */
 export const typography = {
   display: { size: 48, weight: 700, family: "sans" },
-  title: { size: 32, weight: 700, family: "sans" },
-  heading: { size: 20, weight: 600, family: "sans" },
-  lead: { size: 20, weight: 400, family: "sans" },
+  tagline: { size: 22, weight: 600, family: "sans" },
+  title: { size: 24, weight: 500, family: "sans" },
+  heading: { size: 16, weight: 600, family: "sans" },
+  lead: { size: 14, weight: 400, family: "sans" },
   body: { size: 14, weight: 400, family: "sans" },
   label: { size: 12, weight: 400, family: "sans" },
-  number: { size: 24, weight: 600, family: "mono" },
   typing: { size: 22, weight: 400, family: "mono" },
   button: { size: 14, weight: 600, family: "sans" },
+  chip: { size: 13, weight: 600, family: "sans" },
+  strong: { size: 14, weight: 500, family: "sans" },
+  name: { size: 16, weight: 500, family: "sans" },
+  stat: { size: 20, weight: 500, family: "sans" },
 } as const satisfies { readonly [name: string]: TypeStyle };
+
+/**
+ * Text metrics for centering without measuring (spec 0010). `capCenter`: a capital letter's middle sits this many ems
+ * above the baseline, so a baseline at `center + capCenter × size` centers the text on every system font (more
+ * steadily than `dominant-baseline="central"`, which fonts place differently).
+ */
+export const textMetrics = { capCenter: 0.35 } as const satisfies { readonly [name: string]: number };
+
+/**
+ * Character widths in ems for snug label estimates (spec 0010), rounded from the system UI font at weight 500 to 600
+ * (San Francisco and Segoe UI are close). Text drawn with them is centered in its space, so a small error splits
+ * evenly on both sides. A character in no group uses its kind's default.
+ */
+export const charWidths = {
+  groups: [
+    { width: 0.27, chars: " ijlI'|.,:;!" },
+    { width: 0.42, chars: "frt/()-[]1" },
+    { width: 0.9, chars: "mwMW" },
+  ],
+  upper: 0.7,
+  digit: 0.65,
+  other: 0.59,
+} as const;
 
 /** Spacing scale in px. */
 export const space = [4, 8, 12, 16, 24, 32] as const satisfies readonly number[];
@@ -122,29 +198,27 @@ export const button = { width: 140, height: 40, margin: 4, padX: 16, icon: 16, g
 };
 
 /**
- * Tech stack cards (spec 0005, docs/design.md "Stack card anatomy"): chips in `columns` columns under the card
- * heading. `headingGap` runs from the heading box to the first chip row, `chipPadX` from the chip edge to the
- * icon (and from the text end to the chip edge), `iconGap` from the icon to the name.
+ * Tech stack chips (spec 0010, docs/design.md "Tech stack"): one pill per item, `height` tall and as wide as its
+ * name needs (`padX`, icon, `iconGap`, the `chip` style estimate, `padX`), so the table cell wraps them like words.
  */
-export const stackCard = {
-  columns: 2,
-  headingGap: 16,
-  chipHeight: 32,
-  gapX: 16,
-  gapY: 8,
-  chipPadX: 12,
-  icon: 16,
-  iconGap: 8,
-} as const satisfies { readonly [name: string]: number };
+export const stackChip = { height: 32, padX: 10, icon: 18, iconGap: 8, margin: 2 } as const satisfies {
+  readonly [name: string]: number;
+};
 
 /**
- * LeetCode solved card (spec 0006, docs/design.md "Solved card anatomy"): a 270 degree arc of Easy, Medium, and
- * Hard segments around (`cx`, `cy`), plus three difficulty chips on the right. Angles are in degrees. The card is
- * `2 × layout.pad + 3 × chipHeight + 2 × chipGap` tall. Chip offsets (`dotX` to `chipValueY`) are from the chip's
- * top left corner.
+ * The LeetCode summary row (spec 0010): the solved card and the badges card side by side in one `layout.full` wide
+ * image, so they always share a row. Each card is `(layout.full − gap) / 2` wide.
+ */
+export const summaryRow = { height: 196, gap: 16 } as const satisfies { readonly [name: string]: number };
+
+/**
+ * LeetCode solved card (spec 0006, chips restyled by spec 0010; docs/design.md "Solved card anatomy"): a 270 degree
+ * arc of Easy, Medium, and Hard segments around (`cx`, `cy`), plus three difficulty chips on the right, drawn like
+ * LeetCode's: a `track` tile with the colored difficulty name over the count. Angles are in degrees. Chip offsets
+ * are from the chip's top left corner.
  */
 export const solvedCard = {
-  cx: 136,
+  cx: 140,
   cy: 107,
   radius: 80,
   stroke: 6,
@@ -152,143 +226,143 @@ export const solvedCard = {
   segmentGap: 6,
   trackOpacity: 0.25,
   numberBaseline: 112,
-  numberSlot: 88,
-  checkX: 104,
+  numberSlot: 96,
+  checkX: 108,
   checkY: 122,
   checkSize: 14,
-  solvedX: 122,
+  solvedX: 126,
   solvedY: 129,
   attemptingY: 162,
   attemptingSlot: 96,
-  chipX: 264,
+  chipX: 281,
   chipWidth: 112,
   chipHeight: 44,
   chipGap: 8,
-  dotX: 16,
-  dotY: 14,
-  dotRadius: 4,
-  chipLabelX: 26,
   chipLabelY: 14,
-  chipValueX: 12,
   chipValueY: 31,
-  chipValueSlot: 88,
+  chipValueSlot: 96,
 } as const satisfies { readonly [name: string]: number };
 
 /**
- * LeetCode contest card (spec 0006, docs/design.md "Contest card anatomy"): `layout.full` wide. A left pane with the
- * stats row and the rating history chart, a divider at `dividerX + 0.5`, and a right pane with the Top value and the
- * rating histogram. `*X` and `*Slot` place each stat column; every text on this card is 20px or larger.
+ * LeetCode contest card (spec 0006, reshaped by spec 0010; docs/design.md "Contest card anatomy"): `layout.full`
+ * wide. The stats row over the rating history chart, which spans the whole card. Contests are spaced evenly, one
+ * step per attended contest, so a long break between contests leaves no empty stretch. `*X` and `*Slot` place each
+ * stat column.
  */
 export const contestCard = {
-  height: 300,
-  paneRight: 616,
-  dividerX: 640,
-  rightX: 664,
-  rightWidth: 162,
-  labelY: 34,
-  valueY: 68,
+  height: 244,
+  labelY: 32,
+  valueY: 62,
   ratingX: 24,
-  ratingSlot: 104,
-  levelIconX: 144,
-  levelIconY: 31,
-  levelIcon: 40,
-  levelX: 192,
-  levelSlot: 120,
-  rankX: 328,
-  rankSlot: 176,
-  attendedX: 520,
-  attendedSlot: 96,
-  chartLeft: 28,
-  chartRight: 612,
-  chartTop: 120,
-  chartBottom: 240,
+  ratingSlot: 120,
+  levelIconX: 168,
+  levelIconY: 30,
+  levelIcon: 32,
+  levelX: 208,
+  levelSlot: 150,
+  rankX: 384,
+  rankSlot: 230,
+  attendedX: 640,
+  attendedSlot: 120,
+  chartLeft: 32,
+  chartRight: 818,
+  chartTop: 104,
+  chartBottom: 196,
   flatSpan: 100,
   lineWidth: 2,
-  dotRadius: 5,
-  tipGap: 10,
-  tipHeight: 28,
+  dotRadius: 4,
+  tipGap: 8,
+  tipHeight: 24,
   tipPadX: 8,
-  yearY: 266,
-  barsBottom: 276,
-  barsMaxHeight: 168,
-  barGap: 2,
-  barMinHeight: 2,
-  barRadius: 1,
+  yearY: 220,
+  yearMinGap: 48,
 } as const satisfies { readonly [name: string]: number };
 
 /**
- * Experience and education cards (spec 0007, docs/design.md "Timeline card anatomy"): `layout.full` wide, a
- * vertical rail at `railX` with a dot per entry, and text from `textX` to `layout.full − layout.pad`. Row 0 holds
- * the name and the dates, right aligned in `dateSlot`, `titleGap` apart. Rows are `lineHeight` apart, entries
- * `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
+ * Experience and education (spec 0007, reshaped by spec 0010; docs/design.md "Timeline anatomy"): `layout.full`
+ * wide and drawn on the page, with no card. Each entry has its `logo` px logo tile at `padX` and text from `textX`
+ * to `layout.full − padX`. Row 0 holds the name and the dates, right aligned in `dateSlot`, `titleGap` apart.
+ * Rows are `lineHeight` apart, entries `entryGap` apart, and highlight text starts `bulletIndent` after the bullet.
  */
 export const timelineCard = {
-  railX: 40,
-  railWidth: 2,
-  dotRadius: 7,
-  dotStroke: 2,
-  textX: 72,
-  bulletIndent: 20,
-  dateSlot: 228,
+  padX: 1,
+  padY: 4,
+  logo: 48,
+  logoInset: 4,
+  logoRadius: 8,
+  textX: 65,
+  bulletIndent: 16,
+  dateSlot: 200,
   titleGap: 16,
-  lineHeight: 28,
+  lineHeight: 24,
   entryGap: 24,
+  honorHeight: 26,
+  honorPadX: 12,
+  starWidth: 0.8,
+  starGap: 7,
 } as const satisfies { readonly [name: string]: number };
 
-/** Certifications (spec 0008, docs/design.md "Certifications"): each Credly badge PNG shows `badgeWidth` px wide. */
-export const credlyGrid = { badgeWidth: 110 } as const satisfies { readonly [name: string]: number };
+/**
+ * Table column widths in percent (spec 0010). GitHub sizes a table to its content; a first column whose content is
+ * wider than its share of the README pushes the table out to the full width (the tech stack's 10% is narrower than
+ * any label, so that column shrinks to the longest label and the chips get the rest).
+ */
+export const tableColumns = { certifications: [25, 75], stack: [10, 90] } as const satisfies {
+  readonly [table: string]: readonly [number, number];
+};
+
+/** Certifications (specs 0008 and 0010, docs/design.md "Certifications"): each Credly badge PNG is `badgeWidth` px. */
+export const credlyGrid = { badgeWidth: 96 } as const satisfies { readonly [name: string]: number };
 
 /**
- * LeetCode badges half card (spec 0009, docs/design.md "Badges card anatomy"): `layout.half` wide and as tall as
- * the solved card. Every y is a text center (`dominant-baseline="central"`), every x is `layout.pad`.
+ * LeetCode badges card (spec 0009, redrawn by spec 0010; docs/design.md "Badges card anatomy"): the right card of the
+ * summary row. Every y is a text center (`dominant-baseline="central"`). The featured badge art sits in a row centered
+ * on `artCenterX`, the middle one `artLarge` px and the others `artSmall` px. The most recent badge's `recentArt` px
+ * art sits at `layout.pad`, its label and name `recentArtGap` after it.
  */
 export const badgesCard = {
-  headingY: 34,
-  icon: 24,
-  iconY: 22,
-  countY: 74,
-  recentY: 112,
-  nameY: 138,
-  nameSlot: 352,
-  nameMin: 14,
-  monthY: 164,
+  headingY: 30,
+  countY: 58,
+  artCenterX: 236,
+  artCenterY: 88,
+  artSmall: 60,
+  artLarge: 76,
+  artGap: 20,
+  recentArt: 40,
+  recentArtGap: 12,
+  recentY: 150,
+  nameY: 170,
+  nameMin: 12,
 } as const satisfies { readonly [name: string]: number };
 
-/** The LeetCode badge image row (spec 0009): at most `max` PNGs, each `width` px wide. */
-export const badgeRow = { max: 8, width: 80 } as const satisfies { readonly [name: string]: number };
-
 /**
- * LeetCode submission heatmap (spec 0009, docs/design.md "Heatmap card anatomy"): `layout.full` × `height`, the
- * `windowDays` ending on the snapshot's `asOf`. A day's level is the highest k with `count ≥ level<k>Min`, drawn
- * with `fill-opacity` `opacity<k>`; level 0 is `fill-track`.
+ * LeetCode submission heatmap (spec 0009, redrawn like LeetCode's by spec 0010; docs/design.md "Heatmap card
+ * anatomy"): `layout.full` × `height`, the `windowDays` ending on the snapshot's `asOf`. A sentence with the
+ * submission count on the left and the active days and max streak on the right, then the grid and the month names.
+ * A month with its Daily Coding Challenge badge shows that badge's art (`monthArt` px) instead of its name. A day's
+ * level is the highest k with `count ≥ level<k>Min`, drawn in `heat` at `fill-opacity` `opacity<k>`; level 0 is
+ * `fill-track`.
  */
 export const heatmap = {
-  height: 264,
+  height: 196,
   windowDays: 365,
-  labelY: 34,
-  valueY: 68,
-  submissionsX: 24,
-  submissionsSlot: 300,
-  activeX: 348,
-  activeSlot: 220,
-  streakX: 592,
-  streakSlot: 234,
-  gridTop: 100,
+  headY: 34,
+  headGap: 24,
+  gridTop: 68,
   cell: 9,
   cellGap: 2,
   cellRadius: 2,
   monthGap: 6,
-  monthY: 198,
+  monthY: 166,
+  monthArt: 28,
   monthMinColumns: 3,
-  legendY: 230,
-  legendGap: 8,
   level1Min: 1,
   level2Min: 2,
   level3Min: 3,
   level4Min: 5,
-  opacity1: 0.25,
-  opacity2: 0.5,
-  opacity3: 0.75,
+  opacity1: 0.3,
+  opacity2: 0.55,
+  opacity3: 0.8,
   opacity4: 1,
 } as const satisfies { readonly [name: string]: number };
 
