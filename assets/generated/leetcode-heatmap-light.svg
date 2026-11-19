@@ -3,7 +3,6 @@
 <rect x="0.5" y="0.5" width="849" height="195" rx="12" class="fill-surface stroke-border" stroke-width="1"/>
 <text class="fill-muted" x="24" y="34" dominant-baseline="central" text-anchor="start" font-size="14" font-weight="400"><tspan class="fill-text" font-size="24" font-weight="500">640</tspan> submissions in the past one year</text>
 <text class="fill-muted" x="826" y="34" dominant-baseline="central" text-anchor="end" font-size="14" font-weight="400">Total active days: <tspan class="fill-text" font-weight="500">362</tspan><tspan dx="24">Max streak: </tspan><tspan class="fill-text" font-weight="500">292</tspan></text>
-<rect x="49" y="101" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
 <rect x="49" y="112" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
 <rect x="49" y="123" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
 <rect x="49" y="134" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
@@ -379,6 +378,7 @@
 <rect x="792" y="68" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
 <rect x="792" y="79" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
 <rect x="792" y="90" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
-<rect x="792" y="101" width="9" height="9" rx="2" class="fill-track"/>
+<rect x="792" y="101" width="9" height="9" rx="2" class="fill-heat" fill-opacity="0.3"/>
+<rect x="792" y="112" width="9" height="9" rx="2" class="fill-track"/>
 <text class="fill-muted" x="785.5" y="166" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="400">Nov</text>
 </svg>
