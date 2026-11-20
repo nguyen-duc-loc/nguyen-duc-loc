@@ -1,6 +1,6 @@
 {
   "activeBadgeId": "10279006",
-  "asOf": "2026-11-19",
+  "asOf": "2026-11-20",
   "badges": [
     {
       "category": "ANNUAL",
@@ -438,10 +438,6 @@
     }
   ],
   "calendar": [
-    {
-      "count": 1,
-      "date": "2025-11-19"
-    },
     {
       "count": 1,
       "date": "2025-11-20"
@@ -1889,15 +1885,19 @@
     {
       "count": 1,
       "date": "2026-11-18"
+    },
+    {
+      "count": 2,
+      "date": "2026-11-19"
     }
   ],
   "contest": {
     "attended": 31,
     "badge": "Guardian",
-    "globalRanking": 6064,
+    "globalRanking": 6061,
     "rating": 2247.01,
     "topPercentage": 0.72,
-    "totalParticipants": 892590
+    "totalParticipants": 893251
   },
   "difficulties": {
     "easy": {
@@ -1912,7 +1912,7 @@
     },
     "medium": {
       "attempting": 1,
-      "solved": 1170,
+      "solved": 1171,
       "total": 2148
     }
   },
@@ -1920,117 +1920,117 @@
     {
       "ratingEnd": 1200,
       "ratingStart": 0,
-      "userCount": 6224
+      "userCount": 6231
     },
     {
       "ratingEnd": 1250,
       "ratingStart": 1200,
-      "userCount": 6656
+      "userCount": 6688
     },
     {
       "ratingEnd": 1300,
       "ratingStart": 1250,
-      "userCount": 15606
+      "userCount": 15626
     },
     {
       "ratingEnd": 1350,
       "ratingStart": 1300,
-      "userCount": 35754
+      "userCount": 35894
     },
     {
       "ratingEnd": 1400,
       "ratingStart": 1350,
-      "userCount": 77870
+      "userCount": 77950
     },
     {
       "ratingEnd": 1450,
       "ratingStart": 1400,
-      "userCount": 201196
+      "userCount": 201269
     },
     {
       "ratingEnd": 1500,
       "ratingStart": 1450,
-      "userCount": 159970
+      "userCount": 159941
     },
     {
       "ratingEnd": 1550,
       "ratingStart": 1500,
-      "userCount": 110021
+      "userCount": 110068
     },
     {
       "ratingEnd": 1600,
       "ratingStart": 1550,
-      "userCount": 75671
+      "userCount": 75752
     },
     {
       "ratingEnd": 1650,
       "ratingStart": 1600,
-      "userCount": 54364
+      "userCount": 54340
     },
     {
       "ratingEnd": 1700,
       "ratingStart": 1650,
-      "userCount": 40305
+      "userCount": 40354
     },
     {
       "ratingEnd": 1750,
       "ratingStart": 1700,
-      "userCount": 30459
+      "userCount": 30502
     },
     {
       "ratingEnd": 1800,
       "ratingStart": 1750,
-      "userCount": 22553
+      "userCount": 22579
     },
     {
       "ratingEnd": 1850,
       "ratingStart": 1800,
-      "userCount": 17221
+      "userCount": 17220
     },
     {
       "ratingEnd": 1900,
       "ratingStart": 1850,
-      "userCount": 16715
+      "userCount": 16755
     },
     {
       "ratingEnd": 1950,
       "ratingStart": 1900,
-      "userCount": 11347
+      "userCount": 11353
     },
     {
       "ratingEnd": 2000,
       "ratingStart": 1950,
-      "userCount": 7376
+      "userCount": 7403
     },
     {
       "ratingEnd": 2050,
       "ratingStart": 2000,
-      "userCount": 6027
+      "userCount": 6034
     },
     {
       "ratingEnd": 2100,
       "ratingStart": 2050,
-      "userCount": 3968
+      "userCount": 3985
     },
     {
       "ratingEnd": 2150,
       "ratingStart": 2100,
-      "userCount": 3225
+      "userCount": 3234
     },
     {
       "ratingEnd": 2200,
       "ratingStart": 2150,
-      "userCount": 2748
+      "userCount": 2753
     },
     {
       "ratingEnd": 2250,
       "ratingStart": 2200,
-      "userCount": 2022
+      "userCount": 2030
     },
     {
       "ratingEnd": 9950,
       "ratingStart": 2250,
-      "userCount": 6486
+      "userCount": 6483
     }
   ],
   "history": [

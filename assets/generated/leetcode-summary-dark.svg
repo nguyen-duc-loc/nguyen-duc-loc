@@ -4,10 +4,10 @@
 <path d="M83.43 163.57 A80 80 0 0 1 63.17 84.69" fill="none" class="stroke-success" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
 <path d="M83.43 163.57 A80 80 0 0 1 60.15 111.96" fill="none" class="gauge stroke-success" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
 <path d="M65.93 76.78 A80 80 0 0 1 213.57 75.57" fill="none" class="stroke-warning" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
-<path d="M65.93 76.78 A80 80 0 0 1 147.74 27.37" fill="none" class="gauge stroke-warning" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
+<path d="M65.93 76.78 A80 80 0 0 1 147.82 27.38" fill="none" class="gauge stroke-warning" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
 <path d="M216.45 83.43 A80 80 0 0 1 196.57 163.57" fill="none" class="stroke-danger" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
 <path d="M216.45 83.43 A80 80 0 0 1 219.04 119.36" fill="none" class="gauge stroke-danger" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
-<g class="enter" style="animation-delay:0ms"><text class="fill-text" x="140" y="112" dominant-baseline="alphabetic" text-anchor="middle" font-size="24" font-weight="500">2246<tspan class="fill-muted" font-size="14" font-weight="400">/4115</tspan></text></g>
+<g class="enter" style="animation-delay:0ms"><text class="fill-text" x="140" y="112" dominant-baseline="alphabetic" text-anchor="middle" font-size="24" font-weight="500">2247<tspan class="fill-muted" font-size="14" font-weight="400">/4115</tspan></text></g>
 <g class="enter" style="animation-delay:100ms"><svg x="108" y="122" width="14" height="14" viewBox="0 0 24 24"><path class="fill-success" d="M20.3 5.3L9 16.6L3.7 11.3L2.3 12.7L9 19.4L21.7 6.7Z"/></svg><text class="fill-text" x="126" y="129" dominant-baseline="central" text-anchor="start" font-size="14" font-weight="400">Solved</text></g>
 <g class="enter" style="animation-delay:200ms"><text class="fill-muted" x="140" y="162" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">3 Attempting</text></g>
 <g class="enter" style="animation-delay:300ms">
@@ -18,7 +18,7 @@
 <g class="enter" style="animation-delay:400ms">
 <rect x="281" y="76" width="112" height="44" rx="6" class="fill-track"/>
 <text class="fill-warningText" x="337" y="90" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">Med.</text>
-<text class="fill-text" x="337" y="107" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">1170/2148</text>
+<text class="fill-text" x="337" y="107" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">1171/2148</text>
 </g>
 <g class="enter" style="animation-delay:500ms">
 <rect x="281" y="128" width="112" height="44" rx="6" class="fill-track"/>
