@@ -440,10 +440,6 @@
   "calendar": [
     {
       "count": 1,
-      "date": "2025-11-21"
-    },
-    {
-      "count": 1,
       "date": "2025-11-22"
     },
     {
@@ -1889,6 +1885,10 @@
     {
       "count": 1,
       "date": "2026-11-20"
+    },
+    {
+      "count": 1,
+      "date": "2026-11-21"
     }
   ],
   "contest": {
@@ -1903,17 +1903,17 @@
     "easy": {
       "attempting": 0,
       "solved": 661,
-      "total": 976
+      "total": 977
     },
     "hard": {
       "attempting": 2,
       "solved": 415,
-      "total": 991
+      "total": 992
     },
     "medium": {
       "attempting": 1,
       "solved": 1171,
-      "total": 2148
+      "total": 2150
     }
   },
   "histogram": [
