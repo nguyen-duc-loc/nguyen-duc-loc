@@ -1,29 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="850" height="196" viewBox="0 0 850 196">
 <style>.fill-surface{fill:#f6f8fa}.stroke-surface{stroke:#f6f8fa}.stop-surface{stop-color:#f6f8fa}.fill-border{fill:#d1d9e0}.stroke-border{stroke:#d1d9e0}.stop-border{stop-color:#d1d9e0}.fill-track{fill:#e6eaef}.stroke-track{stroke:#e6eaef}.stop-track{stop-color:#e6eaef}.fill-text{fill:#1f2328}.stroke-text{stroke:#1f2328}.stop-text{stop-color:#1f2328}.fill-muted{fill:#59636e}.stroke-muted{stroke:#59636e}.stop-muted{stop-color:#59636e}.fill-accent{fill:#0969da}.stroke-accent{stroke:#0969da}.stop-accent{stop-color:#0969da}.fill-accent2{fill:#8250df}.stroke-accent2{stroke:#8250df}.stop-accent2{stop-color:#8250df}.fill-onAccent{fill:#ffffff}.stroke-onAccent{stroke:#ffffff}.stop-onAccent{stop-color:#ffffff}.fill-success{fill:#00af9b}.stroke-success{stroke:#00af9b}.stop-success{stop-color:#00af9b}.fill-warning{fill:#ffb800}.stroke-warning{stroke:#ffb800}.stop-warning{stop-color:#ffb800}.fill-danger{fill:#ff2d55}.stroke-danger{stroke:#ff2d55}.stop-danger{stop-color:#ff2d55}.fill-successText{fill:#00705f}.stroke-successText{stroke:#00705f}.stop-successText{stop-color:#00705f}.fill-warningText{fill:#805600}.stroke-warningText{stroke:#805600}.stop-warningText{stop-color:#805600}.fill-dangerText{fill:#c0262d}.stroke-dangerText{stroke:#c0262d}.stop-dangerText{stop-color:#c0262d}.fill-heat{fill:#2cbb5d}.stroke-heat{stroke:#2cbb5d}.stop-heat{stop-color:#2cbb5d}.fill-leetcode{fill:#ffa116}.stroke-leetcode{stroke:#ffa116}.stop-leetcode{stop-color:#ffa116}.fill-honor{fill:#f5c518}.stroke-honor{stroke:#f5c518}.stop-honor{stop-color:#f5c518}.fill-onHonor{fill:#3d2b00}.stroke-onHonor{stroke:#3d2b00}.stop-onHonor{stop-color:#3d2b00}.fill-logoTile{fill:#ffffff}.stroke-logoTile{stroke:#ffffff}.stop-logoTile{stop-color:#ffffff}svg{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"}.font-mono{font-family:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace}.enter{animation:enter 600ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes enter{from{opacity:0;transform:translateY(8px)}}.grow{animation:grow 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:left center}@keyframes grow{from{transform:scaleX(0)}}.gauge{animation:gauge 1000ms cubic-bezier(0.2, 0, 0, 1) both}@keyframes gauge{from{stroke-dashoffset:var(--gauge-empty)}}.rise{animation:rise 1000ms cubic-bezier(0.2, 0, 0, 1) both;transform-box:fill-box;transform-origin:center bottom}@keyframes rise{from{transform:scaleY(0)}}@media (prefers-reduced-motion: reduce){*{animation:none !important}}</style>
 <rect x="0.5" y="0.5" width="416" height="195" rx="12" class="fill-surface stroke-border" stroke-width="1"/>
-<path d="M83.43 163.57 A80 80 0 0 1 63.17 84.69" fill="none" class="stroke-success" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
-<path d="M83.43 163.57 A80 80 0 0 1 60.16 112.02" fill="none" class="gauge stroke-success" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
-<path d="M65.93 76.78 A80 80 0 0 1 213.57 75.57" fill="none" class="stroke-warning" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
-<path d="M65.93 76.78 A80 80 0 0 1 147.73 27.37" fill="none" class="gauge stroke-warning" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
+<path d="M83.43 163.57 A80 80 0 0 1 63.18 84.68" fill="none" class="stroke-success" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
+<path d="M83.43 163.57 A80 80 0 0 1 60.16 112.08" fill="none" class="gauge stroke-success" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
+<path d="M65.93 76.77 A80 80 0 0 1 213.57 75.56" fill="none" class="stroke-warning" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
+<path d="M65.93 76.77 A80 80 0 0 1 147.63 27.37" fill="none" class="gauge stroke-warning" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
 <path d="M216.45 83.43 A80 80 0 0 1 196.57 163.57" fill="none" class="stroke-danger" stroke-opacity="0.25" stroke-width="6" stroke-linecap="round"/>
-<path d="M216.45 83.43 A80 80 0 0 1 219.05 119.32" fill="none" class="gauge stroke-danger" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
-<g class="enter" style="animation-delay:0ms"><text class="fill-text" x="140" y="112" dominant-baseline="alphabetic" text-anchor="middle" font-size="24" font-weight="500">2247<tspan class="fill-muted" font-size="14" font-weight="400">/4119</tspan></text></g>
+<path d="M216.45 83.43 A80 80 0 0 1 219.05 119.28" fill="none" class="gauge stroke-danger" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="--gauge-empty:1"/>
+<g class="enter" style="animation-delay:0ms"><text class="fill-text" x="140" y="112" dominant-baseline="alphabetic" text-anchor="middle" font-size="24" font-weight="500">2247<tspan class="fill-muted" font-size="14" font-weight="400">/4123</tspan></text></g>
 <g class="enter" style="animation-delay:100ms"><svg x="108" y="122" width="14" height="14" viewBox="0 0 24 24"><path class="fill-success" d="M20.3 5.3L9 16.6L3.7 11.3L2.3 12.7L9 19.4L21.7 6.7Z"/></svg><text class="fill-text" x="126" y="129" dominant-baseline="central" text-anchor="start" font-size="14" font-weight="400">Solved</text></g>
 <g class="enter" style="animation-delay:200ms"><text class="fill-muted" x="140" y="162" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">3 Attempting</text></g>
 <g class="enter" style="animation-delay:300ms">
 <rect x="281" y="24" width="112" height="44" rx="6" class="fill-track"/>
 <text class="fill-successText" x="337" y="38" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">Easy</text>
-<text class="fill-text" x="337" y="55" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">661/977</text>
+<text class="fill-text" x="337" y="55" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">661/978</text>
 </g>
 <g class="enter" style="animation-delay:400ms">
 <rect x="281" y="76" width="112" height="44" rx="6" class="fill-track"/>
 <text class="fill-warningText" x="337" y="90" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">Med.</text>
-<text class="fill-text" x="337" y="107" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">1171/2150</text>
+<text class="fill-text" x="337" y="107" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">1171/2152</text>
 </g>
 <g class="enter" style="animation-delay:500ms">
 <rect x="281" y="128" width="112" height="44" rx="6" class="fill-track"/>
 <text class="fill-dangerText" x="337" y="142" dominant-baseline="central" text-anchor="middle" font-size="12" font-weight="400">Hard</text>
-<text class="fill-text" x="337" y="159" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">415/992</text>
+<text class="fill-text" x="337" y="159" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="500">415/993</text>
 </g>
 <rect x="433.5" y="0.5" width="416" height="195" rx="12" class="fill-surface stroke-border" stroke-width="1"/>
 <svg x="433" y="0" width="417" height="196"><text class="fill-muted" x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="14" font-weight="400">Badges</text>
