@@ -134,13 +134,13 @@
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-summary-dark.svg">
-  <img alt="LeetCode problems solved: 2,247 of 4,123. Easy 661 of 978, Medium 1,171 of 2,152, Hard 415 of 993. 3 attempting. LeetCode badges: 62 earned, featuring Guardian, 1000 Days Badge, Annual Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-summary-light.svg" width="100%">
+  <img alt="LeetCode problems solved: 2,248 of 4,124. Easy 661 of 978, Medium 1,171 of 2,152, Hard 416 of 994. 3 attempting. LeetCode badges: 62 earned, featuring Guardian, 1000 Days Badge, Annual Badge 2026. Most recent: Oct LeetCoding Challenge, Oct 2026." src="assets/generated/leetcode-summary-light.svg" width="100%">
 </picture></a>
 </p>
 
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
-  <img alt="LeetCode submissions from Nov 25, 2025 to Nov 24, 2026: 642 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+  <img alt="LeetCode submissions from Nov 26, 2025 to Nov 25, 2026: 643 submissions on 363 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
 </picture></a>
 </p>

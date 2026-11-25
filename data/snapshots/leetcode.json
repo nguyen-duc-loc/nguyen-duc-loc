@@ -1,6 +1,6 @@
 {
   "activeBadgeId": "10279006",
-  "asOf": "2026-11-24",
+  "asOf": "2026-11-25",
   "badges": [
     {
       "category": "ANNUAL",
@@ -438,10 +438,6 @@
     }
   ],
   "calendar": [
-    {
-      "count": 1,
-      "date": "2025-11-24"
-    },
     {
       "count": 1,
       "date": "2025-11-25"
@@ -1889,6 +1885,14 @@
     {
       "count": 1,
       "date": "2026-11-23"
+    },
+    {
+      "count": 1,
+      "date": "2026-11-24"
+    },
+    {
+      "count": 1,
+      "date": "2026-11-25"
     }
   ],
   "contest": {
@@ -1907,8 +1911,8 @@
     },
     "hard": {
       "attempting": 2,
-      "solved": 415,
-      "total": 993
+      "solved": 416,
+      "total": 994
     },
     "medium": {
       "attempting": 1,
