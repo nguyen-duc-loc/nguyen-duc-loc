@@ -127,7 +127,7 @@
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-contest-dark.svg">
-  <img alt="LeetCode contest rating 2,247, level Guardian, global ranking 6,061 of 893,251, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024." src="assets/generated/leetcode-contest-light.svg" width="100%">
+  <img alt="LeetCode contest rating 2,247, level Guardian, global ranking 6,085 of 894,294, 31 contests attended. Rating history: 1,565 in 2022 to 2,247 in 2024." src="assets/generated/leetcode-contest-light.svg" width="100%">
 </picture></a>
 </p>
 
@@ -141,6 +141,6 @@
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
-  <img alt="LeetCode submissions from Nov 26, 2025 to Nov 25, 2026: 643 submissions on 363 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+  <img alt="LeetCode submissions from Nov 27, 2025 to Nov 26, 2026: 642 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
 </picture></a>
 </p>
