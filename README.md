@@ -141,6 +141,6 @@
 <p>
 <a href="https://leetcode.com/u/nguyenducloc"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/leetcode-heatmap-dark.svg">
-  <img alt="LeetCode submissions from Nov 27, 2025 to Nov 26, 2026: 642 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
+  <img alt="LeetCode submissions from Nov 28, 2025 to Nov 27, 2026: 640 submissions on 362 active days, max streak 292 days." src="assets/generated/leetcode-heatmap-light.svg" width="100%">
 </picture></a>
 </p>
